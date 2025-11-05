@@ -12,9 +12,16 @@
 
 ### Шаг 2: Скопировать код диаграммы
 
-Открыть файл `docs/architecture/ARCHITECTURE_DIAGRAM.md`
+**Выберите уровень детализации:**
 
-Скопировать весь код из раздела **"High-Level Architecture"** (начинается с ` ```mermaid` и заканчивается ` ``` `)
+**Вариант A - High-Level (рекомендуется):**
+- Открыть `docs/architecture/ARCHITECTURE_DIAGRAM.md`
+- Скопировать раздел **"High-Level Architecture"**
+
+**Вариант B - Detailed (максимальная детализация):**
+- Открыть `docs/architecture/ARCHITECTURE_DETAILED.md`
+- Скопировать раздел **"Complete System Architecture (Detailed)"**
+- ⚠️ Диаграмма очень большая (может долго рендериться)
 
 ### Шаг 3: Вставить в редактор
 

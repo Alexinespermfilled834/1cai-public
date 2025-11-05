@@ -6,7 +6,7 @@
 
 ## 📁 Файлы
 
-### `ARCHITECTURE_DIAGRAM.md`
+### `ARCHITECTURE_DIAGRAM.md` ⭐
 
 **Содержит:**
 - Полная архитектурная диаграмма (Mermaid)
@@ -17,7 +17,30 @@
 - CI/CD pipeline
 - Технологический стек
 
-**Формат:** Mermaid diagrams (можно рендерить в GitHub, VSCode, mermaid.live)
+**Формат:** Mermaid diagrams (можно рендерить в GitHub, VSCode, mermaid.live)  
+**Уровень:** High-Level Overview
+
+---
+
+### `ARCHITECTURE_DETAILED.md` 🔍 NEW!
+
+**Содержит:**
+- **Детальная архитектурная диаграмма** (все компоненты с портами, версиями)
+- **Все 12 таблиц PostgreSQL** (полные схемы SQL)
+- **Neo4j графовые схемы** (Cypher примеры)
+- **Qdrant коллекции** (конфигурации, payload schemas)
+- **API Endpoints** (полная спецификация всех endpoint'ов)
+- **MCP Tools** (JSON schemas всех 4 инструментов)
+- **Docker Compose** (полный файл с конфигурацией)
+- **Kubernetes manifests** (Deployment, Service, HPA)
+- **Performance metrics** (SLA, таргеты, мониторинг)
+- **Security flows** (Authentication, Authorization, RBAC)
+- **Детальные data flows** (Code Generation, Voice Processing с timing)
+- **Code style guide** (Python conventions, naming)
+
+**Формат:** Mermaid + Technical Specifications  
+**Уровень:** Maximum Detail - Technical Documentation  
+**Объем:** 1000+ строк
 
 ---
 
