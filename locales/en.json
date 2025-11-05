@@ -40,12 +40,9 @@
         "upgrade_hint": "💎 Try Premium for unlimited requests: /premium"
       },
       "premium": {
-        "title": "💎 **Premium Subscription**",
-        "features": "**What's included:**\n✅ Unlimited requests\n✅ Priority processing (faster)\n✅ Code generation without limits\n✅ Advanced analysis access\n✅ API integration\n✅ Export results\n✅ 24/7 tech support",
-        "pricing": "**Pricing:**\n🎯 **$4/month** — personal account\n👥 **$40/month** — team (up to 10 people)\n🏢 **Enterprise** — custom",
-        "payment": "**Payment:**\n• Telegram Stars ⭐\n• Credit card 💳\n• Cryptocurrency 🪙",
-        "trial": "🎁 **First week free!**",
-        "activation": "To activate: create GitHub Issue"
+        "title": "💎 **Premium Features**",
+        "features": "**Extended capabilities:**\n✅ Higher request limits\n✅ Priority processing\n✅ Advanced code analysis\n✅ API integration\n✅ Export results\n✅ Additional AI agents",
+        "activation": "Interested in Premium? Create GitHub Issue describing your use case."
       },
       "help": {
         "title": "🤖 **1C AI Assistant**",

@@ -96,6 +96,17 @@ knowledge_base/*
 # Deprecated/unused directories
 docs-new/
 
+# Business/Marketing materials (not for public repo)
+docs/presentations/
+docs/business-strategy/
+marketing/
+DEVELOPMENT_COMPLETION_REPORT.md
+OCR_INTEGRATION_COMPLETE.md
+docs/COMPLETE_DAY_SUMMARY_*.md
+docs/ULTIMATE_SESSION_SUMMARY_*.md
+docs/TODAY_COMPLETE_WORK_SUMMARY.md
+docs/FINAL_COMPREHENSIVE_SUMMARY.md
+
 # Node modules (если используется)
 node_modules/
 
