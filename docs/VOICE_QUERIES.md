@@ -354,7 +354,7 @@ tail -f logs/telegram_bot.log
 **Голосовые запросы работают плохо?**
 
 Напишите нам:
-- GitHub: [Issues](https://github.com/DmitrL-dev/1cai/issues) с тегом `voice`
+- GitHub: [Issues](https://github.com/DmitrL-dev/1cai-public/issues) с тегом `voice`
 
 **Укажите:**
 1. Что сказали (текст)

@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 
 class OCRProvider(str, Enum):
     """Провайдеры OCR"""
-    CHANDRA_HF = "chandra_hf"  # Chandra with HuggingFace
+    DEEPSEEK = "deepseek"  # DeepSeek-OCR (primary, best accuracy 91%+)
+    CHANDRA_HF = "chandra_hf"  # Chandra with HuggingFace (fallback)
     CHANDRA_VLLM = "chandra_vllm"  # Chandra with vLLM (faster)
     TESSERACT = "tesseract"  # Fallback для простых случаев
 
@@ -68,8 +69,9 @@ class OCRService:
     
     def __init__(
         self,
-        provider: OCRProvider = OCRProvider.CHANDRA_HF,
-        enable_ai_parsing: bool = True
+        provider: OCRProvider = OCRProvider.DEEPSEEK,
+        enable_ai_parsing: bool = True,
+        enable_fallback: bool = True
     ):
         """
         Инициализация OCR сервиса
@@ -77,32 +79,77 @@ class OCRService:
         Args:
             provider: Провайдер OCR
             enable_ai_parsing: Использовать AI для парсинга структуры
+            enable_fallback: Использовать fallback на другие провайдеры при ошибке
         """
         self.provider = provider
         self.enable_ai_parsing = enable_ai_parsing
+        self.enable_fallback = enable_fallback
         
         # Инициализация провайдера
-        if provider == OCRProvider.CHANDRA_HF or provider == OCRProvider.CHANDRA_VLLM:
+        if provider == OCRProvider.DEEPSEEK:
+            self._init_deepseek()
+        elif provider == OCRProvider.CHANDRA_HF or provider == OCRProvider.CHANDRA_VLLM:
             self._init_chandra()
         elif provider == OCRProvider.TESSERACT:
             self._init_tesseract()
+        
+        # Инициализация fallback провайдеров (если включен)
+        if enable_fallback:
+            self._init_fallback_providers()
+    
+    def _init_deepseek(self):
+        """Инициализация DeepSeek-OCR"""
+        try:
+            from transformers import AutoModel, AutoTokenizer
+            import torch
+            
+            logger.info("Loading DeepSeek-OCR model...")
+            
+            # Загружаем модель и токенизатор
+            model_name = "deepseek-ai/DeepSeek-OCR"
+            
+            self.deepseek_tokenizer = AutoTokenizer.from_pretrained(model_name)
+            self.deepseek_model = AutoModel.from_pretrained(
+                model_name,
+                device_map="auto",
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                trust_remote_code=True  # DeepSeek требует этого
+            )
+            
+            self.deepseek_available = True
+            self.deepseek_device = "cuda" if torch.cuda.is_available() else "cpu"
+            
+            logger.info(f"✓ DeepSeek-OCR initialized on {self.deepseek_device}")
+            logger.info(f"  Model: {model_name}")
+            logger.info(f"  Expected accuracy: 91%+ (best in class)")
+            
+        except ImportError as e:
+            logger.error(
+                f"DeepSeek-OCR dependencies not installed: {e}\n"
+                "Install: pip install transformers torch"
+            )
+            self.deepseek_available = False
+            raise
+        except Exception as e:
+            logger.error(f"Failed to initialize DeepSeek-OCR: {e}")
+            self.deepseek_available = False
+            raise
     
     def _init_chandra(self):
-        """Инициализация Chandra OCR"""
+        """Инициализация Chandra OCR (fallback)"""
         try:
             # Проверяем установлен ли chandra
             import chandra
             
             self.chandra_available = True
-            logger.info("Chandra OCR initialized")
+            logger.info("Chandra OCR initialized (fallback)")
             
         except ImportError:
-            logger.error(
+            logger.warning(
                 "Chandra OCR not installed. "
                 "Install: pip install chandra-ocr"
             )
             self.chandra_available = False
-            raise
     
     def _init_tesseract(self):
         """Инициализация Tesseract (fallback)"""
@@ -114,12 +161,41 @@ class OCRService:
             pytesseract.get_tesseract_version()
             
             self.tesseract_available = True
-            logger.info("Tesseract OCR initialized")
+            logger.info("Tesseract OCR initialized (fallback)")
             
         except Exception as e:
-            logger.error(f"Tesseract not available: {e}")
+            logger.warning(f"Tesseract not available: {e}")
             self.tesseract_available = False
-            raise
+    
+    def _init_fallback_providers(self):
+        """Инициализация fallback провайдеров"""
+        logger.info("Initializing fallback OCR providers...")
+        
+        # Попытка инициализации Chandra (если не основной)
+        if self.provider != OCRProvider.CHANDRA_HF:
+            try:
+                self._init_chandra()
+            except Exception:
+                pass
+        
+        # Попытка инициализации Tesseract (если не основной)
+        if self.provider != OCRProvider.TESSERACT:
+            try:
+                self._init_tesseract()
+            except Exception:
+                pass
+        
+        # Логируем доступные fallback
+        fallbacks = []
+        if hasattr(self, 'chandra_available') and self.chandra_available:
+            fallbacks.append("Chandra")
+        if hasattr(self, 'tesseract_available') and self.tesseract_available:
+            fallbacks.append("Tesseract")
+        
+        if fallbacks:
+            logger.info(f"✓ Fallback providers available: {', '.join(fallbacks)}")
+        else:
+            logger.warning("⚠ No fallback providers available")
     
     async def process_image(
         self,
@@ -141,13 +217,35 @@ class OCRService:
         logger.info(f"Processing image: {image_path}")
         
         try:
-            # OCR распознавание
-            if self.provider in [OCRProvider.CHANDRA_HF, OCRProvider.CHANDRA_VLLM]:
-                raw_result = await self._chandra_ocr(image_path, **kwargs)
-            elif self.provider == OCRProvider.TESSERACT:
-                raw_result = await self._tesseract_ocr(image_path)
-            else:
-                raise ValueError(f"Unknown provider: {self.provider}")
+            # OCR распознавание с fallback логикой
+            raw_result = None
+            errors = []
+            
+            # Попытка с primary провайдером
+            try:
+                if self.provider == OCRProvider.DEEPSEEK:
+                    raw_result = await self._deepseek_ocr(image_path, **kwargs)
+                elif self.provider in [OCRProvider.CHANDRA_HF, OCRProvider.CHANDRA_VLLM]:
+                    raw_result = await self._chandra_ocr(image_path, **kwargs)
+                elif self.provider == OCRProvider.TESSERACT:
+                    raw_result = await self._tesseract_ocr(image_path)
+                else:
+                    raise ValueError(f"Unknown provider: {self.provider}")
+            
+            except Exception as e:
+                logger.warning(f"Primary provider {self.provider} failed: {e}")
+                errors.append(f"{self.provider}: {e}")
+                
+                # Пытаемся fallback провайдеры (если включен)
+                if self.enable_fallback:
+                    raw_result = await self._try_fallback_providers(image_path, **kwargs)
+                
+                if raw_result is None:
+                    # Все провайдеры failed
+                    raise RuntimeError(
+                        f"All OCR providers failed:\n" + 
+                        "\n".join(errors)
+                    )
             
             # Создаем результат
             result = OCRResult(
@@ -178,6 +276,103 @@ class OCRService:
         except Exception as e:
             logger.error(f"OCR processing error: {e}")
             raise
+    
+    async def _deepseek_ocr(
+        self,
+        image_path: str,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """Распознавание через DeepSeek-OCR"""
+        
+        if not self.deepseek_available:
+            raise RuntimeError("DeepSeek-OCR not available")
+        
+        try:
+            from PIL import Image
+            import torch
+            
+            logger.info(f"DeepSeek-OCR processing: {image_path}")
+            
+            # Загружаем изображение
+            image = Image.open(image_path).convert("RGB")
+            
+            # Подготавливаем inputs
+            inputs = self.deepseek_tokenizer(
+                images=image,
+                return_tensors="pt"
+            ).to(self.deepseek_device)
+            
+            # Генерация (OCR)
+            with torch.no_grad():
+                outputs = self.deepseek_model.generate(
+                    **inputs,
+                    max_new_tokens=4096,
+                    do_sample=False,
+                    temperature=1.0,
+                    num_beams=1,
+                )
+            
+            # Декодируем результат
+            generated_text = self.deepseek_tokenizer.batch_decode(
+                outputs,
+                skip_special_tokens=True
+            )[0]
+            
+            logger.info(f"✓ DeepSeek-OCR: {len(generated_text)} chars recognized")
+            
+            return {
+                "text": generated_text,
+                "confidence": 0.91,  # DeepSeek показывает 91%+ accuracy
+                "metadata": {
+                    "method": "deepseek",
+                    "device": self.deepseek_device,
+                    "model": "deepseek-ai/DeepSeek-OCR"
+                }
+            }
+        
+        except Exception as e:
+            logger.error(f"DeepSeek OCR error: {e}")
+            raise
+    
+    async def _try_fallback_providers(
+        self,
+        image_path: str,
+        **kwargs
+    ) -> Optional[Dict[str, Any]]:
+        """Попытка использования fallback провайдеров"""
+        
+        logger.info("Trying fallback OCR providers...")
+        
+        # Приоритет fallback: Chandra > Tesseract
+        fallback_attempts = []
+        
+        # 1. Chandra
+        if hasattr(self, 'chandra_available') and self.chandra_available:
+            fallback_attempts.append(('Chandra', self._chandra_ocr))
+        
+        # 2. Tesseract
+        if hasattr(self, 'tesseract_available') and self.tesseract_available:
+            fallback_attempts.append(('Tesseract', self._tesseract_ocr))
+        
+        # Пробуем каждый fallback
+        for name, ocr_method in fallback_attempts:
+            try:
+                logger.info(f"Trying fallback: {name}")
+                result = await ocr_method(image_path, **kwargs)
+                logger.info(f"✓ Fallback {name} succeeded")
+                
+                # Добавляем флаг что это fallback
+                result['metadata']['fallback_from'] = self.provider.value
+                result['metadata']['used_provider'] = name.lower()
+                
+                return result
+                
+            except Exception as e:
+                logger.warning(f"Fallback {name} failed: {e}")
+                continue
+        
+        # Все fallback failed
+        return None
     
     async def _chandra_ocr(
         self,
@@ -443,7 +638,9 @@ class OCRService:
     def get_supported_formats(self) -> List[str]:
         """Получить список поддерживаемых форматов"""
         
-        if self.provider in [OCRProvider.CHANDRA_HF, OCRProvider.CHANDRA_VLLM]:
+        if self.provider == OCRProvider.DEEPSEEK:
+            return ["pdf", "png", "jpg", "jpeg", "tiff", "bmp", "webp", "gif"]
+        elif self.provider in [OCRProvider.CHANDRA_HF, OCRProvider.CHANDRA_VLLM]:
             return ["pdf", "png", "jpg", "jpeg", "tiff", "bmp", "webp"]
         elif self.provider == OCRProvider.TESSERACT:
             return ["png", "jpg", "jpeg", "tiff", "bmp"]
@@ -502,7 +699,10 @@ class OCRService:
         file_size = os.path.getsize(file_path)
         
         # Оценки на основе бенчмарков
-        if self.provider == OCRProvider.CHANDRA_HF:
+        if self.provider == OCRProvider.DEEPSEEK:
+            # DeepSeek-OCR: ~1-3 сек на страницу (GPU), ~5-8 сек (CPU)
+            base_time = 2 if hasattr(self, 'deepseek_device') and self.deepseek_device == 'cuda' else 6
+        elif self.provider == OCRProvider.CHANDRA_HF:
             # HuggingFace: ~2-5 сек на страницу (CPU/GPU)
             base_time = 3
         elif self.provider == OCRProvider.CHANDRA_VLLM:
@@ -524,20 +724,22 @@ _ocr_service: Optional[OCRService] = None
 
 def get_ocr_service(
     provider: Optional[OCRProvider] = None,
-    enable_ai_parsing: bool = True
+    enable_ai_parsing: bool = True,
+    enable_fallback: bool = True
 ) -> OCRService:
     """Получить глобальный экземпляр OCR сервиса"""
     global _ocr_service
     
     if _ocr_service is None or provider is not None:
-        # Определяем провайдера из env
+        # Определяем провайдера из env (по умолчанию DeepSeek)
         if provider is None:
-            provider_str = os.getenv("OCR_PROVIDER", "chandra_hf")
+            provider_str = os.getenv("OCR_PROVIDER", "deepseek")
             provider = OCRProvider(provider_str)
         
         _ocr_service = OCRService(
             provider=provider,
-            enable_ai_parsing=enable_ai_parsing
+            enable_ai_parsing=enable_ai_parsing,
+            enable_fallback=enable_fallback
         )
     
     return _ocr_service

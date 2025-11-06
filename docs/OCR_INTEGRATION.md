@@ -427,7 +427,7 @@ OCR_PROVIDER=chandra_vllm
 ## 📞 Support
 
 **Вопросы по OCR:**
-- GitHub: [Issues](https://github.com/DmitrL-dev/1cai/issues) с тегом `ocr`
+- GitHub: [Issues](https://github.com/DmitrL-dev/1cai-public/issues) с тегом `ocr`
 - Chandra docs: https://github.com/datalab-to/chandra
 
 ---

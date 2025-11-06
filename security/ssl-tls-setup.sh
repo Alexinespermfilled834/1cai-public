@@ -51,3 +51,5 @@ echo "3. Ingress will automatically get SSL certificates"
 
 
 
+
+

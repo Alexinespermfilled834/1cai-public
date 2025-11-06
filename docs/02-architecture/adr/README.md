@@ -1,5 +1,8 @@
 # 📝 Architecture Decision Records (ADR)
 
+> ⚠️ **ВНИМАНИЕ:** Этот файл описывает состояние на **3 ноября 2025**.  
+> **Актуальная версия:** [../../architecture/ARCHITECTURE_CURRENT_STATE.md](../../architecture/ARCHITECTURE_CURRENT_STATE.md) (обновлено 6 ноября 2025)
+
 ## Enterprise 1C AI Development Stack - ADR Repository
 
 **Хранилище архитектурных решений**

@@ -1,0 +1,138 @@
+{
+  "total_files": 539,
+  "stats": {
+    "files_analyzed": 539,
+    "total_lines": 220616,
+    "total_classes": 1520,
+    "classes_with_docstring": 1388,
+    "total_functions": 6000,
+    "functions_with_docstring": 4966,
+    "functions_with_return_type": 2439,
+    "files_with_long_lines": 122,
+    "functions_with_param_types": 2848,
+    "files_over_500_lines": 161,
+    "syntax_errors": 6
+  },
+  "issues": {
+    "long_lines": 254,
+    "high_complexity": 108,
+    "long_files": 25,
+    "syntax_errors": 6
+  },
+  "top_issues": [
+    {
+      "type": "long_lines",
+      "count": 254,
+      "examples": [
+        {
+          "file": "1c_mcp\\src\\py_server\\config.py",
+          "line": 34,
+          "length": 135
+        },
+        {
+          "file": "1c_mcp\\src\\py_server\\http_server.py",
+          "line": 506,
+          "length": 136
+        },
+        {
+          "file": "1c_mcp\\src\\py_server\\onec_client.py",
+          "line": 61,
+          "length": 130
+        },
+        {
+          "file": "1c_mcp\\src\\py_server\\onec_client.py",
+          "line": 64,
+          "length": 128
+        },
+        {
+          "file": "1c_mcp\\src\\py_server\\auth\\oauth2.py",
+          "line": 103,
+          "length": 125
+        }
+      ]
+    },
+    {
+      "type": "high_complexity",
+      "count": 108,
+      "examples": [
+        {
+          "file": "1c_mcp\\src\\py_server\\http_server.py",
+          "function": "_register_oauth2_routes",
+          "complexity": 27
+        },
+        {
+          "file": "1c_mcp_code_generation\\src\\py_server\\code_generation\\engine.py",
+          "function": "_parse_plain_text_response",
+          "complexity": 13
+        },
+        {
+          "file": "1c_mcp_code_generation\\src\\py_server\\code_generation\\__init__.py",
+          "function": "validate_config",
+          "complexity": 11
+        },
+        {
+          "file": "1c_mcp_code_generation\\src\\py_server\\code_generation\\prompts\\context.py",
+          "function": "_apply_context_adaptations",
+          "complexity": 11
+        },
+        {
+          "file": "1c_mcp_code_generation\\src\\py_server\\code_generation\\prompts\\context.py",
+          "function": "_get_applied_adaptations",
+          "complexity": 11
+        }
+      ]
+    },
+    {
+      "type": "long_files",
+      "count": 25,
+      "examples": [
+        {
+          "file": "1c_mcp\\src\\py_server\\cache\\oauth_cache.py",
+          "lines": 1385
+        },
+        {
+          "file": "1c_mcp_code_generation\\src\\py_server\\code_generation\\validation\\validator.py",
+          "lines": 1134
+        },
+        {
+          "file": "archive_package\\1c_mcp\\src\\py_server\\cache\\oauth_cache.py",
+          "lines": 1385
+        },
+        {
+          "file": "archive_package\\1c_mcp_code_generation\\src\\py_server\\code_generation\\validation\\validator.py",
+          "lines": 1134
+        },
+        {
+          "file": "archive_package\\code\\py_server\\cache\\http_cache.py",
+          "lines": 1002
+        }
+      ]
+    },
+    {
+      "type": "syntax_errors",
+      "count": 6,
+      "examples": [
+        {
+          "file": "1c_mcp_code_generation\\tests\\integration\\test_e2e_scenarios.py",
+          "error": "positional argument follows keyword argument (<unknown>, line 643)"
+        },
+        {
+          "file": "archive_package\\1c_mcp_code_generation\\tests\\integration\\test_e2e_scenarios.py",
+          "error": "positional argument follows keyword argument (<unknown>, line 643)"
+        },
+        {
+          "file": "archive_package\\code\\py_server\\logging\\handlers.py",
+          "error": "unterminated string literal (detected at line 390) (<unknown>, line 390)"
+        },
+        {
+          "file": "archive_package\\monitoring\\exporters\\health-check.py",
+          "error": "invalid syntax (<unknown>, line 66)"
+        },
+        {
+          "file": "code\\py_server\\logging\\handlers.py",
+          "error": "unterminated string literal (detected at line 390) (<unknown>, line 390)"
+        }
+      ]
+    }
+  ]
+}

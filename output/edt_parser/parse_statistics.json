@@ -1,0 +1,11 @@
+{
+  "total_time": 812.1837668418884,
+  "total_objects": 6708,
+  "common_modules": 4517,
+  "catalogs": 1344,
+  "documents": 847,
+  "total_functions": 60111,
+  "total_procedures": 57238,
+  "errors": 5,
+  "rate": 8.259214569239079
+}

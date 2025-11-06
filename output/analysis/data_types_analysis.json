@@ -1,0 +1,21 @@
+{
+  "catalog_types": {
+    "catalogs_analyzed": 0,
+    "total_attributes": 0,
+    "type_usage": {},
+    "composite_types": {},
+    "avg_string_length": 0,
+    "avg_number_precision": 0
+  },
+  "document_types": {
+    "documents_analyzed": 0,
+    "total_attributes": 0,
+    "type_usage": {},
+    "composite_types": {}
+  },
+  "reference_types": {
+    "catalog_refs": {},
+    "document_refs": {}
+  },
+  "recommendations": []
+}

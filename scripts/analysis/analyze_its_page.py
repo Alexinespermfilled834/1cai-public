@@ -3,6 +3,7 @@
 
 import asyncio
 import sys
+import os
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -12,7 +13,16 @@ from bs4 import BeautifulSoup
 
 async def analyze_its_structure():
     """Анализ структуры страниц ИТС"""
-    its_service = get_its_service(username="its_rrpk", password="RRPK_2022")
+    # Security: Use environment variables for credentials
+    username = os.getenv("ITS_USERNAME", "")
+    password = os.getenv("ITS_PASSWORD", "")
+    
+    if not username or not password:
+        print("[ERROR] Credentials not found in environment variables")
+        print("Please set: ITS_USERNAME and ITS_PASSWORD")
+        return
+    
+    its_service = get_its_service(username=username, password=password)
     
     print("Авторизация...")
     auth_result = await its_service.authenticate()

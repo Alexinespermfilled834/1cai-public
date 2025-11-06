@@ -14,6 +14,7 @@
 | 🏗️ **Понять архитектуру** | [Architecture](./02-architecture/PROJECT_SUMMARY.md) |
 | 🤖 **Использовать AI агентов** | [AI Agents Guide](./03-ai-agents/FINAL_PROJECT_SUMMARY.md) |
 | 📦 **Развернуть в production** | [Deployment](./04-deployment/PRODUCTION_DEPLOYMENT.md) |
+| 📋 **Внедрить ITIL/ITSM** | [ITIL Analysis](./itil-analysis/README.md) |
 | 💻 **Разрабатывать и контрибьютить** | [Development](./05-development/) |
 | 📊 **Посмотреть отчеты** | [Project Reports](./06-project-reports/) |
 | 💡 **Узнать о новых возможностях** | [Innovation Report](./06-project-reports/INNOVATION_OPPORTUNITIES_2025.md) |
@@ -96,6 +97,26 @@ Production развертывание
 
 ---
 
+### **[itil-analysis/](./itil-analysis/)** 📋
+ITIL/ITSM анализ и внедрение
+
+**Главный документ:**
+- 📊 **[README](./itil-analysis/README.md)** - START HERE!
+
+**Документация:**
+- 📄 [Полный отчёт](./itil-analysis/ITIL_APPLICATION_REPORT.md) (60+ стр)
+- 📄 [Executive Summary](./itil-analysis/ITIL_EXECUTIVE_SUMMARY.md) (5 стр)
+- 📄 [Action Plan](./itil-analysis/ITIL_ACTION_PLAN.md) (30+ стр)
+- 📄 [Visual Overview](./itil-analysis/ITIL_VISUAL_OVERVIEW.md) (диаграммы)
+
+**Ключевые выводы:**
+- ✅ Проект готов к ITIL (6/10 readiness)
+- 💰 ROI: 458-4900% (окупаемость 1 неделя - 2.5 мес)
+- 🎯 Рекомендация: ВНЕДРЯТЬ (высокий приоритет)
+- 🎁 Уникальные преимущества: Telegram + AI
+
+---
+
 ### **[05-development/](./05-development/)** 💻
 Разработка и вклад
 
@@ -133,7 +154,7 @@ Production развертывание
 
 **1. Установка (5 минут):**
 ```bash
-git clone https://github.com/your-repo/enterprise-1c-ai-stack
+git clone https://github.com/DmitrL-dev/1cai-public
 cd enterprise-1c-ai-stack
 pip install -r requirements.txt
 cp .env.example .env
@@ -224,7 +245,7 @@ python main.py
 ## 🆘 ПОМОЩЬ
 
 ### **Нашли проблему?**
-- Создайте [Issue на GitHub](https://github.com/your-repo/issues)
+- Создайте [Issue на GitHub](https://github.com/DmitrL-dev/1cai-public/issues)
 - См. [Contributing Guide](./01-getting-started/CONTRIBUTING.md)
 
 ### **Есть вопросы?**
@@ -283,9 +304,9 @@ python main.py
 
 ## 📞 CONTACT & SUPPORT
 
-**GitHub:** [Enterprise 1C AI Stack](https://github.com/your-repo)  
+**GitHub:** [Enterprise 1C AI Stack](https://github.com/DmitrL-dev/1cai-public)  
 **Docs:** Вы здесь! 📚  
-**Community:** [Discussions](https://github.com/your-repo/discussions)
+**Community:** [Discussions](https://github.com/DmitrL-dev/1cai-public/discussions)
 
 ---
 

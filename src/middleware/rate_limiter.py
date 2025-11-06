@@ -83,3 +83,5 @@ LIGHT_OPERATION_LIMIT = "1000/hour"  # 1000 запросов в час
 
 
 
+
+

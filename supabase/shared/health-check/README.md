@@ -657,8 +657,8 @@ mypy supabase/shared/health-check/
 ## 🆘 Поддержка
 
 - 📖 [Документация](docs/health-checks.md)
-- 🐛 [Issues](https://github.com/your-repo/issues)
-- 💬 [Discussions](https://github.com/your-repo/discussions)
+- 🐛 [Issues](https://github.com/DmitrL-dev/1cai-public/issues)
+- 💬 [Discussions](https://github.com/DmitrL-dev/1cai-public/discussions)
 - 📧 [Email](mailto:support@example.com)
 
 ## 🗺️ Дорожная карта

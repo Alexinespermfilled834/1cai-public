@@ -220,7 +220,7 @@ docs/
 2. **Chat:** https://1c-ai-stack.com/chat (24/7)
 3. **Email:** support@1c-ai-stack.com
 4. **Phone:** +7 (999) 123-45-67
-5. **Issues:** https://github.com/your-org/1c-ai-stack/issues
+5. **Issues:** https://github.com/DmitrL-dev/1cai-public/issues
 
 **We're here to help!** 💪
 

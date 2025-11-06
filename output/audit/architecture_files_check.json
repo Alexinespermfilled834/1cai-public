@@ -1,0 +1,23 @@
+{
+  "status": "PARTIALLY_UPDATED",
+  "total_files": 11,
+  "outdated_files": 11,
+  "recent_files": 0,
+  "new_components_mentioned": 1,
+  "outdated_list": [
+    "docs\\architecture\\ARCHITECTURE_DETAILED.md",
+    "docs\\architecture\\ARCHITECTURE_DIAGRAM.md",
+    "docs\\architecture\\C4_MODEL_COMPLETE.md",
+    "docs\\architecture\\README.md",
+    "docs\\02-architecture\\IMPLEMENTATION_PLAN.md",
+    "docs\\02-architecture\\PROJECT_SUMMARY.md",
+    "docs\\02-architecture\\README.md",
+    "docs\\02-architecture\\TECHNOLOGY_STACK.md",
+    "docs\\02-architecture\\adr\\ADR_TEMPLATE.md",
+    "docs\\02-architecture\\adr\\README.md",
+    "analysis\\project_architecture\\architecture_analysis.md"
+  ],
+  "files_with_new_components": [
+    "docs\\architecture\\ARCHITECTURE_DETAILED.md"
+  ]
+}

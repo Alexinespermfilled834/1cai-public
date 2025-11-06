@@ -254,3 +254,5 @@ kubectl describe pvc PVC_NAME -n 1c-ai-stack
 
 
 
+
+

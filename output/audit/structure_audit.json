@@ -1,0 +1,926 @@
+{
+  "total_files": 2517,
+  "file_types": {
+    "(no extension)": 62,
+    ".md": 573,
+    ".ini": 6,
+    ".png": 109,
+    ".txt": 46,
+    ".yml": 90,
+    ".dev": 1,
+    ".gateway": 2,
+    ".metrics": 2,
+    ".risk": 2,
+    ".bat": 3,
+    ".sh": 70,
+    ".yaml": 55,
+    ".json": 106,
+    ".log": 3,
+    ".js": 32,
+    ".html": 19,
+    ".ts": 300,
+    ".xml": 45,
+    ".css": 14,
+    ".tsx": 254,
+    ".bsl": 64,
+    ".py": 538,
+    ".example": 6,
+    ".mbsl": 4,
+    ".mdo": 2,
+    ".test": 2,
+    ".epf": 6,
+    ".prom": 2,
+    ".production": 2,
+    ".staging": 2,
+    ".conf": 16,
+    ".hcl": 6,
+    ".docx": 2,
+    ".pdf": 12,
+    ".php": 2,
+    ".supabase": 1,
+    ".sql": 31,
+    ".jsonc": 1,
+    ".lock": 1,
+    ".toml": 1,
+    ".tf": 1,
+    ".disabled": 2,
+    ".telegram": 1,
+    ".properties": 1,
+    ".mf": 1,
+    ".java": 12,
+    ".ps1": 4
+  },
+  "file_sizes": {
+    "(no extension)": {
+      "count": 62,
+      "total_mb": 0.3153076171875
+    },
+    ".md": {
+      "count": 573,
+      "total_mb": 8.808403968811035
+    },
+    ".ini": {
+      "count": 6,
+      "total_mb": 0.021444320678710938
+    },
+    ".png": {
+      "count": 109,
+      "total_mb": 21.84419536590576
+    },
+    ".txt": {
+      "count": 46,
+      "total_mb": 0.08187675476074219
+    },
+    ".yml": {
+      "count": 90,
+      "total_mb": 0.4694547653198242
+    },
+    ".dev": {
+      "count": 1,
+      "total_mb": 0.00079345703125
+    },
+    ".gateway": {
+      "count": 2,
+      "total_mb": 0.0020618438720703125
+    },
+    ".metrics": {
+      "count": 2,
+      "total_mb": 0.0017986297607421875
+    },
+    ".risk": {
+      "count": 2,
+      "total_mb": 0.001773834228515625
+    },
+    ".bat": {
+      "count": 3,
+      "total_mb": 0.005608558654785156
+    },
+    ".sh": {
+      "count": 70,
+      "total_mb": 0.8232078552246094
+    },
+    ".yaml": {
+      "count": 55,
+      "total_mb": 1.1775627136230469
+    },
+    ".json": {
+      "count": 106,
+      "total_mb": 3194.1799364089966
+    },
+    ".log": {
+      "count": 3,
+      "total_mb": 0.14673900604248047
+    },
+    ".js": {
+      "count": 32,
+      "total_mb": 0.16193294525146484
+    },
+    ".html": {
+      "count": 19,
+      "total_mb": 0.1938486099243164
+    },
+    ".ts": {
+      "count": 300,
+      "total_mb": 5.248686790466309
+    },
+    ".xml": {
+      "count": 45,
+      "total_mb": 0.16282939910888672
+    },
+    ".css": {
+      "count": 14,
+      "total_mb": 0.02781963348388672
+    },
+    ".tsx": {
+      "count": 254,
+      "total_mb": 3.8680620193481445
+    },
+    ".bsl": {
+      "count": 64,
+      "total_mb": 1.3193607330322266
+    },
+    ".py": {
+      "count": 538,
+      "total_mb": 8.132852554321289
+    },
+    ".example": {
+      "count": 6,
+      "total_mb": 0.011430740356445312
+    },
+    ".mbsl": {
+      "count": 4,
+      "total_mb": 0.09214401245117188
+    },
+    ".mdo": {
+      "count": 2,
+      "total_mb": 0.01839447021484375
+    },
+    ".test": {
+      "count": 2,
+      "total_mb": 0.020795822143554688
+    },
+    ".epf": {
+      "count": 6,
+      "total_mb": 0.10943603515625
+    },
+    ".prom": {
+      "count": 2,
+      "total_mb": 0.005916595458984375
+    },
+    ".production": {
+      "count": 2,
+      "total_mb": 0.007897377014160156
+    },
+    ".staging": {
+      "count": 2,
+      "total_mb": 0.0039768218994140625
+    },
+    ".conf": {
+      "count": 16,
+      "total_mb": 0.11111259460449219
+    },
+    ".hcl": {
+      "count": 6,
+      "total_mb": 0.004611968994140625
+    },
+    ".docx": {
+      "count": 2,
+      "total_mb": 0.029476165771484375
+    },
+    ".pdf": {
+      "count": 12,
+      "total_mb": 19.45583724975586
+    },
+    ".php": {
+      "count": 2,
+      "total_mb": 0.028472900390625
+    },
+    ".supabase": {
+      "count": 1,
+      "total_mb": 0.0032958984375
+    },
+    ".sql": {
+      "count": 31,
+      "total_mb": 0.0781402587890625
+    },
+    ".jsonc": {
+      "count": 1,
+      "total_mb": 0.0013856887817382812
+    },
+    ".lock": {
+      "count": 1,
+      "total_mb": 0.007168769836425781
+    },
+    ".toml": {
+      "count": 1,
+      "total_mb": 0.0022869110107421875
+    },
+    ".tf": {
+      "count": 1,
+      "total_mb": 0.005848884582519531
+    },
+    ".disabled": {
+      "count": 2,
+      "total_mb": 0.019189834594726562
+    },
+    ".telegram": {
+      "count": 1,
+      "total_mb": 0.0007276535034179688
+    },
+    ".properties": {
+      "count": 1,
+      "total_mb": 0.00016880035400390625
+    },
+    ".mf": {
+      "count": 1,
+      "total_mb": 0.0007228851318359375
+    },
+    ".java": {
+      "count": 12,
+      "total_mb": 0.06997108459472656
+    },
+    ".ps1": {
+      "count": 4,
+      "total_mb": 0.014719009399414062
+    }
+  },
+  "large_files": [
+    {
+      "path": "knowledge_base\\erp.json",
+      "size_mb": 978.0097913742065,
+      "ext": ".json"
+    },
+    {
+      "path": "knowledge_base\\buh.json",
+      "size_mb": 669.4627723693848,
+      "ext": ".json"
+    },
+    {
+      "path": "output\\edt_parser\\full_parse_with_metadata.json",
+      "size_mb": 599.485743522644,
+      "ext": ".json"
+    },
+    {
+      "path": "knowledge_base\\zup.json",
+      "size_mb": 383.4800453186035,
+      "ext": ".json"
+    },
+    {
+      "path": "output\\edt_parser\\edt_parse_results.json",
+      "size_mb": 268.77253913879395,
+      "ext": ".json"
+    },
+    {
+      "path": "knowledge_base\\do.json",
+      "size_mb": 264.5963068008423,
+      "ext": ".json"
+    },
+    {
+      "path": "archive_package\\docs\\download_f95b3b37005a41059d384f5cc07f9ce9.pdf",
+      "size_mb": 16.34336757659912,
+      "ext": ".pdf"
+    },
+    {
+      "path": "output\\dataset\\ml_training_dataset.json",
+      "size_mb": 11.0277099609375,
+      "ext": ".json"
+    },
+    {
+      "path": "output\\dataset\\ml_training_dataset_compact.json",
+      "size_mb": 10.636405944824219,
+      "ext": ".json"
+    },
+    {
+      "path": "output\\edt_parser\\test_100_modules.json",
+      "size_mb": 6.029428482055664,
+      "ext": ".json"
+    },
+    {
+      "path": "images\\09_external_integrations_diagram.png",
+      "size_mb": 1.0558977127075195,
+      "ext": ".png"
+    }
+  ],
+  "duplicates": {
+    "05affbfc8a092dda98c0b537ca83144d": 5,
+    "909e19016d102884b341a132957d18c9": 5,
+    "ef3ba2a81ba19f8ea5ddf625521e96f0": 5,
+    "5f758c9ed91381d9b229f3f5a6eb2d62": 5,
+    "763b9259ff66d702462764b78da2de94": 5,
+    "b39b0c04c8b06a94fa53e598a344f2b4": 5,
+    "476e0dd0349442542744b95ddb2ad018": 5,
+    "0352474ba2918efe13895edbc3780d94": 5,
+    "9ff3b19dcb8a6d6ad0c4d90af0d78a7d": 5,
+    "f9d2e9a2ad6a227c729332b9c524b2e9": 2,
+    "d480198de1791b9fd94f55fa6b7b8483": 2,
+    "c10b3606f4a7f89ae61cc1dc36adaa16": 2,
+    "e5ae76167befc4945212c987ce2b5afa": 2,
+    "00bc98fb8d26eb787040762948ad1c3a": 2,
+    "eb35b1b57001e86e9554eb05f129f912": 2,
+    "df69f0a8a14003f703bcc0728d6faee2": 2,
+    "108860e4704fbf314b57c0d3da537378": 2,
+    "7098897125601ce4213d43058fd2bcbc": 2,
+    "ba333e06e342f5824c9dbf25a49de1b5": 2,
+    "5c19bb7affc1f25e17111ab569afe502": 2,
+    "4a80d2fea3f1a187d40146a8a126a805": 2,
+    "23736d073839fa49a7920393a67ffedb": 2,
+    "fb524f737717921c1d210e6dc72d78f1": 2,
+    "70177bce9d4506e003e113a7e69d8a7f": 2,
+    "9d868aa18375e9bed4986be19fc7d80a": 2,
+    "b034bd7109f084672de12ce9c049dcbd": 2,
+    "685db8340913be11e1c71fe00f7b75e1": 2,
+    "60f600e00fedbea8bb73648a04236dab": 2,
+    "161405df9e9ea89a1fc056590449f6df": 2,
+    "17d4f2a28b9524c3a4a4bd6ebc8e025b": 2,
+    "8a58ae2ac3ee3641d46021a3b81d4828": 2,
+    "13f7150eca49213d1c128ec73204c07e": 2,
+    "cc22cc3fb99e8118ced09290e13a0216": 2,
+    "ac6bc7bdc0a08a5c3546ca0e8bcc6e3e": 2,
+    "0902b849f5c41b512a2d7c23cc977ade": 2,
+    "845985b7e0c4ea3f25c86ecfb43cadf9": 2,
+    "754bddbd43906b854e9ff7f347372ca1": 2,
+    "7f6896413f393ccf022549fa326d6515": 2,
+    "209b5193af16624cdd89d3591480dd48": 5,
+    "e0b0e1c8581ef7dabdf97f03c3dd5c47": 5,
+    "3d1de53ec903940211e029ac4c009ecc": 2,
+    "43c8d8f35ebd58870fb6c71f5d30cb7c": 2,
+    "40b6dd9aa58aaa2c6b70ae9b3a1f558f": 2,
+    "e0e03bae00256ebef166596f245cb434": 2,
+    "0d6c690c0024d01cdacb96a82948c653": 2,
+    "9e7f687dd0491eedfb69cd60e0ef0912": 2,
+    "d87ea47bdd0ab8a82ddd510f14b5d8cd": 2,
+    "d4500aa1446ba05402145e7998221e98": 2,
+    "611923bfb6306aa5d3655ea9b11844ca": 2,
+    "d1142e108bfeb44c6737a20a3f92fc68": 2,
+    "9e9003e86266d1305ffc05845b6d3c26": 2,
+    "9ddd5e5bb161fcda18dceac4be588c61": 3,
+    "19b45eecdf322730a25ee1a212e416a1": 4,
+    "442f70e18fb16b41d0c1354c69387dbf": 4,
+    "17da0bfc4ac0fe08842481e64feb0afb": 2,
+    "87f2934275a531eb01844c6bf50989a2": 2,
+    "1bfa15046de3b37d9fdd3462c0f47d11": 2,
+    "00e3d076856847177a5da7738c603111": 2,
+    "46804a515d8a8f2c95b70e85b7864935": 2,
+    "3d57f73cc89b23f1e99e1ee8619509af": 2,
+    "e167c3456b8db69256fb00837067d104": 2,
+    "f95a6cae9a54dff164f9d43283cd404f": 2,
+    "4ff45581281f364b1a0bbdee7f7a075b": 2,
+    "61b53740f559c7a09a57775ff0d3e4f1": 2,
+    "bd9d3215da794d61c55d62aee90cc48b": 2,
+    "917461ab8086c60e44540813b05c2501": 2,
+    "1e0c48d66f02f093f0511de219e77f8f": 2,
+    "fa5b9a510a5fbf4d83ec07047268497f": 2,
+    "ab5dcaa3e66eecb6b0bc72696026e06d": 2,
+    "9c601c8351ad0d8f6f2c3fe6000e15b4": 2,
+    "e9a546020447f89a67156d113dee902d": 2,
+    "be601c9062a45ead72c73f5452601446": 2,
+    "6ce81045ad1a27f1f7cdfe4b9df64433": 2,
+    "c767ff62af925fce5212226366b798ec": 2,
+    "a00f98b1f5cf78b6cb8024b96e6589dd": 2,
+    "fffcbb48bbfbd89f7c380df3db4c45e5": 2,
+    "26f6c094d892098a4e0055a5708013ae": 2,
+    "531b7f7675644824c28464eac97f13e5": 2,
+    "91d665a6a4da78381f92f29b4e29727a": 2,
+    "34a87e2c07b6c3ab1a7bfc11621b55a6": 2,
+    "02481d02d73c15b733e70f17f96baec9": 2,
+    "545a86d09835b0c43bd6c112581fe757": 2,
+    "54a78f34eff6a1b8812fa0981e53200d": 2,
+    "fb7bddbf649780b274229154cc75f4d9": 2,
+    "191a640d45c0a74642b45b255fe61a55": 2,
+    "878e17c34c96ffed013cf1c3ccf42711": 2,
+    "c328ce5745c69592154d02eed9dc2ae4": 2,
+    "7f3c3af7e5dc39f5d5755a533b185d0a": 2,
+    "0f4b9b4bb75f55bb7563ba18bd91b1f0": 2,
+    "db458977a5955385bc27e9e8df7c0796": 2,
+    "0a1a65a803cd1d74b5aca72769851814": 2,
+    "ec032292243413afc5836410832e3828": 2,
+    "1de451ff34759761b2329e201a33d09e": 2,
+    "01be0dabaa7e0788121b40f42b521afb": 2,
+    "b9fdeda43145550c01148f1754100c20": 2,
+    "5d6ae31a6897c185d884b79b4344a705": 2,
+    "ec4b7630540ecf5cebabb9793ee34d38": 2,
+    "30d7cdcce4b42a1454392f232a4b2c73": 2,
+    "9bdea657b0baba8eea04ef183b59f5ec": 2,
+    "2233ba6adc8a57f78d22d34090ec860b": 2,
+    "1d19506694396da959f599301ecd3724": 2,
+    "61908ebb9eb0aa002ab31a3f99ab03e6": 2,
+    "6768da65748773f96d7f166575a243d8": 2,
+    "a8a3b0610abd5c88dae153666ecaaae4": 2,
+    "468c6406e1f0d112a3cf3123db143fa8": 2,
+    "fee262a72de5436d0ea41d2caf258eb6": 2,
+    "158a5ae69e16fef9b3f9a4058dd47e60": 2,
+    "85120ccb793e7fbbb7d031cc23d72b17": 2,
+    "888b8803f96442b3218361f6be6a47b6": 2,
+    "d8f820b632f2bb09a493abd8b15fe81f": 2,
+    "ed1ee6e7320b7cdfca110f25be46e849": 2,
+    "2b985ac791f82c707c7e7b296e8d2dfd": 2,
+    "b261856510f20ca14822cd73aecbf4af": 2,
+    "1d6a2cec7ff6a044e241d5852fc61532": 2,
+    "e221723edf57382f5a555c74c4e81dbd": 2,
+    "fc7a74c641201486171ea796b57d8f4b": 2,
+    "3ec59e8099d283a32cfd2a2474f0af60": 2,
+    "87af5dfbf23e988656c57125010870f2": 2,
+    "f33b791a8649b44bd9d3505fbd221fe7": 2,
+    "91739cd5a379f6ee21800bba6440ce38": 2,
+    "3d460d96d283f45c7e0e756d217b951f": 2,
+    "f69f279ec1d87a106712dc82e51af953": 2,
+    "bc0eebd970609f7e9887da2d922cc50a": 2,
+    "09b49c2ceaf3ff59ff8562a0445bf4ae": 2,
+    "7002f17d25c1ad255995e3e4a882fa9a": 2,
+    "52aa141bdfc5162b436446b9aef7e3ab": 2,
+    "b99fd5bb6bb3d0c4702f3dfbadc5c053": 2,
+    "a18e0b8b750bddbb00acc84f4fe0793b": 2,
+    "8eb8bd820a48c4e089c88453b65f44c9": 2,
+    "3bce2e5876ca29d3858abce3b4f8f1a3": 2,
+    "ae94a1fe3f588b8a7aecc6e8e51941c7": 2,
+    "18e72956ff26e5e7fb3065f3cb86fa8a": 2,
+    "b586c3cc3135ae0b53a19c9e37da230c": 2,
+    "3dba8226231868aa28cea117739d3228": 2,
+    "309965b790b216dfad764e7c55752d9e": 2,
+    "ce57e7011f6cd967bba5cdf4c67f98b1": 2,
+    "7f5bb5c05126907bd2bc60fada47815b": 2,
+    "3de4340ad4508e2526d6c5a3c9f96b38": 2,
+    "8533f7b1e9e9ad9b1c5be6b27bd19149": 2,
+    "34080236bee3dd1bfdf97c9ba7dcf095": 2,
+    "263c97202c95725168338c6deee5a5a3": 2,
+    "c08966cb6b831a93f634907a1c6ac3ee": 2,
+    "e9abf2cce108a098c2e7a3cac89f7c09": 2,
+    "ca276b368fbe792fadead4f15cb6de67": 2,
+    "03108006304910c0415329a66767529c": 2,
+    "a50118e5cb6fe2d0558d97d8e345e33d": 2,
+    "386ea046218be7f291fd361e4a5073a4": 2,
+    "106698feb6f67d32afca272f71e1127b": 2,
+    "7fcf5ab45f92a137b5db96e837d62968": 2,
+    "d806cba656f17c5a0f2ad97e12fea1af": 2,
+    "a50cb2d4e0fcf8ceb9bb3f5641038125": 2,
+    "6b311f8739e2fd68e7c2fdb9969774d0": 2,
+    "d1666dad96c3c5821e781b057b67df4a": 2,
+    "b7ea29a086ad6590990d40820cf55d12": 2,
+    "d888b15bd7a0ac224aaab5ed24d48f1d": 2,
+    "01f041f54bde9cd946487a035092c5e2": 2,
+    "21ec27a12b7e42b72f62c46317fd2625": 2,
+    "8fc2d674ce7ddd4865105bfcfb5f2c15": 2,
+    "b8b89625653ed228f11309b86c6850d0": 2,
+    "cf8478b409b5be6255a793288468f205": 2,
+    "3c9abf96254e61b87a92cd8028744166": 2,
+    "cb334052f9a7e80b79cffe4f1275a333": 2,
+    "d8b58089df04e28dff9f115824bb7c37": 2,
+    "056284e51f17d142a23a38680b571b30": 2,
+    "e04e7101af8af43bd847cd2382f7f31a": 2,
+    "a2451644ade861b5443f9397aeb48729": 2,
+    "fcb6eab069b56ee1f00bcfe7efd8eeb1": 2,
+    "d09985c2edbdeac47d089d72fbccc2b8": 2,
+    "d79c0f8de7c1241a9333a7bc4a88b41a": 2,
+    "9bdbd580600e7489e6c0bc3d2dbb5635": 2,
+    "bddc77a8b44cff8aa37aecb084280b5a": 2,
+    "0c64331f69cc421dac73d95b92b42699": 2,
+    "f0fabc8c694b9420a9252a607a87b363": 2,
+    "a79645d8c0d2004408e63420994889a2": 2,
+    "e1987b74cdee83996a062772008f480f": 2,
+    "fee1184f63ad6a789fd6a54322953bde": 2,
+    "783b68117851a8eab6eb3556e7a515f7": 2,
+    "00e98998e9025b4b6bb05c1981d1652b": 2,
+    "7e224beda921ba3c5c1e77494755686b": 2,
+    "f283f87de601813968295e4c21b0221d": 2,
+    "98794956fd27b5f625823b41d02bbc2a": 2,
+    "4954fec87fb2441db84662d9f1fc531a": 2,
+    "72b91db19cf0e9f3c5812aa24ac8f59c": 2,
+    "7132ec886d37c07638d59f4c4700bda2": 2,
+    "47e728470571414ea02d4c721da4eb36": 2,
+    "6d4bb0144ad4dafbf42af13514c00879": 2,
+    "a3b699fd8ca4d8ba0d389cc987fa96d7": 2,
+    "ea98d6bc4f45eed23e60d2423362caf8": 2,
+    "3c2cb16c42cef59c720c1567583e8103": 2,
+    "88752407dd132a90c9664c7d87ec3fd8": 2,
+    "0fbfaaa0417a445f4e5636eb5d987ecd": 2,
+    "daa4b95236f77c7458292eb015062ef3": 2,
+    "eaab48a5964d87d48ed955e629ba770d": 2,
+    "42afc7de30823ffa2b5dc4e051f3f64d": 2,
+    "39f89b1d7aa709cccfa8116be1fb4e92": 2,
+    "d97bd0ddd37bfcd498d734b1d0279cdc": 2,
+    "c5bfe475ee0f29067c2c500788fb8a1c": 2,
+    "15cd7bd26bfa111984cc0be047b3d740": 2,
+    "63eadd26853e19bdae4b6726e405dde3": 2,
+    "b61d753346771fae2d8e1958509f7869": 2,
+    "f798d88732ef67c149da83490e1e9c8f": 2,
+    "3042525e9be3284994c982cbf28c2b5e": 2,
+    "8c66dd95d9d7c8a44313f014673ae6aa": 2,
+    "001b9e48cac7c50b492fa3acbcf6ad54": 2,
+    "1b3cdad4992e7b956ce0fcfbeeedfe51": 2,
+    "f4069ed9870ac3106e396c9a97353516": 2,
+    "7cf667bc6a1a734124d520452d2cc048": 2,
+    "a55bf48d31efd954e15da92dc82a019a": 2,
+    "a950b81fbcb773e72c5a89f4ed2248cd": 2,
+    "ef56aa8e8d72e564458e069efdedd4cd": 2,
+    "af4cd8673fdde18626e1cd475853edca": 2,
+    "51490bf2c66b49a4c9ac762377971d27": 2,
+    "80741054db53fa64fc719c8e4371ba31": 2,
+    "9a4e6b4fc00e67f8a85d0191efdf1658": 2,
+    "e83f2fa5a3e3e7eb52399b0a7c8f886e": 2,
+    "a8dc10cd88d942b413736196360d7a6f": 2,
+    "a9cd5a4f0c168d901026c8f8589a58b9": 2,
+    "16fd39bd4e767ef5a120c6c83a7113e2": 2,
+    "7b4fc5caa703ef9ef7cba0350c5c45f9": 2,
+    "d71a377a70e7996f6ca8842180feb85e": 2,
+    "eff9b22e7ea4dd77e95094d0530c8714": 2,
+    "d6f4aa126d29df96aa9a051713ff7851": 2,
+    "1bab20f36ff081917be2bf19dddce1a4": 2,
+    "f8d0d47496d23f8778ba500141522651": 2,
+    "9d66950f15837c22d8368d284e82a1c6": 2,
+    "794e16d45240b3c45f91ce0021101a4c": 2,
+    "971272420d7cc4d643da524176e2e068": 2,
+    "996f28606bd5c343f07774b3db7e73a8": 2,
+    "2721e3d27e10585e98505cbd102289ef": 2,
+    "3775138ce8306c7ca7085fc14fc6114a": 2,
+    "6dffdd7d1cecf2af34f9f5100485db8f": 2,
+    "d4dca1d9e5c63d3830fd6b07c1991e35": 2,
+    "0d1243353a54e33179aea0c937656ecd": 2,
+    "a4fdeef5db1eff37c097ff5fc9aaa0bb": 2,
+    "cab67462545f15ef77c092a3764debd7": 2,
+    "c3e738c8bd66f615ca293db357e58fce": 2,
+    "a8b49b0f817a1ff4d52081c9b07eb587": 2,
+    "f7e939625b0fac642360224e0a792e79": 2,
+    "efc570365bb8e89b3f8236dacac8c087": 2,
+    "9f28e89780618b295e38ac0e75040f27": 2,
+    "4aab4bc2fc722b6b1291dbf4e649ee09": 2,
+    "4e913a793000e6e0b9ac8859bebf238a": 2,
+    "b14f3b9f68b3a5a6b75941ff29784977": 2,
+    "8669464d9e4026b5dc5eb7dd0722ee51": 2,
+    "01069f7fcdb29fa2869d10b04b013db0": 2,
+    "501168073432012917328702b04ec6d8": 2,
+    "08a6c8c16e58a17298bdab0ec00f616d": 2,
+    "9c29fb8b12401d94312cf94319588cea": 2,
+    "fd1ff7a8d2a7e077f44968f2e53f89c1": 2,
+    "f3d10fd9eb01525718b4baf3067a38d6": 2,
+    "4462817330ec165f3cac21c1e63acbf2": 2,
+    "577b60c27a7700cbe3a574c487edc275": 2,
+    "44ea4127c1272162c41ccbddac1b3d5d": 2,
+    "1ccf6f9bc69fe9b9e8d1e3ecd63a1da1": 2,
+    "99cb9f82373d2797089f638639cc66de": 2,
+    "04003479264ab208b17295c2ceef4c85": 2,
+    "fda559008777de81c4b4c2f2fd989868": 2,
+    "994a080b8dd70e8248dcda69371aa71b": 2,
+    "0ce1921f1191c1dee970baedf6d65d79": 2,
+    "3a734c9e7ddd95ab2d3307d7dfb17ede": 2,
+    "7c649bc19f9f3b99e050e8182b4b7c83": 2,
+    "a17f880a97b246357ffee018ace816ea": 2,
+    "7c20bf68ff7b7080dea4333e26f00a01": 2,
+    "231465aec92d91653433483fd9c6bec0": 2,
+    "7a8759fde11db9c30fdf9b4204c31b07": 2,
+    "6680fb346ea38b6a177291c0a1839cd9": 2,
+    "74cc45a1aec2d0aaef1fb0fc0a4b61f5": 2,
+    "682d6915f982760ead0ee41f52af5da2": 2,
+    "458b0abeedea49e6e1cdd6b4633b206e": 2,
+    "5cc26c23462de67086a3797bd1c5c6a3": 2,
+    "8898e639436f6169c9af0b76c3c370af": 2,
+    "b47f33336723994f8b264cb01ec6dc2f": 2,
+    "8acfddf4da739524b3ac3ee3a826a63f": 2,
+    "234270b53f872f22cd60bc12c8bd7a7b": 2,
+    "ca3b8024b6572f53379f3ebae8a71a57": 2,
+    "39ec88b9c70565963a6ff19fbfdd31ec": 2,
+    "0d669aa6315e020039345e2c98922b3e": 2,
+    "7bca0012ba375092a7715f5c98b92214": 2,
+    "7caf403dc1b3f8e4689b28badf86c697": 2,
+    "125f490221e65341808cffb62cfebe92": 2,
+    "ed3b62a31a286921c4644cd4d90a6d42": 2,
+    "0d2d55b87646fa62f6d6b65762191642": 2,
+    "af2d06051252fa767fe46dc64372a4f4": 2,
+    "e43e5a4b513a4c047c2aba620bacdb37": 2,
+    "d41d8cd98f00b204e9800998ecf8427e": 5,
+    "515873a4c80d462744d65e9569fbf3f9": 2,
+    "5ed35fc12bc2673dbb0d2d84ac1c1004": 2,
+    "2b15e2ac6305e66139d162979789b9d0": 2,
+    "73dd065df06972f24beeedfa32d64b92": 2,
+    "e88bb00c3444326523025f979083e3f8": 2,
+    "d7f6b498544d58fee918c9f265c3f427": 2,
+    "46b662bbeab924d8dd53a04f86db5475": 2,
+    "62e4dda8e60b78197e3d802251c2a2a5": 2,
+    "e76b2ae0da7b38acbae44110f8e3e145": 2,
+    "8e04593f6350580b53ec93ce57a63279": 2,
+    "f92bd8e9a42a0233e88c8888a77efc1a": 2,
+    "1b7f898ac7e8d72982a228e9d863972c": 2,
+    "39b34e7b63baf781142236bfd55ae542": 2,
+    "c77f737ab311062d9c70bfbc87bd4152": 2,
+    "9e8b2c7fe7c1e7e2827f732659918648": 2,
+    "a0ec72cd14e764184018e7d05a83e4c2": 2,
+    "c70b5da45cb1db3004989c0aece67282": 2,
+    "cfc3eb9b65f23a209922abe41e4e7ee5": 2,
+    "96c78d66c67509181d8994df05e1a523": 2,
+    "84b77e54d160f4ef263e94a16b502fbe": 2,
+    "1d3aa0335fe2cd13454b041a66fb8f1c": 2,
+    "e6c3a3da3d556edba460106b2ef285a2": 2,
+    "4c2915cc4dde5359b8006b692370208a": 2,
+    "10a34a883a6b233490690353449ca201": 2,
+    "3fbae3ccf15832d0b40f581f55ceae1b": 2,
+    "8a669af67c07b95e2c223c20792e407f": 2,
+    "d17f8e989d7083123c7d1970e5a55fdf": 2
+  },
+  "directory_structure": {
+    ".browser_screenshots": {
+      "files": 91,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 13.505828857421875
+    },
+    ".ci": {
+      "files": 9,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.113037109375
+    },
+    ".devcontainer": {
+      "files": 1,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.0012874603271484375
+    },
+    ".github": {
+      "files": 5,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.024847030639648438
+    },
+    ".memory": {
+      "files": 2,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.05303955078125
+    },
+    ".vscode": {
+      "files": 1,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.0001068115234375
+    },
+    "1c-ai-demo-classic": {
+      "files": 221,
+      "py_files": 0,
+      "ts_files": 181,
+      "size_mb": 3.885064125061035
+    },
+    "1c-ai-demo-updated": {
+      "files": 33,
+      "py_files": 0,
+      "ts_files": 17,
+      "size_mb": 0.31310081481933594
+    },
+    "1c_mcp": {
+      "files": 59,
+      "py_files": 14,
+      "ts_files": 0,
+      "size_mb": 0.5057907104492188
+    },
+    "1c_mcp_code_generation": {
+      "files": 45,
+      "py_files": 30,
+      "ts_files": 0,
+      "size_mb": 0.7330074310302734
+    },
+    "analysis": {
+      "files": 3,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.0909128189086914
+    },
+    "archive_package": {
+      "files": 494,
+      "py_files": 157,
+      "ts_files": 9,
+      "size_mb": 25.305432319641113
+    },
+    "cache": {
+      "files": 0,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.0
+    },
+    "code": {
+      "files": 175,
+      "py_files": 84,
+      "ts_files": 0,
+      "size_mb": 2.921372413635254
+    },
+    "config": {
+      "files": 34,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.3195619583129883
+    },
+    "data": {
+      "files": 1,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.006207466125488281
+    },
+    "db": {
+      "files": 5,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.032059669494628906
+    },
+    "demo": {
+      "files": 246,
+      "py_files": 0,
+      "ts_files": 87,
+      "size_mb": 2.2759361267089844
+    },
+    "deploy": {
+      "files": 3,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.020557403564453125
+    },
+    "docker": {
+      "files": 5,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.006962776184082031
+    },
+    "docs": {
+      "files": 162,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 1.7180109024047852
+    },
+    "edge-functions": {
+      "files": 9,
+      "py_files": 0,
+      "ts_files": 9,
+      "size_mb": 0.13759517669677734
+    },
+    "edt-plugin": {
+      "files": 17,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.08069324493408203
+    },
+    "examples": {
+      "files": 9,
+      "py_files": 5,
+      "ts_files": 0,
+      "size_mb": 0.1801128387451172
+    },
+    "frontend": {
+      "files": 1,
+      "py_files": 0,
+      "ts_files": 1,
+      "size_mb": 0.018934249877929688
+    },
+    "frontend-portal": {
+      "files": 42,
+      "py_files": 0,
+      "ts_files": 34,
+      "size_mb": 0.1667947769165039
+    },
+    "helm": {
+      "files": 2,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.0027856826782226562
+    },
+    "images": {
+      "files": 10,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 6.652531623840332
+    },
+    "innovation-engine": {
+      "files": 1,
+      "py_files": 1,
+      "ts_files": 0,
+      "size_mb": 0.0073680877685546875
+    },
+    "k8s": {
+      "files": 11,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.014896392822265625
+    },
+    "knowledge_base": {
+      "files": 6,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 2295.5500917434692
+    },
+    "live-demo": {
+      "files": 180,
+      "py_files": 0,
+      "ts_files": 74,
+      "size_mb": 6.491464614868164
+    },
+    "locales": {
+      "files": 2,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.01709747314453125
+    },
+    "logs": {
+      "files": 0,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.0
+    },
+    "marketing": {
+      "files": 15,
+      "py_files": 1,
+      "ts_files": 0,
+      "size_mb": 0.11424922943115234
+    },
+    "memories": {
+      "files": 2,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.014737129211425781
+    },
+    "monitoring": {
+      "files": 28,
+      "py_files": 1,
+      "ts_files": 0,
+      "size_mb": 0.16557693481445312
+    },
+    "nginx": {
+      "files": 1,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.0017328262329101562
+    },
+    "original-style-demo": {
+      "files": 1,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.04538154602050781
+    },
+    "original-style-report": {
+      "files": 1,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.005828857421875
+    },
+    "output": {
+      "files": 16,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 898.1453590393066
+    },
+    "research": {
+      "files": 1,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.0619659423828125
+    },
+    "scripts": {
+      "files": 97,
+      "py_files": 71,
+      "ts_files": 0,
+      "size_mb": 1.059605598449707
+    },
+    "security": {
+      "files": 3,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.0061359405517578125
+    },
+    "shared-components": {
+      "files": 12,
+      "py_files": 0,
+      "ts_files": 8,
+      "size_mb": 0.024336814880371094
+    },
+    "src": {
+      "files": 241,
+      "py_files": 131,
+      "ts_files": 109,
+      "size_mb": 4.150169372558594
+    },
+    "supabase": {
+      "files": 75,
+      "py_files": 15,
+      "ts_files": 24,
+      "size_mb": 0.6855354309082031
+    },
+    "tests": {
+      "files": 28,
+      "py_files": 27,
+      "ts_files": 0,
+      "size_mb": 0.19097328186035156
+    },
+    "tools": {
+      "files": 1,
+      "py_files": 1,
+      "ts_files": 0,
+      "size_mb": 0.006375312805175781
+    },
+    "user_input_files": {
+      "files": 2,
+      "py_files": 0,
+      "ts_files": 0,
+      "size_mb": 0.045065879821777344
+    },
+    "vscode-extension": {
+      "files": 3,
+      "py_files": 0,
+      "ts_files": 1,
+      "size_mb": 0.013251304626464844
+    }
+  }
+}

@@ -12,6 +12,52 @@
 
 ---
 
+## ⚠️ Important Notice / Важное уведомление
+
+### English
+
+**This project is a parser and analysis tool for 1C:Enterprise configurations.**
+
+**This repository does NOT include:**
+- ❌ Any 1C configurations (proprietary software)
+- ❌ Any code from 1C configurations
+- ❌ Any proprietary 1C documentation
+- ❌ Any credentials or API keys
+
+**Users must:**
+- ✅ Provide their own 1C configurations
+- ✅ Have proper licenses for 1C software they analyze
+- ✅ Comply with 1C licensing terms
+- ✅ Use their own credentials and API keys
+
+**This tool:**
+- ✅ Is provided "as is" without warranty
+- ✅ Is for educational and analysis purposes
+- ✅ Requires user to have legal right to analyze their 1C configurations
+
+### Русский
+
+**Этот проект - инструмент для парсинга и анализа конфигураций 1С:Предприятие.**
+
+**Репозиторий НЕ содержит:**
+- ❌ Конфигурации 1С (проприетарное ПО)
+- ❌ Код из конфигураций 1С
+- ❌ Проприетарную документацию 1С
+- ❌ Credentials или API ключи
+
+**Пользователи должны:**
+- ✅ Предоставить свои конфигурации 1С
+- ✅ Иметь легальные лицензии на ПО 1С
+- ✅ Соблюдать условия лицензирования 1С
+- ✅ Использовать свои credentials и API ключи
+
+**Этот инструмент:**
+- ✅ Предоставляется "как есть" без гарантий
+- ✅ Для образовательных целей и анализа
+- ✅ Требует наличия прав на анализ конфигураций
+
+---
+
 ## 🎯 Основные возможности
 
 ### 🔍 Семантический поиск кода
@@ -315,12 +361,15 @@ curl -X POST http://localhost:8000/generate \
 - **Redis 7** - кеширование
 
 ### AI/ML:
+- **DeepSeek-OCR** - OCR документов (91%+ accuracy) 🆕
+- **Qwen3-Coder** - генерация BSL (fine-tuned на SmolTalk) 🆕
+- **Kimi-Linear-48B** - анализ больших конфигураций (200K контекст) 🆕
 - **OpenAI API** (GPT-4, Whisper STT)
 - **Ollama** - локальные LLM
-- **Qwen3-Coder** - генерация BSL
-- **Chandra OCR** - распознавание документов
+- **Chandra OCR** - распознавание документов (fallback)
 - **LangChain** - AI orchestration
 - **MLflow** - ML experiments tracking
+- **ModelScan** - security scanning 🆕
 
 ### Frontend:
 - **React + TypeScript** (web portal)

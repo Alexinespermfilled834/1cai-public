@@ -1,0 +1,75 @@
+# Docker Compose для инфраструктуры парсинга
+# Запуск: docker-compose -f docker-compose.parser.yml up -d
+
+version: '3.8'
+
+services:
+  # BSL Language Server для AST парсинга
+  bsl-language-server:
+    image: ghcr.io/1c-syntax/bsl-language-server:latest
+    container_name: bsl-language-server
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_OPTS=-Xmx2g -Xms512m
+      - SERVER_PORT=8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - parser-network
+
+  # PostgreSQL для knowledge base (если еще не запущен)
+  postgres-kb:
+    image: postgres:15-alpine
+    container_name: postgres-kb-parser
+    environment:
+      POSTGRES_DB: 1c_ai_db
+      POSTGRES_USER: parser_user
+      POSTGRES_PASSWORD: parser_pass_2024
+    ports:
+      - "5433:5432"  # Отдельный порт чтобы не конфликтовать
+    volumes:
+      - postgres-kb-data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U parser_user -d 1c_ai_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - parser-network
+
+  # Redis для кеширования результатов парсинга
+  redis-parser-cache:
+    image: redis:7-alpine
+    container_name: redis-parser-cache
+    ports:
+      - "6380:6379"
+    command: redis-server --maxmemory 1gb --maxmemory-policy lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - parser-network
+    volumes:
+      - redis-parser-data:/data
+
+networks:
+  parser-network:
+    driver: bridge
+
+volumes:
+  postgres-kb-data:
+  redis-parser-data:
+
+
+

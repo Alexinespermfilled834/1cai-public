@@ -4,12 +4,29 @@
 
 ---
 
-## 📚 Содержание раздела
+## ⭐ АКТУАЛЬНАЯ АРХИТЕКТУРА
 
-1. **[PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)** - обзор проекта
-2. **[IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md)** - план реализации
-3. **[TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md)** - технологический стек
-4. **[adr/](./adr/)** - Architecture Decision Records
+**→ [ARCHITECTURE_CURRENT_STATE.md](../architecture/ARCHITECTURE_CURRENT_STATE.md) (6 ноября 2025) ←**
+
+Это основной актуальный файл, содержащий:
+- EDT-Parser Ecosystem
+- ML Dataset (24K+ примеров)
+- Analysis & Audit tools
+- Обновленные уровни системы
+- Security fixes
+- Полный changelog
+
+---
+
+## 📚 Содержание раздела (исторические версии)
+
+1. **[PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)** - обзор проекта (3 ноября)
+2. **[IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md)** - план реализации (3 ноября)
+3. **[TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md)** - технологический стек (2 ноября)
+4. **[adr/](./adr/)** - Architecture Decision Records (3 ноября)
+
+> ⚠️ **Примечание:** Файлы выше описывают состояние до 6 ноября 2025.  
+> Актуальная версия: [ARCHITECTURE_CURRENT_STATE.md](../architecture/ARCHITECTURE_CURRENT_STATE.md)
 
 ---
 

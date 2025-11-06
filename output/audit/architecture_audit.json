@@ -1,0 +1,29 @@
+{
+  "total_modules": 540,
+  "import_connections": 4237,
+  "circular_dependencies": 0,
+  "cycles_details": [],
+  "layers": {
+    "1c_mcp": 14,
+    "1c_mcp_code_generation": 30,
+    "archive_package": 157,
+    "code": 84,
+    "examples": 5,
+    "innovation-engine": 1,
+    "marketing": 1,
+    "monitoring": 1,
+    "scripts": 73,
+    "business_layer": 42,
+    "ai_layer": 39,
+    "api_layer": 29,
+    "data_layer": 5,
+    "service_layer": 16,
+    "supabase": 15,
+    "tests": 27,
+    "tools": 1
+  },
+  "concerns": {
+    "total_violations": 0,
+    "examples": []
+  }
+}

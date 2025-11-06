@@ -344,15 +344,36 @@ class PostgreSQLSaver:
                 'objects'
             ]
             
+            # Whitelist of allowed tables for security
+            allowed_tables = {'api_usage', 'regions', 'functions', 'modules', 'objects'}
+            
             for table in tables:
+                # Security check: ensure table name is in whitelist
+                if table not in allowed_tables:
+                    logger.warning(f"Attempted to delete from non-whitelisted table: {table}")
+                    continue
+                
                 if table == 'modules':
-                    self.cur.execute(f"DELETE FROM {table} WHERE configuration_id = %s", (config_id,))
+                    self.cur.execute("DELETE FROM modules WHERE configuration_id = %s", (config_id,))
                 elif table == 'objects':
-                    self.cur.execute(f"DELETE FROM {table} WHERE configuration_id = %s", (config_id,))
-                else:
-                    # These tables reference modules
-                    self.cur.execute(f"""
-                        DELETE FROM {table} 
+                    self.cur.execute("DELETE FROM objects WHERE configuration_id = %s", (config_id,))
+                elif table == 'api_usage':
+                    self.cur.execute("""
+                        DELETE FROM api_usage 
+                        WHERE module_id IN (
+                            SELECT id FROM modules WHERE configuration_id = %s
+                        )
+                    """, (config_id,))
+                elif table == 'regions':
+                    self.cur.execute("""
+                        DELETE FROM regions 
+                        WHERE module_id IN (
+                            SELECT id FROM modules WHERE configuration_id = %s
+                        )
+                    """, (config_id,))
+                elif table == 'functions':
+                    self.cur.execute("""
+                        DELETE FROM functions 
                         WHERE module_id IN (
                             SELECT id FROM modules WHERE configuration_id = %s
                         )
@@ -377,7 +398,8 @@ class PostgreSQLSaver:
                 where_clause = "WHERE c.name = %s"
                 params = [config_name]
             
-            self.cur.execute(f"""
+            # Build query safely without f-string interpolation
+            base_query = """
                 SELECT 
                     COUNT(DISTINCT c.id) as configs,
                     COUNT(DISTINCT o.id) as objects,
@@ -388,8 +410,14 @@ class PostgreSQLSaver:
                 LEFT JOIN objects o ON o.configuration_id = c.id
                 LEFT JOIN modules m ON m.configuration_id = c.id
                 LEFT JOIN functions f ON f.module_id = m.id
-                {where_clause}
-            """, params)
+            """
+            
+            if where_clause:
+                full_query = base_query + " " + where_clause
+            else:
+                full_query = base_query
+            
+            self.cur.execute(full_query, params)
             
             result = self.cur.fetchone()
             
@@ -413,6 +441,8 @@ class PostgreSQLSaver:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit"""
         self.disconnect()
+
+
 
 
 

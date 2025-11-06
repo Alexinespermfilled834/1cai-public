@@ -332,18 +332,31 @@ async def get_plugin(plugin_id: str):
 
 
 @router.put("/plugins/{plugin_id}", response_model=PluginResponse)
-async def update_plugin(plugin_id: str, update: PluginUpdateRequest):
+async def update_plugin(
+    plugin_id: str, 
+    update: PluginUpdateRequest,
+    user_id: str = "user_123"  # TODO: Получать из auth middleware
+):
     """
     Обновление плагина
     
     Только автор может обновлять свой плагин
-    TODO: Добавить проверку авторизации
+    
+    Note:
+        В production: user_id должен получаться из auth middleware (JWT token)
     """
     
     if plugin_id not in plugins_db:
         raise HTTPException(status_code=404, detail="Plugin not found")
     
     plugin = plugins_db[plugin_id]
+    
+    # Проверка прав доступа
+    if not _check_authorization(user_id, plugin_id):
+        raise HTTPException(
+            status_code=403, 
+            detail="You don't have permission to update this plugin"
+        )
     
     # Обновляем поля
     update_data = update.model_dump(exclude_unset=True)
@@ -357,28 +370,41 @@ async def update_plugin(plugin_id: str, update: PluginUpdateRequest):
     
     plugins_db[plugin_id] = plugin
     
-    logger.info(f"Plugin updated: {plugin_id}")
+    logger.info(f"Plugin updated: {plugin_id} by user {user_id}")
     
     return PluginResponse(**plugin)
 
 
 @router.delete("/plugins/{plugin_id}")
-async def delete_plugin(plugin_id: str):
+async def delete_plugin(
+    plugin_id: str,
+    user_id: str = "user_123"  # TODO: Получать из auth middleware
+):
     """
     Удаление плагина
     
     Мягкое удаление - статус → REMOVED
-    TODO: Добавить проверку прав (только автор или админ)
+    Только автор или админ могут удалять плагин
+    
+    Note:
+        В production: user_id должен получаться из auth middleware (JWT token)
     """
     
     if plugin_id not in plugins_db:
         raise HTTPException(status_code=404, detail="Plugin not found")
     
+    # Проверка прав доступа (автор или админ)
+    if not _check_authorization(user_id, plugin_id):
+        raise HTTPException(
+            status_code=403,
+            detail="You don't have permission to delete this plugin"
+        )
+    
     # Мягкое удаление
     plugins_db[plugin_id]["status"] = PluginStatus.REMOVED
     plugins_db[plugin_id]["updated_at"] = datetime.utcnow()
     
-    logger.info(f"Plugin removed: {plugin_id}")
+    logger.info(f"Plugin removed: {plugin_id} by user {user_id}")
     
     return {"status": "removed", "plugin_id": plugin_id}
 
@@ -444,33 +470,52 @@ async def get_plugin_stats(plugin_id: str):
         rating = review["rating"]
         rating_dist[rating] = rating_dist.get(rating, 0) + 1
     
-    # TODO: Реальная статистика из БД
+    # TODO: В production - получать реальную статистику из БД:
+    # - downloads_last_30_days: SELECT COUNT(*) FROM plugin_downloads 
+    #                            WHERE plugin_id = %s AND downloaded_at >= NOW() - INTERVAL '30 days'
+    # - favorites_count: SELECT COUNT(*) FROM user_favorites WHERE plugin_id = %s
+    # - downloads_trend: сравнение с предыдущим периодом
+    # - rating_trend: сравнение текущего рейтинга с предыдущим
     stats = PluginStatsResponse(
         plugin_id=plugin_id,
         downloads_total=plugin["downloads"],
-        downloads_last_30_days=plugin["downloads"] // 2,  # Mock
+        downloads_last_30_days=plugin["downloads"] // 2,  # Mock: в production из БД
         installs_active=plugin["installs"],
         rating_average=plugin["rating"],
         rating_distribution=rating_dist,
         reviews_count=len(plugin_reviews),
-        favorites_count=0,  # TODO
-        downloads_trend="stable",
-        rating_trend="stable"
+        favorites_count=0,  # TODO: В production из БД (таблица user_favorites)
+        downloads_trend="stable",  # TODO: Вычислять из БД
+        rating_trend="stable"  # TODO: Вычислять из БД
     )
     
     return stats
 
 
 @router.post("/plugins/{plugin_id}/reviews", response_model=PluginReviewResponse)
-async def submit_review(plugin_id: str, review: PluginReviewRequest, user_id: str = "user_123"):
+async def submit_review(
+    plugin_id: str, 
+    review: PluginReviewRequest, 
+    user_id: str = "user_123"  # TODO: Получать из auth middleware
+):
     """
     Отзыв на плагин
     
-    TODO: Добавить проверку что пользователь установил плагин
+    Только пользователи, установившие плагин, могут оставлять отзывы
+    
+    Note:
+        В production: user_id должен получаться из auth middleware (JWT token)
     """
     
     if plugin_id not in plugins_db:
         raise HTTPException(status_code=404, detail="Plugin not found")
+    
+    # Проверка что пользователь установил плагин
+    if not _check_plugin_installed(user_id, plugin_id):
+        raise HTTPException(
+            status_code=403,
+            detail="You must install the plugin before leaving a review"
+        )
     
     # Генерируем ID отзыва
     review_id = f"review_{len(reviews_db) + 1}"
@@ -533,8 +578,14 @@ async def download_plugin(plugin_id: str):
     """
     Скачать плагин
     
-    TODO: Вернуть файл плагина
-    Формат: ZIP архив с manifest.json + код
+    Возвращает ZIP архив с manifest.json и кодом плагина
+    
+    Note:
+        В production: реализовать возврат реального файла через FileResponse
+        Формат: ZIP архив содержащий:
+        - manifest.json (метаданные плагина)
+        - код плагина (Python/BSL файлы)
+        - README.md (если есть)
     """
     
     if plugin_id not in plugins_db:
@@ -548,14 +599,20 @@ async def download_plugin(plugin_id: str):
     # Увеличиваем счетчик скачиваний
     plugin["downloads"] += 1
     
-    # TODO: Вернуть реальный файл
-    # return FileResponse(path=plugin_file_path, filename=f"{plugin['name']}.zip")
+    # TODO: В production - вернуть реальный файл:
+    # from fastapi.responses import FileResponse
+    # plugin_file_path = f"/storage/plugins/{plugin_id}/{plugin['version']}.zip"
+    # return FileResponse(
+    #     path=plugin_file_path,
+    #     filename=f"{plugin['name']}_{plugin['version']}.zip",
+    #     media_type="application/zip"
+    # )
     
     return {
         "message": "Download started",
         "plugin_id": plugin_id,
         "version": plugin["version"],
-        "download_url": f"/files/plugins/{plugin_id}.zip"  # Mock
+        "download_url": f"/files/plugins/{plugin_id}.zip"  # Mock URL
     }
 
 
@@ -630,13 +687,24 @@ async def get_trending_plugins(
 
 
 @router.post("/plugins/{plugin_id}/favorite")
-async def add_to_favorites(plugin_id: str, user_id: str = "user_123"):
-    """Добавить в избранное"""
+async def add_to_favorites(
+    plugin_id: str, 
+    user_id: str = "user_123"  # TODO: Получать из auth middleware
+):
+    """
+    Добавить плагин в избранное
+    
+    Note:
+        В production: user_id должен получаться из auth middleware (JWT token)
+    """
     
     if plugin_id not in plugins_db:
         raise HTTPException(status_code=404, detail="Plugin not found")
     
-    # TODO: Сохранить в БД user_favorites
+    # TODO: В production - сохранить в БД:
+    # INSERT INTO user_favorites (user_id, plugin_id, created_at)
+    # VALUES (%s, %s, NOW())
+    # ON CONFLICT (user_id, plugin_id) DO NOTHING
     
     logger.info(f"Plugin {plugin_id} added to favorites by user {user_id}")
     
@@ -644,13 +712,22 @@ async def add_to_favorites(plugin_id: str, user_id: str = "user_123"):
 
 
 @router.delete("/plugins/{plugin_id}/favorite")
-async def remove_from_favorites(plugin_id: str, user_id: str = "user_123"):
-    """Удалить из избранного"""
+async def remove_from_favorites(
+    plugin_id: str, 
+    user_id: str = "user_123"  # TODO: Получать из auth middleware
+):
+    """
+    Удалить плагин из избранного
+    
+    Note:
+        В production: user_id должен получаться из auth middleware (JWT token)
+    """
     
     if plugin_id not in plugins_db:
         raise HTTPException(status_code=404, detail="Plugin not found")
     
-    # TODO: Удалить из БД user_favorites
+    # TODO: В production - удалить из БД:
+    # DELETE FROM user_favorites WHERE user_id = %s AND plugin_id = %s
     
     logger.info(f"Plugin {plugin_id} removed from favorites by user {user_id}")
     
@@ -662,7 +739,7 @@ async def report_plugin(
     plugin_id: str,
     reason: str,
     details: Optional[str] = None,
-    user_id: str = "user_123"
+    user_id: str = "user_123"  # TODO: Получать из auth middleware
 ):
     """
     Пожаловаться на плагин
@@ -673,13 +750,22 @@ async def report_plugin(
     - inappropriate: Неприемлемый контент
     - copyright: Нарушение авторских прав
     - other: Другое
+    
+    Note:
+        В production: user_id должен получаться из auth middleware (JWT token)
     """
     
     if plugin_id not in plugins_db:
         raise HTTPException(status_code=404, detail="Plugin not found")
     
-    # TODO: Сохранить жалобу в БД
-    # TODO: Отправить уведомление модераторам
+    # TODO: В production - сохранить жалобу в БД:
+    # INSERT INTO plugin_reports (plugin_id, user_id, reason, details, created_at)
+    # VALUES (%s, %s, %s, %s, NOW())
+    
+    # TODO: В production - отправить уведомление модераторам:
+    # - Через email/telegram бот
+    # - Или через очередь задач (Celery/RQ)
+    # - Или через webhook к системе модерации
     
     logger.warning(f"Plugin {plugin_id} reported by user {user_id}: {reason}")
     
@@ -691,6 +777,75 @@ async def report_plugin(
 
 
 # ==================== Helper Functions ====================
+
+def _check_authorization(user_id: str, plugin_id: str) -> bool:
+    """
+    Проверка прав доступа к плагину
+    
+    Args:
+        user_id: ID пользователя
+        plugin_id: ID плагина
+    
+    Returns:
+        True если пользователь имеет права (автор или админ)
+    
+    Note:
+        В production: заменить на реальную проверку через auth middleware
+        и проверку ролей пользователя в БД
+    """
+    if plugin_id not in plugins_db:
+        return False
+    
+    plugin = plugins_db[plugin_id]
+    
+    # Проверка: автор плагина
+    if plugin.get("author") == user_id:
+        return True
+    
+    # Проверка: админ (в production - через роль в БД)
+    # TODO: Реализовать проверку роли админа через auth middleware
+    if user_id == "admin" or user_id.startswith("admin_"):
+        return True
+    
+    return False
+
+
+def _is_admin(user_id: str) -> bool:
+    """
+    Проверка является ли пользователь админом
+    
+    Args:
+        user_id: ID пользователя
+    
+    Returns:
+        True если пользователь админ
+    
+    Note:
+        В production: заменить на проверку роли через auth middleware
+    """
+    # TODO: Реализовать проверку роли через auth middleware
+    return user_id == "admin" or user_id.startswith("admin_")
+
+
+def _check_plugin_installed(user_id: str, plugin_id: str) -> bool:
+    """
+    Проверка установлен ли плагин у пользователя
+    
+    Args:
+        user_id: ID пользователя
+        plugin_id: ID плагина
+    
+    Returns:
+        True если плагин установлен
+    
+    Note:
+        В production: проверка через БД (таблица user_plugin_installs)
+    """
+    # TODO: Реализовать проверку через БД
+    # SELECT EXISTS(SELECT 1 FROM user_plugin_installs 
+    #               WHERE user_id = %s AND plugin_id = %s AND uninstalled_at IS NULL)
+    return True  # Mock: всегда True для демо
+
 
 def _update_plugin_rating(plugin_id: str):
     """Пересчитать рейтинг плагина на основе отзывов"""
@@ -718,15 +873,27 @@ def _update_plugin_rating(plugin_id: str):
 # ==================== Admin Endpoints ====================
 
 @router.post("/admin/plugins/{plugin_id}/approve")
-async def approve_plugin(plugin_id: str, admin_id: str = "admin"):
+async def approve_plugin(
+    plugin_id: str, 
+    admin_id: str = "admin"  # TODO: Получать из auth middleware
+):
     """
     Одобрить плагин (только админы)
     
-    TODO: Добавить проверку прав админа
+    Note:
+        В production: admin_id должен получаться из auth middleware (JWT token)
+        и проверяться через _is_admin()
     """
     
     if plugin_id not in plugins_db:
         raise HTTPException(status_code=404, detail="Plugin not found")
+    
+    # Проверка прав админа
+    if not _is_admin(admin_id):
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required"
+        )
     
     plugin = plugins_db[plugin_id]
     
@@ -743,18 +910,34 @@ async def approve_plugin(plugin_id: str, admin_id: str = "admin"):
 async def reject_plugin(
     plugin_id: str,
     reason: str,
-    admin_id: str = "admin"
+    admin_id: str = "admin"  # TODO: Получать из auth middleware
 ):
-    """Отклонить плагин (только админы)"""
+    """
+    Отклонить плагин (только админы)
+    
+    Note:
+        В production: admin_id должен получаться из auth middleware (JWT token)
+    """
     
     if plugin_id not in plugins_db:
         raise HTTPException(status_code=404, detail="Plugin not found")
+    
+    # Проверка прав админа
+    if not _is_admin(admin_id):
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required"
+        )
     
     plugin = plugins_db[plugin_id]
     
     plugin["status"] = PluginStatus.REJECTED
     plugin["updated_at"] = datetime.utcnow()
-    # TODO: Отправить уведомление автору с причиной
+    
+    # TODO: В production - отправить уведомление автору с причиной:
+    # - Через email на адрес автора (plugin["author_email"])
+    # - Или через внутреннюю систему уведомлений
+    # - Или через webhook к системе уведомлений
     
     logger.info(f"Plugin rejected by admin {admin_id}: {plugin_id} (reason: {reason})")
     
@@ -762,11 +945,27 @@ async def reject_plugin(
 
 
 @router.post("/admin/plugins/{plugin_id}/feature")
-async def feature_plugin(plugin_id: str, featured: bool = True, admin_id: str = "admin"):
-    """Добавить/убрать из избранных (только админы)"""
+async def feature_plugin(
+    plugin_id: str, 
+    featured: bool = True, 
+    admin_id: str = "admin"  # TODO: Получать из auth middleware
+):
+    """
+    Добавить/убрать из избранных (только админы)
+    
+    Note:
+        В production: admin_id должен получаться из auth middleware (JWT token)
+    """
     
     if plugin_id not in plugins_db:
         raise HTTPException(status_code=404, detail="Plugin not found")
+    
+    # Проверка прав админа
+    if not _is_admin(admin_id):
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required"
+        )
     
     plugins_db[plugin_id]["featured"] = featured
     plugins_db[plugin_id]["updated_at"] = datetime.utcnow()
@@ -777,11 +976,27 @@ async def feature_plugin(plugin_id: str, featured: bool = True, admin_id: str = 
 
 
 @router.post("/admin/plugins/{plugin_id}/verify")
-async def verify_plugin(plugin_id: str, verified: bool = True, admin_id: str = "admin"):
-    """Верифицировать плагин (только админы)"""
+async def verify_plugin(
+    plugin_id: str, 
+    verified: bool = True, 
+    admin_id: str = "admin"  # TODO: Получать из auth middleware
+):
+    """
+    Верифицировать плагин (только админы)
+    
+    Note:
+        В production: admin_id должен получаться из auth middleware (JWT token)
+    """
     
     if plugin_id not in plugins_db:
         raise HTTPException(status_code=404, detail="Plugin not found")
+    
+    # Проверка прав админа
+    if not _is_admin(admin_id):
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required"
+        )
     
     plugins_db[plugin_id]["verified"] = verified
     plugins_db[plugin_id]["updated_at"] = datetime.utcnow()

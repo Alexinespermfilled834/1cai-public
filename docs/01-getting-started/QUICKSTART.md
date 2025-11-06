@@ -18,8 +18,8 @@
 ### Step 1: Clone Repository
 
 ```bash
-git clone https://github.com/your-org/1c-ai-stack.git
-cd 1c-ai-stack
+git clone https://github.com/DmitrL-dev/1cai-public.git
+cd 1cai-public
 ```
 
 ### Step 2: Configure Environment
@@ -298,8 +298,8 @@ After successful setup:
 
 ## 📞 Get Help
 
-- **GitHub Issues**: [Report bugs](https://github.com/your-org/1c-ai-stack/issues)
-- **Discussions**: [Ask questions](https://github.com/your-org/1c-ai-stack/discussions)
+- **GitHub Issues**: [Report bugs](https://github.com/DmitrL-dev/1cai-public/issues)
+- **Discussions**: [Ask questions](https://github.com/DmitrL-dev/1cai-public/discussions)
 - **Documentation**: [Full docs](./docs/)
 
 ---

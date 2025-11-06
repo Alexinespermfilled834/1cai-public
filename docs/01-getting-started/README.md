@@ -18,7 +18,7 @@
 
 ### **Шаг 1: Установка**
 ```bash
-git clone https://github.com/your-repo/enterprise-1c-ai-stack
+git clone https://github.com/DmitrL-dev/1cai-public
 cd enterprise-1c-ai-stack
 pip install -r requirements.txt
 ```

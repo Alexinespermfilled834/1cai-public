@@ -89,9 +89,22 @@ archive_*/
 *.rar
 backup/
 
-# Knowledge base - exclude content but keep folder
+# === КРИТИЧНО: Проприетарные данные 1С ===
+
+# Knowledge base - содержит код из конфигураций 1С (НЕЛЬЗЯ публиковать!)
 knowledge_base/*
+knowledge_base/**/*.json
 !knowledge_base/.gitkeep
+!knowledge_base/README.md
+
+# Результаты парсинга - содержат распарсенный код 1С (НЕЛЬЗЯ публиковать!)
+output/edt_parser/*.json
+output/dataset/ml_training_dataset*.json
+
+# Разрешаем только статистику и примеры
+!output/**/*statistics*.json
+!output/**/*audit*.json
+!output/dataset/example_*.json
 
 # Deprecated/unused directories
 docs-new/

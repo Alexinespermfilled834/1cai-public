@@ -500,8 +500,8 @@ export COVERAGE_DIR=.deno/coverage_unit_test
 ## 📞 Поддержка
 
 - 📖 **[Документация](./docs/)** - полная документация проекта
-- 🐛 **[Issues](https://github.com/your-repo/issues)** - баги и фича-реквесты
-- 💬 **[Discussions](https://github.com/your-repo/discussions)** - обсуждения и вопросы
+- 🐛 **[Issues](https://github.com/DmitrL-dev/1cai-public/issues)** - баги и фича-реквесты
+- 💬 **[Discussions](https://github.com/DmitrL-dev/1cai-public/discussions)** - обсуждения и вопросы
 - 📧 **[Email](mailto:support@yourcompany.com)** - техническая поддержка
 
 ## 📄 Лицензия

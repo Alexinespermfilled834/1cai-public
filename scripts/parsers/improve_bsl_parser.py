@@ -13,6 +13,8 @@ class ImprovedBSLParser:
     """
     Улучшенный парсер BSL кода
     Основан на понимании синтаксиса из Language 1C (BSL) расширения
+    
+    ОПТИМИЗАЦИЯ: Предкомпилированные regex паттерны
     """
     
     # Зарезервированные слова BSL
@@ -40,6 +42,39 @@ class ImprovedBSLParser:
         self.procedures = []
         self.regions = []
         self.api_usage = []
+        
+        # ОПТИМИЗАЦИЯ: Предкомпилируем regex паттерны
+        # Вместо компиляции на каждой строке - один раз при инициализации
+        self._func_pattern = re.compile(
+            r'^\s*(?:Экспорт\s+)?(?:Функция|Процедура)\s+([\wА-Яа-я]+)\s*\(([^)]*)\)',
+            re.IGNORECASE
+        )
+        self._region_pattern = re.compile(
+            r'#Область\s+([^\n]+)',
+            re.IGNORECASE
+        )
+        self._region_end_pattern = re.compile(
+            r'#КонецОбласти',
+            re.IGNORECASE
+        )
+        self._control_flow_pattern = re.compile(
+            r'\b(?:Если|Пока|Для|Попытка)\b',
+            re.IGNORECASE
+        )
+        self._control_end_pattern = re.compile(
+            r'\b(?:КонецЕсли|КонецЦикла|Исключение)\b',
+            re.IGNORECASE
+        )
+        self._function_end_pattern = re.compile(
+            r'\s*Конец(?:Функции|Процедуры)\s*$',
+            re.IGNORECASE
+        )
+        
+        # API patterns
+        self._api_patterns = {
+            api_obj: re.compile(rf'\b{api_obj}\b', re.IGNORECASE)
+            for api_obj in self.API_OBJECTS
+        }
     
     def parse(self, code: str) -> Dict[str, Any]:
         """
@@ -139,7 +174,7 @@ class ImprovedBSLParser:
             
             # Обработка областей
             if stripped.startswith('#Область'):
-                region_match = re.search(r'#Область\s+([^\n]+)', stripped)
+                region_match = self._region_pattern.search(stripped)
                 if region_match:
                     region_stack.append(region_match.group(1).strip())
             
@@ -163,12 +198,8 @@ class ImprovedBSLParser:
                         j -= 1
             
             # Проверка начала функции/процедуры
-            # Улучшенный паттерн: учитывает Экспорт, типы параметров, значения по умолчанию
-            func_match = re.search(
-                r'^\s*(?:Экспорт\s+)?(?:Функция|Процедура)\s+([\wА-Яа-я]+)\s*\(([^)]*)\)',
-                stripped,
-                re.IGNORECASE
-            )
+            # ОПТИМИЗАЦИЯ: Используем предкомпилированный паттерн
+            func_match = self._func_pattern.search(stripped)
             
             if func_match:
                 # Сохраняем предыдущую функцию если есть
@@ -209,14 +240,14 @@ class ImprovedBSLParser:
             if in_function and current_func:
                 function_lines.append(original_line)
                 
-                # Подсчет уровней вложенности
-                if re.search(r'\b(?:Если|Пока|Для|Попытка)\b', stripped, re.IGNORECASE):
+                # Подсчет уровней вложенности (ОПТИМИЗАЦИЯ: предкомпилированные паттерны)
+                if self._control_flow_pattern.search(stripped):
                     brace_level += 1
-                elif re.search(r'\b(?:КонецЕсли|КонецЦикла|Исключение)\b', stripped, re.IGNORECASE):
+                elif self._control_end_pattern.search(stripped):
                     brace_level = max(0, brace_level - 1)
                 
                 # Конец функции/процедуры
-                if re.search(r'\s*Конец(?:Функции|Процедуры)\s*$', stripped, re.IGNORECASE) and brace_level == 0:
+                if self._function_end_pattern.search(stripped) and brace_level == 0:
                     current_func['code'] = '\n'.join(function_lines)
                     current_func['line_end'] = i + 1
                     
@@ -326,10 +357,10 @@ class ImprovedBSLParser:
     
     def _extract_api_usage(self, code: str):
         """Извлечение использования API 1С"""
-        for api_obj in self.API_OBJECTS:
+        # ОПТИМИЗАЦИЯ: Используем предкомпилированные паттерны
+        for api_obj, pattern in self._api_patterns.items():
             # Поиск использования API объекта
-            pattern = rf'\b{api_obj}\b'
-            for match in re.finditer(pattern, code, re.IGNORECASE):
+            for match in pattern.finditer(code):
                 # Находим контекст использования (строка кода)
                 lines = code[:match.start()].split('\n')
                 line_num = len(lines)

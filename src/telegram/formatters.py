@@ -194,7 +194,7 @@ class TelegramFormatter:
 ✅ Дополнительные AI агенты
 
 **Интересует Premium доступ?**
-Создайте [Issue на GitHub](https://github.com/DmitrL-dev/1cai/issues) с описанием ваших задач.
+Создайте [Issue на GitHub](https://github.com/DmitrL-dev/1cai-public/issues) с описанием ваших задач.
 
 Мы обсудим возможности интеграции для вашего случая.
 """

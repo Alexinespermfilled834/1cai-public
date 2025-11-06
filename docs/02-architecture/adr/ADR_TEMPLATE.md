@@ -1,5 +1,8 @@
 # ADR-TEMPLATE: [Краткое название решения]
 
+> ⚠️ **ВНИМАНИЕ:** Этот файл описывает состояние на **3 ноября 2025**.  
+> **Актуальная версия:** [../../architecture/ARCHITECTURE_CURRENT_STATE.md](../../architecture/ARCHITECTURE_CURRENT_STATE.md) (обновлено 6 ноября 2025)
+
 **Date:** YYYY-MM-DD  
 **Status:** proposed | accepted | deprecated | superseded  
 **Tags:** integration, architecture, performance, etc.

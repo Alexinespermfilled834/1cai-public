@@ -1,0 +1,26 @@
+# Requirements for Parser Optimization
+# Install: pip install -r requirements-parser-optimization.txt
+
+# XML Parsing Optimization
+lxml>=5.0.0
+
+# PostgreSQL async driver
+asyncpg>=0.29.0
+
+# HTTP client for BSL Language Server
+requests>=2.31.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Hashing and crypto
+hashlib-additional>=1.0.0  # Optional, hashlib is built-in
+
+# Existing dependencies (already in main requirements.txt)
+# sqlalchemy>=2.0.0
+# psycopg2-binary>=2.9.0
+# python-dotenv>=1.0.0
+
+
+

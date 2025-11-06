@@ -528,8 +528,8 @@ results = ab_test(
 
 **Нужна помощь с fine-tuning?**
 
-- GitHub: [Issues](https://github.com/DmitrL-dev/1cai/issues) с тегом `ml`
-- Discussions: [GitHub Discussions](https://github.com/DmitrL-dev/1cai/discussions)
+- GitHub: [Issues](https://github.com/DmitrL-dev/1cai-public/issues) с тегом `ml`
+- Discussions: [GitHub Discussions](https://github.com/DmitrL-dev/1cai-public/discussions)
 
 **Хотите поделиться примерами?**
 

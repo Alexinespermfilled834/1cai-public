@@ -1,0 +1,27 @@
+{
+  "total": 24136,
+  "export_count": 0,
+  "avg_code_length": 0.0,
+  "function_types": {
+    "query": 3547,
+    "other": 17291,
+    "setter": 414,
+    "getter": 1435,
+    "generation": 296,
+    "fill": 611,
+    "validation": 388,
+    "processing": 92,
+    "calculation": 62
+  },
+  "object_types": {
+    "CommonModule": 9511,
+    "CatalogManager": 3101,
+    "CatalogObject": 292,
+    "DocumentManager": 9695,
+    "DocumentObject": 1537
+  },
+  "complexity_distribution": {
+    "simple": 24136
+  },
+  "api_usage": {}
+}
