@@ -216,3 +216,45 @@ live-demo/
 # Personal notes
 NOTES.md
 TODO_PERSONAL.md
+
+# === КРИТИЧНО: Бизнес-планы и pricing (ТОЛЬКО для приватного репозитория!) ===
+# Эти файлы содержат конфиденциальную бизнес-информацию:
+# - Детальные цены tier'ов
+# - ROI расчеты
+# - Бизнес-стратегии
+# - Внутренние планы масштабирования
+
+# Приватная директория (ВЕСЬ контент - конфиденциальный!)
+private/
+/private/
+
+# Tier configurations с ценами
+config/tiers/
+/config/tiers/
+
+# Документация по масштабированию с ценами
+docs/10-scaling/
+/docs/10-scaling/
+
+# Docker compose файлы для tier'ов (содержат конфигурации)
+docker-compose.tier-*.yml
+/docker-compose.tier-*.yml
+
+# Kubernetes манифесты для tier'ов
+k8s/tiers/
+/k8s/tiers/
+
+# Скрипты миграции между tier'ами (содержат бизнес-логику)
+scripts/tiers/
+/scripts/tiers/
+
+# Внутренние отчеты о реализации
+*SCALING_IMPLEMENTATION*.md
+*SCALING_COMPLETE*.md
+*TIER_IMPLEMENTATION*.md
+
+# Бизнес-планы и стратегии
+*BUSINESS_PLAN*.md
+*PRICING_STRATEGY*.md
+*MONETIZATION*.md
+*REVENUE*.md
