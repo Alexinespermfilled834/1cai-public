@@ -31,7 +31,7 @@ cp .env.example .env
 
 ### **Шаг 3: Запуск**
 ```bash
-python main.py
+python src/main.py
 ```
 
 ---

@@ -39,13 +39,13 @@ docker-compose -f docker-compose.yml -f docker-compose.stage1.yml up -d
 pip install -r requirements-stage1.txt
 
 # 4. Мигрировать JSON → PostgreSQL
-python migrate_json_to_postgres.py
+python scripts/migrations/migrate_json_to_postgres.py
 
 # 5. Мигрировать PostgreSQL → Neo4j
-python migrate_postgres_to_neo4j.py
+python scripts/migrations/migrate_postgres_to_neo4j.py
 
 # 6. Векторизация в Qdrant
-python migrate_to_qdrant.py
+python scripts/migrations/migrate_to_qdrant.py
 ```
 
 ### Этап 3: Настройка AI моделей
@@ -289,9 +289,9 @@ docker-compose logs -f neo4j
 
 4. **Миграция данных**
    ```bash
-   python migrate_json_to_postgres.py
-   python migrate_postgres_to_neo4j.py
-   python migrate_to_qdrant.py
+   python scripts/migrations/migrate_json_to_postgres.py
+   python scripts/migrations/migrate_postgres_to_neo4j.py
+   python scripts/migrations/migrate_to_qdrant.py
    ```
 
 5. **API сервисы**

@@ -151,9 +151,9 @@ python -m src.telegram.bot
 1. **Добавьте тестовые данные** в БД:
    ```bash
    # Запустите скрипты миграции (если есть данные)
-   python scripts/migrate_json_to_postgres.py
-   python scripts/migrate_postgres_to_neo4j.py
-   python scripts/migrate_to_qdrant.py
+   python scripts/migrations/migrate_json_to_postgres.py
+   python scripts/migrations/migrate_postgres_to_neo4j.py
+   python scripts/migrations/migrate_to_qdrant.py
    ```
 
 2. **Настройте IDE интеграцию:**

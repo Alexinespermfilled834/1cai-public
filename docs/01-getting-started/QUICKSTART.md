@@ -119,17 +119,17 @@ Example structure:
 venv\Scripts\activate
 
 # Run parser
-python parse_edt_xml.py
+python scripts/parsers/parse_edt_xml.py
 ```
 
 ### Parse Specific Configuration
 
 ```bash
 # Parse only DO
-python parse_edt_xml.py DO
+python scripts/parsers/parse_edt_xml.py DO
 
 # Parse only ERP
-python parse_edt_xml.py ERP
+python scripts/parsers/parse_edt_xml.py ERP
 ```
 
 ### Check Results
