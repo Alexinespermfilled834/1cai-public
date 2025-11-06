@@ -311,7 +311,7 @@ curl -X POST http://localhost:8000/generate \
 │  ├─ AI Orchestrator (intelligent routing)           │
 │  ├─ 8 Specialized AI Agents                         │
 │  ├─ OpenAI API (GPT-4, Whisper STT)                 │
-│  ├─ Ollama (Qwen3-Coder for BSL)                    │
+│  ├─ Ollama (Qwen2.5-Coder 7B for BSL)               │
 │  └─ DeepSeek-OCR (document recognition, 91%+)       │
 │                                                       │
 │  DATA LAYER:                                         │
@@ -412,10 +412,10 @@ curl -X POST http://localhost:8000/generate \
 
 ### AI/ML:
 - **DeepSeek-OCR** - распознавание документов (91%+ accuracy) 🆕
-- **Qwen3-Coder** - генерация BSL (fine-tuned на SmolTalk) 🆕
-- **Kimi-Linear-48B** - анализ больших конфигураций (200K контекст) 🆕
-- **OpenAI API** (GPT-4, Whisper STT)
-- **Ollama** - локальные LLM
+- **Qwen2.5-Coder** - генерация BSL кода (через Ollama, 7B модель) 🆕
+- **OpenAI GPT-4** - AI agents, code analysis, generation
+- **Whisper** - Speech-to-Text (голосовые запросы)
+- **Ollama** - локальные LLM runtime
 - **LangChain** - AI orchestration
 - **MLflow** - ML experiments tracking
 - **ModelScan** - security scanning 🆕
@@ -475,7 +475,8 @@ curl -X POST http://localhost:8000/generate \
 |-----------|-----------|-----|
 | Kubernetes | High | Phase 2 |
 | Monitoring Stack | High | Phase 2 |
-| BSL Fine-tuning | Medium | Phase 3 |
+| BSL Fine-tuning (SmolTalk dataset) | Medium | Phase 3 |
+| Kimi-Linear-48B (200K context) | Medium | Evaluation |
 | ITIL/ITSM | Medium | 12 months |
 | Elasticsearch | Low | Phase 4 |
 | Innovation Engine | Low | Phase 3 |
