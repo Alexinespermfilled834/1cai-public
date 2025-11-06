@@ -430,24 +430,51 @@ curl -X POST http://localhost:8000/generate \
 
 ## 📊 Статус проекта
 
-### Готовность: 99%
+> 💡 **NEW!** [Что реально работает →](WHAT_REALLY_WORKS.md) | [Критический анализ архитектуры →](АРХИТЕКТУРА_КРИТИЧЕСКИЙ_АНАЛИЗ.md)
+
+### Готовность: 75% (MVP) + 25% (Planned)
+
+#### ✅ Production Ready (работает сейчас):
 
 | Компонент | Статус | Готовность |
 |-----------|--------|------------|
+| **Core (MVP)** | | |
+| PostgreSQL + Redis | ✅ Production | 100% |
 | Telegram Bot | ✅ Production | 100% |
-| Voice Queries | ✅ Production | 100% |
-| OCR Integration | ✅ Beta | 90% |
 | MCP Server | ✅ Production | 100% |
+| REST API | ✅ Production | 100% |
+| 8 AI Agents | ✅ Production | 80-120% |
+| Code Execution | ✅ Production | 100% |
+| Security Layer | ✅ Production | 100% |
+| Docker Compose | ✅ Production | 100% |
+| GitHub Actions | ✅ Production | 100% |
+| **Additional** | | |
+| Voice Queries | ✅ Production | 100% |
 | Multi-language | ✅ Production | 100% |
-| Marketplace API | ✅ Beta | 100% |
-| AI Orchestrator | ✅ Production | 100% |
-| EDT Plugin | ✅ Beta | 95% |
-| BSL Fine-tuning | 🚧 Dataset Ready | 80% |
-| Databases | ✅ Production | 100% |
-| Infrastructure | ✅ Production | 100% |
-| Documentation | ✅ Complete | 95% |
 
-**Production Ready!** 🚀
+#### 🟡 In Development:
+
+| Компонент | Статус | Готовность |
+|-----------|--------|------------|
+| EDT Plugin | 🟡 Beta | 95% |
+| Web Portal | 🟡 Beta | 40% |
+| OCR Integration | 🟡 Beta | 90% |
+| Marketplace API | 🟡 Beta | 100% |
+| Neo4j (active use) | 🟡 Partial | 30% |
+| Qdrant (semantic search) | 🟡 Partial | 30% |
+
+#### ⚠️ Planned (Roadmap):
+
+| Компонент | Приоритет | ETA |
+|-----------|-----------|-----|
+| Kubernetes | High | Phase 2 |
+| Monitoring Stack | High | Phase 2 |
+| BSL Fine-tuning | Medium | Phase 3 |
+| ITIL/ITSM | Medium | 12 months |
+| Elasticsearch | Low | Phase 4 |
+| Innovation Engine | Low | Phase 3 |
+
+**MVP Ready!** 🚀 (Core features work)
 
 ---
 
