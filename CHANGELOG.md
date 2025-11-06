@@ -21,11 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 99.93% успешность
 
 #### ML Dataset Generator
-- **24,136 BSL code examples** для обучения моделей
+- **Инструмент для создания ML датасетов** из ваших конфигураций 1С
 - 5 категорий: API usage, business logic, data processing, UI, integration
-- `create_ml_dataset.py` - генератор dataset
-- Enriched с контекстом (module name, parameters, return types)
-- Ready for fine-tuning GPT/Llama/Qwen
+- `create_ml_dataset.py` - скрипт генерации
+- Автоматический enrichment с контекстом (module name, parameters, return types)
+- Формат подходит для fine-tuning GPT/Llama/Qwen
+- **Примечание:** Датасет НЕ включен в репозиторий - создается из ваших конфигураций
 
 #### Analysis Tools Suite (5 scripts)
 - `analyze_architecture.py` - анализ структуры конфигурации
