@@ -36,8 +36,8 @@ accelerate>=0.25.0  # Для оптимизации загрузки модел�
 # langchain-openai==0.0.2  # Optional
 
 # OCR (implemented)
-deepseek-ocr>=0.1.0  # DeepSeek-OCR - primary (91%+ accuracy)
-chandra-ocr>=0.1.0  # Chandra OCR - fallback (83% accuracy)
+# DeepSeek-OCR используется через transformers (см. выше)
+# Chandra OCR - опционально, установить отдельно если нужен fallback
 pillow>=10.1.0  # Image processing
 pytesseract>=0.3.10  # Tesseract fallback
 
