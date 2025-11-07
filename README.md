@@ -13,9 +13,11 @@
 ## 🆕 Что нового
 
 ### 🛡️ Admin Role Management (Nov 7, 2025)
-- REST endpoints `/admin/users/{id}/roles|permissions` (требуется роль `admin`)
-- Миграции Alembic для `user_roles`, `user_permissions`, `security_audit_log`
-- CLI `scripts/manage_roles.py` и аудит с записью в БД + JSONL
+- Внедрены REST endpoints `/admin/users/{id}/roles|permissions` (требуется роль `admin`) — теперь RBAC можно настраивать из API
+- Выполнены миграции Alembic: `user_roles`, `user_permissions`, `user_role_assignments`, `security_audit_log`
+- Аудит действий пишет в БД + JSONL, добавлена CLI-утилита `scripts/manage_roles.py`
+- Service-to-service токены (`X-Service-Token`) и автоматическое обогащение ролей в `get_current_user`
+- Обновлены интеграционные и unit-тесты, документация, CI (миграции выполняются перед прогоном тестов)
 
 ### Что нового (Nov 6, 2025)
 
