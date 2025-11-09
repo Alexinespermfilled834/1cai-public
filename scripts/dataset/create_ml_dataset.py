@@ -10,6 +10,7 @@
 - Паттернами использования
 """
 
+import argparse
 import json
 import sys
 import re
@@ -17,15 +18,17 @@ from pathlib import Path
 from typing import Dict, List, Any
 from collections import defaultdict
 
-def load_parse_results():
+
+def load_parse_results(results_file: Path) -> Dict[str, Any]:
     """Загрузка результатов парсинга"""
-    results_file = Path("./output/edt_parser/full_parse_with_metadata.json")
-    
+    if not results_file.exists():
+        raise FileNotFoundError(
+            f"Файл {results_file} не найден. Сначала запустите парсер EDT или укажите путь через --input"
+        )
+
     print("Загрузка результатов парсинга...")
-    with open(results_file, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-    print(f"Загружено успешно!")
-    return data
+    with results_file.open('r', encoding='utf-8') as f:
+        return json.load(f)
 
 def extract_api_calls(code: str) -> List[str]:
     """Извлечение API calls из кода"""
@@ -249,6 +252,7 @@ def analyze_dataset(dataset: List[Dict]) -> Dict:
     
     total_code_length = 0
     export_count = 0
+    total_examples = len(dataset)
     
     for example in dataset:
         func_type = example['metadata']['function_type']
@@ -273,99 +277,131 @@ def analyze_dataset(dataset: List[Dict]) -> Dict:
         for api in example['api_usage']:
             api_usage_count[api] += 1
     
-    print(f"\nВсего примеров: {len(dataset):,}")
-    print(f"Экспортных функций: {export_count:,} ({export_count/len(dataset)*100:.1f}%)")
-    print(f"Средняя длина кода: {total_code_length/len(dataset):.0f} символов")
+    print(f"\nВсего примеров: {total_examples:,}")
+    if total_examples:
+        export_pct = export_count / total_examples * 100
+        avg_code = total_code_length / total_examples
+    else:
+        export_pct = 0
+        avg_code = 0
+    print(f"Экспортных функций: {export_count:,} ({export_pct:.1f}%)")
+    print(f"Средняя длина кода: {avg_code:.0f} символов")
     
-    print(f"\nРаспределение по типам функций:")
-    for func_type, count in sorted(func_types.items(), key=lambda x: x[1], reverse=True)[:10]:
-        print(f"  {func_type:<20} {count:>6,} ({count/len(dataset)*100:>5.1f}%)")
+    if total_examples:
+        print(f"\nРаспределение по типам функций:")
+        for func_type, count in sorted(func_types.items(), key=lambda x: x[1], reverse=True)[:10]:
+            print(f"  {func_type:<20} {count:>6,} ({count/total_examples*100:>5.1f}%)")
+        
+        print(f"\nРаспределение по типам объектов:")
+        for obj_type, count in sorted(object_types.items(), key=lambda x: x[1], reverse=True):
+            print(f"  {obj_type:<20} {count:>6,} ({count/total_examples*100:>5.1f}%)")
+        
+        print(f"\nРаспределение по сложности:")
+        for complexity, count in sorted(complexity_distribution.items()):
+            print(f"  {complexity:<20} {count:>6,} ({count/total_examples*100:>5.1f}%)")
     
-    print(f"\nРаспределение по типам объектов:")
-    for obj_type, count in sorted(object_types.items(), key=lambda x: x[1], reverse=True):
-        print(f"  {obj_type:<20} {count:>6,} ({count/len(dataset)*100:>5.1f}%)")
-    
-    print(f"\nРаспределение по сложности:")
-    for complexity, count in sorted(complexity_distribution.items()):
-        print(f"  {complexity:<20} {count:>6,} ({count/len(dataset)*100:>5.1f}%)")
-    
-    print(f"\nТОП-10 используемых API:")
-    for api, count in sorted(api_usage_count.items(), key=lambda x: x[1], reverse=True)[:10]:
-        print(f"  {api:<30} {count:>6,}")
+    if api_usage_count:
+        print(f"\nТОП-10 используемых API:")
+        for api, count in sorted(api_usage_count.items(), key=lambda x: x[1], reverse=True)[:10]:
+            print(f"  {api:<30} {count:>6,}")
     
     return {
-        'total': len(dataset),
+        'schema_version': '1.0.0',
+        'total': total_examples,
         'export_count': export_count,
-        'avg_code_length': total_code_length/len(dataset) if dataset else 0,
+        'avg_code_length': avg_code,
         'function_types': dict(func_types),
         'object_types': dict(object_types),
         'complexity_distribution': dict(complexity_distribution),
         'api_usage': dict(api_usage_count)
     }
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Создание ML dataset для 1C AI Stack")
+    parser.add_argument(
+        "--input",
+        type=Path,
+        default=Path("./output/edt_parser/full_parse_with_metadata.json"),
+        help="Путь к full_parse_with_metadata.json",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("./output/dataset"),
+        help="Каталог для сохранения итоговых файлов",
+    )
+    parser.add_argument(
+        "--limit-common",
+        type=int,
+        default=500,
+        help="Ограничение на количество общих модулей (0 = без ограничений)",
+    )
+    parser.add_argument(
+        "--config-name",
+        default="Configuration",
+        help="Имя конфигурации для отчёта",
+    )
+    return parser.parse_args()
+
+
 def main():
     """Главная функция"""
+    args = parse_args()
+
     print("=" * 80)
-    print("СОЗДАНИЕ ML DATASET")
+    print(f"СОЗДАНИЕ ML DATASET ДЛЯ {args.config_name.upper()}")
     print("=" * 80)
-    
-    # Загрузка данных
-    data = load_parse_results()
-    
-    # Создание dataset
+
+    try:
+        data = load_parse_results(args.input)
+    except (FileNotFoundError, json.JSONDecodeError) as err:
+        print(f"Ошибка загрузки данных: {err}")
+        return 1
+
     print("\nСоздание dataset...")
-    
-    # Общие модули (берем 500 для начала)
-    dataset_common = create_dataset_from_common_modules(data, limit=500)
-    
-    # Справочники (все)
+
+    limit_common = args.limit_common or None
+    dataset_common = create_dataset_from_common_modules(data, limit=limit_common)
     dataset_catalogs = create_dataset_from_catalogs(data)
-    
-    # Документы (все)
     dataset_documents = create_dataset_from_documents(data)
-    
-    # Объединяем
+
     full_dataset = dataset_common + dataset_catalogs + dataset_documents
-    
-    # Анализ
     stats = analyze_dataset(full_dataset)
-    
-    # Сохранение
-    output_dir = Path("./output/dataset")
+    stats["config_name"] = args.config_name
+
+    output_dir = args.output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Полный dataset
+
     dataset_file = output_dir / "ml_training_dataset.json"
-    print(f"\nСохранение dataset...")
-    with open(dataset_file, 'w', encoding='utf-8') as f:
+    print("\nСохранение dataset...")
+    with dataset_file.open('w', encoding='utf-8') as f:
         json.dump(full_dataset, f, ensure_ascii=False, indent=2)
     print(f"  Dataset: {dataset_file} ({dataset_file.stat().st_size / 1024 / 1024:.2f} MB)")
-    
-    # Статистика
+
     stats_file = output_dir / "dataset_statistics.json"
-    with open(stats_file, 'w', encoding='utf-8') as f:
+    with stats_file.open('w', encoding='utf-8') as f:
         json.dump(stats, f, ensure_ascii=False, indent=2)
     print(f"  Статистика: {stats_file}")
-    
-    # Создаем также компактную версию (без кода, только метаданные)
+
     compact_dataset = [
         {k: v for k, v in example.items() if k != 'code'}
         for example in full_dataset
     ]
-    
     compact_file = output_dir / "ml_training_dataset_compact.json"
-    with open(compact_file, 'w', encoding='utf-8') as f:
+    with compact_file.open('w', encoding='utf-8') as f:
         json.dump(compact_dataset, f, ensure_ascii=False, indent=2)
     print(f"  Компактная версия: {compact_file} ({compact_file.stat().st_size / 1024 / 1024:.2f} MB)")
-    
+
     print("\n" + "=" * 80)
     print("DATASET СОЗДАН!")
     print("=" * 80)
-    
+
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
+
 
 
 

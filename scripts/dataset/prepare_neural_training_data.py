@@ -17,6 +17,7 @@
 Версия: 1.0.0
 """
 
+import argparse
 import asyncio
 import json
 import logging
@@ -46,7 +47,7 @@ class NeuralDatasetPreparer:
     4. Train/val/test split
     """
     
-    def __init__(self, output_dir: str = "./data/neural_training"):
+    def __init__(self, output_dir: str | Path = "./data/neural_training"):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
@@ -360,38 +361,74 @@ class NeuralDatasetPreparer:
     def _save_stats(self):
         """Сохранение статистики"""
         stats_file = self.output_dir / 'stats.json'
+        payload = {
+            'schema_version': '1.0.0',
+            'summary': dict(self.stats),
+        }
         with open(stats_file, 'w', encoding='utf-8') as f:
-            json.dump(dict(self.stats), f, indent=2)
+            json.dump(payload, f, indent=2)
         logger.info(f"📊 Статистика: {stats_file}")
 
 
-async def main():
-    """Main entry point"""
-    print("=" * 70)
-    print("ПОДГОТОВКА TRAINING DATASET ДЛЯ NEURAL PARSER")
-    print("=" * 70)
-    
-    preparer = NeuralDatasetPreparer()
-    
-    # Извлечение из PostgreSQL
-    await preparer.prepare_from_postgres()
-    
-    # Сохранение
-    preparer.save_dataset()
-    
-    print("\n" + "=" * 70)
-    print("✅ Dataset готов!")
-    print("=" * 70)
-    print(f"\nФайлы:")
-    print(f"  - {preparer.output_dir}/train.json")
-    print(f"  - {preparer.output_dir}/val.json")
-    print(f"  - {preparer.output_dir}/test.json")
-    print(f"\nСледующий шаг:")
-    print(f"  python scripts/parsers/neural/train_neural_parser.py")
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Подготовка dataset для Neural BSL Parser")
+    parser.add_argument(
+        "--db-url",
+        default="postgresql://parser_user:parser_pass_2024@localhost:5433/1c_ai_db",
+        help="Строка подключения к PostgreSQL",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("./data/neural_training"),
+        help="Каталог для сохранения train/val/test",
+    )
+    parser.add_argument(
+        "--train-ratio",
+        type=float,
+        default=0.8,
+        help="Доля обучающей выборки",
+    )
+    parser.add_argument(
+        "--val-ratio",
+        type=float,
+        default=0.1,
+        help="Доля валидационной выборки",
+    )
+    return parser.parse_args()
+
+
+async def run(args: argparse.Namespace) -> None:
+    logger.info("=" * 70)
+    logger.info("ПОДГОТОВКА TRAINING DATASET ДЛЯ NEURAL PARSER")
+    logger.info("=" * 70)
+
+    preparer = NeuralDatasetPreparer(args.output_dir)
+    await preparer.prepare_from_postgres(db_url=args.db_url)
+    preparer.save_dataset(train_ratio=args.train_ratio, val_ratio=args.val_ratio)
+
+    logger.info("=" * 70)
+    logger.info("✅ Dataset готов!")
+    logger.info("=" * 70)
+    logger.info("Файлы:")
+    logger.info("  - %s", preparer.output_dir / "train.json")
+    logger.info("  - %s", preparer.output_dir / "val.json")
+    logger.info("  - %s", preparer.output_dir / "test.json")
+
+
+def main() -> int:
+    args = parse_args()
+    try:
+        asyncio.run(run(args))
+    except Exception as err:  # noqa: BLE001
+        logger.error("❌ Ошибка подготовки dataset: %s", err)
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    raise SystemExit(main())
+
 
 
 

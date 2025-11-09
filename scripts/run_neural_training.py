@@ -116,8 +116,7 @@ def test_model():
         print(f"Suggestions: {len(result.suggestions)}")
 
 
-async def main():
-    """Main pipeline"""
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Neural BSL Parser Training Pipeline"
     )
@@ -138,9 +137,19 @@ async def main():
         action='store_true',
         help='Skip dataset preparation (use existing)'
     )
-    
-    args = parser.parse_args()
-    
+    parser.add_argument(
+        '--dataset-dir',
+        type=Path,
+        default=Path('./data/neural_training'),
+        help='Каталог с подготовленным dataset' 
+    )
+    return parser.parse_args()
+
+
+async def main():
+    """Main pipeline"""
+    args = parse_args()
+
     print("=" * 70)
     print("🚀 NEURAL BSL PARSER - TRAINING PIPELINE")
     print("=" * 70)
@@ -148,20 +157,22 @@ async def main():
     print(f"  Epochs: {args.epochs}")
     print(f"  Batch Size: {args.batch_size}")
     print("=" * 70)
-    
+
     # Step 1: Dataset
     if not args.skip_dataset:
         dataset_dir = await prepare_dataset()
     else:
-        dataset_dir = Path('./data/neural_training')
+        dataset_dir = args.dataset_dir
+        if not dataset_dir.exists():
+            raise FileNotFoundError(f"Каталог с датасетом {dataset_dir} не найден")
         print(f"\n⏭️  Пропуск подготовки dataset, используем: {dataset_dir}")
-    
+
     # Step 2: Training
     trainer = train_model(dataset_dir, args.epochs, args.batch_size)
-    
+
     # Step 3: Testing
     test_model()
-    
+
     print("\n" + "=" * 70)
     print("🎉 PIPELINE ЗАВЕРШЕН!")
     print("=" * 70)
@@ -175,6 +186,7 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
 
