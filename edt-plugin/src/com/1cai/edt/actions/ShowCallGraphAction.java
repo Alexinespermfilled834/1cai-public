@@ -7,9 +7,11 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.onecai.edt.services.BackendConnector;
+import com.onecai.edt.utils.BslSelectionHelper;
+import com.onecai.edt.utils.BslSelectionHelper.BslFunctionInfo;
 import com.onecai.edt.views.MetadataGraphView;
 
 /**
@@ -18,7 +20,7 @@ import com.onecai.edt.views.MetadataGraphView;
 public class ShowCallGraphAction implements IObjectActionDelegate {
 
     private IWorkbenchPart targetPart;
-    private Object selectedElement;
+    private ISelection currentSelection;
 
     @Override
     public void setActivePart(IAction action, IWorkbenchPart targetPart) {
@@ -27,7 +29,7 @@ public class ShowCallGraphAction implements IObjectActionDelegate {
 
     @Override
     public void run(IAction action) {
-        if (selectedElement == null) {
+        if (currentSelection == null) {
             MessageDialog.openWarning(
                 targetPart.getSite().getShell(),
                 "Show Call Graph",
@@ -36,10 +38,8 @@ public class ShowCallGraphAction implements IObjectActionDelegate {
             return;
         }
 
-        String functionName = extractFunctionName(selectedElement);
-        String moduleName = extractModuleName(selectedElement);
-
-        if (functionName == null || moduleName == null) {
+        BslFunctionInfo info = BslSelectionHelper.resolve(currentSelection, targetPart).orElse(null);
+        if (info == null || info.getFunctionName() == null || info.getModuleName() == null) {
             MessageDialog.openWarning(
                 targetPart.getSite().getShell(),
                 "Show Call Graph",
@@ -48,12 +48,12 @@ public class ShowCallGraphAction implements IObjectActionDelegate {
             return;
         }
 
-        showCallGraph(moduleName, functionName);
+        showCallGraph(info.getModuleName(), info.getFunctionName());
     }
 
     @Override
     public void selectionChanged(IAction action, ISelection selection) {
-        selectedElement = selection;
+        currentSelection = selection;
     }
 
     private void showCallGraph(String moduleName, String functionName) {
@@ -162,16 +162,6 @@ public class ShowCallGraphAction implements IObjectActionDelegate {
         }
 
         return sb.toString();
-    }
-
-    private String extractFunctionName(Object element) {
-        // TODO: Extract from com._1c.g5.v8.dt.bsl.model.Method
-        return "TestFunction";
-    }
-
-    private String extractModuleName(Object element) {
-        // TODO: Extract from BSL model
-        return "DO.ОбщийМодуль.Test";
     }
 }
 

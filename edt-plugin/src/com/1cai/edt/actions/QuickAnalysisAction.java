@@ -3,7 +3,9 @@ package com.onecai.edt.actions;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IObjectActionDelegate;
@@ -11,6 +13,8 @@ import org.eclipse.ui.IWorkbenchPart;
 
 import com.google.gson.JsonObject;
 import com.onecai.edt.services.BackendConnector;
+import com.onecai.edt.utils.BslSelectionHelper;
+import com.onecai.edt.utils.BslSelectionHelper.BslFunctionInfo;
 
 /**
  * Quick Analysis Action
@@ -27,7 +31,7 @@ import com.onecai.edt.services.BackendConnector;
 public class QuickAnalysisAction implements IObjectActionDelegate {
 
     private IWorkbenchPart targetPart;
-    private Object selectedElement;
+    private ISelection currentSelection;
 
     @Override
     public void setActivePart(IAction action, IWorkbenchPart targetPart) {
@@ -36,28 +40,26 @@ public class QuickAnalysisAction implements IObjectActionDelegate {
 
     @Override
     public void run(IAction action) {
-        if (selectedElement == null) {
+        if (currentSelection == null) {
             showWarning("No function selected");
             return;
         }
 
-        // TODO: Extract real function info from selectedElement
-        String functionName = extractFunctionName(selectedElement);
-        String moduleName = extractModuleName(selectedElement);
-        String functionBody = extractFunctionBody(selectedElement);
-
-        if (functionName == null || moduleName == null) {
+        BslFunctionInfo info = BslSelectionHelper.resolve(currentSelection, targetPart).orElse(null);
+        if (info == null || info.getFunctionName() == null || info.getModuleName() == null) {
             showWarning("Could not determine function info");
             return;
         }
 
+        String functionBody = info.getFunctionBody() != null ? info.getFunctionBody() : "";
+
         // Показываем диалог с результатами
-        performQuickAnalysis(moduleName, functionName, functionBody);
+        performQuickAnalysis(info.getModuleName(), info.getFunctionName(), functionBody);
     }
 
     @Override
     public void selectionChanged(IAction action, ISelection selection) {
-        selectedElement = selection;
+        currentSelection = selection;
     }
 
     /**
@@ -331,29 +333,6 @@ public class QuickAnalysisAction implements IObjectActionDelegate {
         return count;
     }
 
-    // ========================================================================
-    // TODO: EXTRACTION FROM EDT MODEL
-    // ========================================================================
-
-    private String extractFunctionName(Object element) {
-        // TODO: Extract from 1C BSL model
-        return "TestFunction";
-    }
-
-    private String extractModuleName(Object element) {
-        // TODO: Extract from 1C BSL model
-        return "TestModule";
-    }
-
-    private String extractFunctionBody(Object element) {
-        // TODO: Extract from 1C BSL model
-        return "Функция TestFunction(Параметр1, Параметр2)\n" +
-               "  // TODO: implementation\n" +
-               "  Результат = 0;\n" +
-               "  Возврат Результат;\n" +
-               "КонецФункции";
-    }
-
     private void showWarning(String message) {
         org.eclipse.jface.dialogs.MessageDialog.openWarning(
             targetPart.getSite().getShell(),
@@ -385,5 +364,6 @@ public class QuickAnalysisAction implements IObjectActionDelegate {
         java.util.List<String> suggestions = new java.util.ArrayList<>();
     }
 }
+
 
 

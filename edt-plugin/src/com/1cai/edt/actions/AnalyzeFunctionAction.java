@@ -3,11 +3,14 @@ package com.onecai.edt.actions;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 import com.google.gson.JsonObject;
 import com.onecai.edt.services.BackendConnector;
+import com.onecai.edt.utils.BslSelectionHelper;
+import com.onecai.edt.utils.BslSelectionHelper.BslFunctionInfo;
 
 /**
  * Context menu action: Analyze Function with AI
@@ -15,7 +18,7 @@ import com.onecai.edt.services.BackendConnector;
 public class AnalyzeFunctionAction implements IObjectActionDelegate {
 
     private IWorkbenchPart targetPart;
-    private Object selectedElement;
+    private ISelection currentSelection;
 
     @Override
     public void setActivePart(IAction action, IWorkbenchPart targetPart) {
@@ -24,7 +27,7 @@ public class AnalyzeFunctionAction implements IObjectActionDelegate {
 
     @Override
     public void run(IAction action) {
-        if (selectedElement == null) {
+        if (currentSelection == null) {
             MessageDialog.openWarning(
                 targetPart.getSite().getShell(),
                 "Analyze Function",
@@ -33,11 +36,8 @@ public class AnalyzeFunctionAction implements IObjectActionDelegate {
             return;
         }
 
-        // TODO: Extract function info from selectedElement
-        String functionName = extractFunctionName(selectedElement);
-        String moduleName = extractModuleName(selectedElement);
-
-        if (functionName == null || moduleName == null) {
+        BslFunctionInfo info = BslSelectionHelper.resolve(currentSelection, targetPart).orElse(null);
+        if (info == null || info.getFunctionName() == null || info.getModuleName() == null) {
             MessageDialog.openWarning(
                 targetPart.getSite().getShell(),
                 "Analyze Function",
@@ -47,14 +47,12 @@ public class AnalyzeFunctionAction implements IObjectActionDelegate {
         }
 
         // Call backend
-        analyzeFunction(moduleName, functionName);
+        analyzeFunction(info.getModuleName(), info.getFunctionName());
     }
 
     @Override
     public void selectionChanged(IAction action, ISelection selection) {
-        // Store selected element
-        // TODO: Extract from selection
-        selectedElement = selection;
+        currentSelection = selection;
     }
 
     private void analyzeFunction(String moduleName, String functionName) {
@@ -116,17 +114,6 @@ public class AnalyzeFunctionAction implements IObjectActionDelegate {
             "Analysis Result",
             message.toString()
         );
-    }
-
-    private String extractFunctionName(Object element) {
-        // TODO: Extract from 1C BSL model
-        // For now, return placeholder
-        return "TestFunction";
-    }
-
-    private String extractModuleName(Object element) {
-        // TODO: Extract from 1C BSL model
-        return "TestModule";
     }
 }
 

@@ -5,8 +5,10 @@ import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.part.ViewPart;
@@ -402,5 +404,6 @@ public class AnalysisDashboardView extends ViewPart {
         });
     }
 }
+
 
 
