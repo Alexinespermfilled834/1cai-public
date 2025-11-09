@@ -15,6 +15,8 @@
 
 ## 📦 Installation (5 minutes)
 
+> 🎬 Нужен формат видео? См. сценарий скринкаста: [INSTALLATION_VIDEO_GUIDE.md](./INSTALLATION_VIDEO_GUIDE.md)
+
 ### Step 1: Clone Repository
 
 ```bash

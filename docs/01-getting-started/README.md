@@ -10,8 +10,9 @@
 2. **[QUICKSTART.md](./QUICKSTART.md)** - быстрый старт за 5 минут
 3. **[START_HERE.md](./START_HERE.md)** - пошаговое руководство для новичков
 4. **[LOCAL_MODEL_TRAINING.md](./LOCAL_MODEL_TRAINING.md)** - обучение локальных моделей (простое пошаговое руководство)
-5. **[DEPLOYMENT_INSTRUCTIONS.md](./DEPLOYMENT_INSTRUCTIONS.md)** - развертывание
-6. **[CONTRIBUTING.md](./CONTRIBUTING.md)** - как контрибьютить
+5. **[INSTALLATION_VIDEO_GUIDE.md](./INSTALLATION_VIDEO_GUIDE.md)** - сценарий видеодемо установки
+6. **[DEPLOYMENT_INSTRUCTIONS.md](./DEPLOYMENT_INSTRUCTIONS.md)** - развертывание
+7. **[CONTRIBUTING.md](./CONTRIBUTING.md)** - как контрибьютить
 
 ---
 
