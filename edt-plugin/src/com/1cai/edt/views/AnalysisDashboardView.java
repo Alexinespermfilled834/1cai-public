@@ -4,6 +4,9 @@ import java.io.FileReader;
 import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -14,6 +17,8 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.part.ViewPart;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -162,15 +167,15 @@ public class AnalysisDashboardView extends ViewPart {
         group.setLayout(new GridLayout(2, false));
         group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        new Label(group, SWT.NONE).setText("Сильно связанных:");
+        new Label(group, SWT.NONE).setText("Модулей с зависимостями:");
         strongCouplingLabel = new Label(group, SWT.NONE);
         strongCouplingLabel.setText("—");
 
-        new Label(group, SWT.NONE).setText("Циклических:");
+        new Label(group, SWT.NONE).setText("Ссылок (кат./док./рег.):");
         cyclicDepsLabel = new Label(group, SWT.NONE);
         cyclicDepsLabel.setText("—");
 
-        new Label(group, SWT.NONE).setText("Изолированных:");
+        new Label(group, SWT.NONE).setText("Модулей без зависимостей:");
         isolatedLabel = new Label(group, SWT.NONE);
         isolatedLabel.setText("—");
 
@@ -251,11 +256,22 @@ public class AnalysisDashboardView extends ViewPart {
             }
 
             // Load dependency analysis
-            String depsPath = "output/analysis/dependency_graph.json";
-            if (Paths.get(depsPath).toFile().exists()) {
-                JsonObject depsData = gson.fromJson(
-                    new FileReader(depsPath), JsonObject.class);
-                updateDependencyStats(depsData);
+            JsonArray dependencyDetails = null;
+            String depsDetailsPath = "output/analysis/all_dependencies.json";
+            if (Paths.get(depsDetailsPath).toFile().exists()) {
+                dependencyDetails = gson.fromJson(
+                    new FileReader(depsDetailsPath), JsonArray.class);
+            }
+
+            JsonObject dependencyStats = null;
+            String depsStatsPath = "output/analysis/dependencies_statistics.json";
+            if (Paths.get(depsStatsPath).toFile().exists()) {
+                dependencyStats = gson.fromJson(
+                    new FileReader(depsStatsPath), JsonObject.class);
+            }
+
+            if (dependencyStats != null || dependencyDetails != null) {
+                updateDependencyStats(dependencyStats, dependencyDetails);
             }
 
             // Load best practices
@@ -305,15 +321,101 @@ public class AnalysisDashboardView extends ViewPart {
         }
     }
 
-    private void updateDependencyStats(JsonObject data) {
+    private void updateDependencyStats(JsonObject statsData, JsonArray modulesData) {
         try {
-            // TODO: Parse dependency graph and calculate stats
-            strongCouplingLabel.setText("234");
-            cyclicDepsLabel.setText("12");
-            isolatedLabel.setText("45");
+            int totalModules = modulesData != null ? modulesData.size() : 0;
+            int modulesWithDeps = 0;
+            int totalCatalogRefs = 0;
+            int totalDocumentRefs = 0;
+            int totalRegisterRefs = 0;
+
+            if (modulesData != null) {
+                for (JsonElement element : modulesData) {
+                    if (!element.isJsonObject()) {
+                        continue;
+                    }
+                    JsonObject module = element.getAsJsonObject();
+                    int catalogRefs = countArrayEntries(module.get("catalogs"));
+                    int documentRefs = countArrayEntries(module.get("documents"));
+                    int registerRefs = countArrayEntries(module.get("registers"));
+
+                    if (catalogRefs + documentRefs + registerRefs > 0) {
+                        modulesWithDeps++;
+                    }
+
+                    totalCatalogRefs += catalogRefs;
+                    totalDocumentRefs += documentRefs;
+                    totalRegisterRefs += registerRefs;
+                }
+            }
+
+            int modulesWithoutDeps = totalModules - modulesWithDeps;
+
+            if (totalModules > 0) {
+                strongCouplingLabel.setText(String.format("%d из %d", modulesWithDeps, totalModules));
+                isolatedLabel.setText(String.valueOf(Math.max(modulesWithoutDeps, 0)));
+            } else {
+                strongCouplingLabel.setText("—");
+                isolatedLabel.setText("—");
+            }
+
+            if (totalCatalogRefs + totalDocumentRefs + totalRegisterRefs > 0) {
+                cyclicDepsLabel.setText(
+                    String.format("Кат: %d, Док: %d, Рег: %d",
+                        totalCatalogRefs, totalDocumentRefs, totalRegisterRefs)
+                );
+            } else if (statsData != null) {
+                String summary = buildTopSummary(statsData);
+                cyclicDepsLabel.setText(summary != null ? summary : "—");
+            } else {
+                cyclicDepsLabel.setText("—");
+            }
         } catch (Exception e) {
             showError("Ошибка парсинга зависимостей: " + e.getMessage());
         }
+    }
+
+    private int countArrayEntries(JsonElement element) {
+        if (element == null || !element.isJsonArray()) {
+            return 0;
+        }
+        return element.getAsJsonArray().size();
+    }
+
+    private String buildTopSummary(JsonObject statsData) {
+        String topCatalog = getTopEntry(statsData, "catalog_usage");
+        String topDocument = getTopEntry(statsData, "document_usage");
+        if (topCatalog == null && topDocument == null) {
+            return null;
+        }
+        List<String> parts = new ArrayList<>();
+        if (topCatalog != null) {
+            parts.add("Top catalog: " + topCatalog);
+        }
+        if (topDocument != null) {
+            parts.add("Top document: " + topDocument);
+        }
+        return String.join(" | ", parts);
+    }
+
+    private String getTopEntry(JsonObject statsData, String key) {
+        if (!statsData.has(key) || !statsData.get(key).isJsonObject()) {
+            return null;
+        }
+        JsonObject usage = statsData.getAsJsonObject(key);
+        String topName = null;
+        int topValue = 0;
+        for (Map.Entry<String, JsonElement> entry : usage.entrySet()) {
+            if (!entry.getValue().isJsonPrimitive()) {
+                continue;
+            }
+            int value = entry.getValue().getAsInt();
+            if (value > topValue) {
+                topValue = value;
+                topName = entry.getKey();
+            }
+        }
+        return topName != null ? topName + " (" + topValue + ")" : null;
     }
 
     private void updateBestPracticesStats(JsonObject data) {

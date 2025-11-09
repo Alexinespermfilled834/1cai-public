@@ -1,5 +1,8 @@
 package com.onecai.edt.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -11,6 +14,8 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.onecai.edt.services.BackendConnector;
 import com.onecai.edt.utils.BslSelectionHelper;
@@ -85,9 +90,7 @@ public class QuickAnalysisAction implements IObjectActionDelegate {
                 JsonObject depsResult = backend.analyzeDependencies(moduleName, functionName);
                 
                 if (depsResult != null) {
-                    // TODO: Parse dependencies
-                    result.calledFrom = 15; // placeholder
-                    result.calls = 4; // placeholder
+                    populateDependencies(result, depsResult);
                 }
                 
                 // Показываем результаты в UI thread
@@ -101,6 +104,54 @@ public class QuickAnalysisAction implements IObjectActionDelegate {
                 });
             }
         }).start();
+    }
+
+    private void populateDependencies(QuickAnalysisResult result, JsonObject depsResult) {
+        JsonObject root = depsResult;
+        if (depsResult.has("result") && depsResult.get("result").isJsonObject()) {
+            root = depsResult.getAsJsonObject("result");
+        }
+
+        if (root == null) {
+            return;
+        }
+
+        result.calledFromDetails.clear();
+        result.callsDetails.clear();
+
+        result.calledFrom = extractDependencyEntries(root, "called_by", result.calledFromDetails);
+        result.calls = extractDependencyEntries(root, "calls_to", result.callsDetails);
+    }
+
+    private int extractDependencyEntries(JsonObject root, String key, List<String> target) {
+        if (!root.has(key)) {
+            return 0;
+        }
+
+        JsonElement element = root.get(key);
+        if (!element.isJsonArray()) {
+            return 0;
+        }
+
+        JsonArray array = element.getAsJsonArray();
+        for (JsonElement item : array) {
+            if (item.isJsonObject()) {
+                JsonObject obj = item.getAsJsonObject();
+                String module = obj.has("module") ? obj.get("module").getAsString() : null;
+                String function = obj.has("function") ? obj.get("function").getAsString() : null;
+                if (module != null && function != null) {
+                    target.add(module + "." + function + "()");
+                } else if (module != null) {
+                    target.add(module);
+                } else if (function != null) {
+                    target.add(function + "()");
+                }
+            } else if (item.isJsonPrimitive()) {
+                target.add(item.getAsString());
+            }
+        }
+
+        return array.size();
     }
 
     /**
@@ -134,9 +185,25 @@ public class QuickAnalysisAction implements IObjectActionDelegate {
                     "Параметров: " + result.parameters);
 
                 // Dependencies section
-                createSection(container, "🔗 Зависимости",
-                    "Вызывается из: " + result.calledFrom + " мест\n" +
-                    "Вызывает: " + result.calls + " функций");
+                StringBuilder depsBuilder = new StringBuilder();
+                depsBuilder.append("Вызывается из: ").append(result.calledFrom).append(" мест");
+                
+                if (!result.calledFromDetails.isEmpty()) {
+                    depsBuilder.append("\nТоп вызывающих:\n");
+                    result.calledFromDetails.stream()
+                        .limit(5)
+                        .forEach(entry -> depsBuilder.append("• ").append(entry).append("\n"));
+                }
+                
+                depsBuilder.append("\nВызывает: ").append(result.calls).append(" функций");
+                if (!result.callsDetails.isEmpty()) {
+                    depsBuilder.append("\nТоп вызываемых:\n");
+                    result.callsDetails.stream()
+                        .limit(5)
+                        .forEach(entry -> depsBuilder.append("• ").append(entry).append("\n"));
+                }
+                
+                createSection(container, "🔗 Зависимости", depsBuilder.toString());
 
                 // Problems section
                 if (!result.problems.isEmpty()) {
@@ -360,6 +427,8 @@ public class QuickAnalysisAction implements IObjectActionDelegate {
         int calls;
         boolean hasErrorHandling;
         boolean hasDocumentation;
+        java.util.List<String> calledFromDetails = new java.util.ArrayList<>();
+        java.util.List<String> callsDetails = new java.util.ArrayList<>();
         java.util.List<String> problems = new java.util.ArrayList<>();
         java.util.List<String> suggestions = new java.util.ArrayList<>();
     }

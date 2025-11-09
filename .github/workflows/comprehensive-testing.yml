@@ -222,4 +222,44 @@ jobs:
     - name: Run white-box tests
       run: pytest tests/whitebox/ -v -s
 
+  full-project-audit:
+    name: Full Project Audit
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt || true
+        pip install -r requirements-neural.txt || true
+        pip install -r requirements-parser-optimization.txt || true
+        pip install -r requirements-stage1.txt || true
+        pip install -r requirements-telegram.txt || true
+        pip install -r requirements.gateway.txt || true
+        pip install -r requirements.metrics.txt || true
+        pip install -r requirements.risk.txt || true
+
+    - name: Run full audit
+      env:
+        PYTHONIOENCODING: utf-8
+      run: python run_full_audit.py --stop-on-failure
+
+    - name: Upload audit reports
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: full-audit-reports
+        path: |
+          BROKEN_LINKS_REPORT.txt
+          COMPREHENSIVE_AUDIT_FINAL.txt
+          SECURITY_AUDIT_REPORT.txt
+          README_CODE_VERIFICATION.txt
+
 
