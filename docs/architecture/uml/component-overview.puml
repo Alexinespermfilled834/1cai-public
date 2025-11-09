@@ -1,5 +1,5 @@
 @startuml
-title 1C AI Stack — Component Overview
+title 1C AI Stack - Component Overview
 
 skinparam componentStyle rectangle
 skinparam backgroundColor #FFFFFF

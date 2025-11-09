@@ -1,5 +1,5 @@
 @startuml
-title ITS Scraper — Detailed Flow
+title ITS Scraper - Detailed Flow
 
 actor Operator
 participant "CLI / Scheduler" as CLI

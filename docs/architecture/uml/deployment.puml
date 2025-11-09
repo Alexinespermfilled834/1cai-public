@@ -1,5 +1,5 @@
 @startuml
-title 1C AI Stack — Deployment Topology
+title 1C AI Stack - Deployment Topology
 
 skinparam backgroundColor #FFFFFF
 skinparam componentStyle rectangle

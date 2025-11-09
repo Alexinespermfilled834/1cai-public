@@ -1,5 +1,5 @@
 @startuml
-title 1C AI Stack — Core Data Flows
+title 1C AI Stack - Core Data Flows
 
 skinparam backgroundColor #FFFFFF
 skinparam componentStyle rectangle

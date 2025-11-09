@@ -1,5 +1,5 @@
 @startuml
-title 1C AI Stack — System Context
+title 1C AI Stack - System Context
 
 skinparam backgroundColor #FFFFFF
 skinparam componentStyle rectangle
@@ -34,11 +34,11 @@ Workers --> MLPipelines : Dataset / Training Jobs
 Workers --> Monitoring : Metrics / Logs
 
 note right of Integrations
-  • ITS Scraper
-  • n8n node
-  • Telegram Bot
-  • Marketplace
-  • EDT Plugin actions
+  * ITS Scraper
+  * n8n node
+  * Telegram Bot
+  * Marketplace
+  * EDT Plugin actions
 end note
 
 @enduml
