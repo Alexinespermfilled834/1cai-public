@@ -75,6 +75,30 @@
 
 ---
 
+## 🌟 Showcase — что можно сделать
+
+- **Автоматический аудит конфигурации 1С:**  
+  1. Экспортируйте свою конфигурацию в `1c_configurations/<NAME>/`  
+  2. Выполните `python scripts/parsers/parse_edt_xml.py <NAME>`  
+  3. Откройте дашборды в `docs/07-itil-analysis/` и `monitoring/grafana/`
+
+- **Семантический поиск и оптимизация кода:**  
+  1. Запустите API (`docker-compose up -d`)  
+  2. Выполните `python examples/query_semantic_search.py "как рассчитать налог"`  
+  3. Сгенерируйте новый модуль через [`examples/generate_bsl_code.py`](examples/generate_bsl_code.py)
+
+- **Визуализация зависимости в EDT:**  
+  1. Установите плагин из `edt-plugin/`  
+  2. Выберите функцию → «Quick Analysis» (`Ctrl+Alt+Q`)  
+  3. Откройте `Analysis Dashboard` для свежих метрик
+
+- **Локальное обучение ML-модели:**  
+  1. Следуйте гайду [LOCAL_MODEL_TRAINING.md](docs/01-getting-started/LOCAL_MODEL_TRAINING.md)  
+  2. Запустите `docker compose -f docker-compose.neural.yml up -d`  
+  3. `docker compose exec ml-worker python train.py --dataset /data/<NAME>.jsonl --output /models/<NAME>`
+
+---
+
 ## ⚠️ Important Notice / Важное уведомление
 
 ### English
@@ -125,7 +149,7 @@
 
 - GitHub Discussions временно недоступны. Используйте [Issues](https://github.com/DmitrL-dev/1cai-public/issues) или Telegram-чат (см. `docs/SUPPORT.md`).
 - Вопросы по установке и обучению закрывает раздел [Getting Started](docs/01-getting-started/README.md), включая [INSTALLATION_VIDEO_GUIDE.md](docs/01-getting-started/INSTALLATION_VIDEO_GUIDE.md).
-- Полный список контактов и FAQ: [docs/SUPPORT.md](docs/SUPPORT.md).
+- Полный список контактов и FAQ: [docs/SUPPORT.md](docs/SUPPORT.md), [FAQ](docs/FAQ.md).
 
 ---
 

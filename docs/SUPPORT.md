@@ -2,9 +2,9 @@
 
 ## 1. Вопросы и обсуждения
 
-- GitHub Discussions временно недоступны.  
-- Используйте **Issues**: https://github.com/DmitrL-dev/1cai-public/issues  
-- Для живого общения — Telegram: `@onec_ai_stack` (пример — заменить реальным).
+- GitHub Discussions временно **выключены** — все технические вопросы заводим через **Issues**: https://github.com/DmitrL-dev/1cai-public/issues  
+- Общее обсуждение и быстрые ответы — Telegram-чат сообщества: `@onec_ai_stack` (замените на актуальный).  
+- Обратная связь по документации → Issue с меткой `documentation`.
 
 ## 2. Где искать ответы
 
@@ -12,7 +12,8 @@
 |----------|---------------|
 | Быстрый старт, установка | `docs/01-getting-started/QUICKSTART.md` |
 | Локальное обучение моделей | `docs/01-getting-started/LOCAL_MODEL_TRAINING.md` |
-| Видеодемо | `docs/01-getting-started/INSTALLATION_VIDEO_GUIDE.md` (сценарий) |
+| Видеодемо (скоро) | `docs/01-getting-started/INSTALLATION_VIDEO_GUIDE.md` (сценарий записи) |
+| FAQ, контакты | `docs/SUPPORT.md` (этот файл) |
 
 ## 3. Как создать issue
 
@@ -23,6 +24,6 @@
 
 ## 4. Обновления
 
-- После включения Discussions информация в README будет обновлена.  
-- Записанный видеоролик следует приложить к issue [#3](https://github.com/DmitrL-dev/1cai-public/issues/3).
+- После записи видеодемо добавим ссылку в README и ответим в [issue #3](https://github.com/DmitrL-dev/1cai-public/issues/3).
+- При включении Discussions уведомим в README + Telegram.
 
