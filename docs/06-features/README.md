@@ -6,6 +6,18 @@
 
 ## 📋 Доступные Features
 
+### 🔒 [Security Agent Framework](../security/agent_framework/README.md)
+**Автоматизированные security-проверки**
+
+- CLI для проверки веб-API, репозиториев, n8n workflow и BSL-кода
+- Пресеты (`security/agent_framework/presets/*.yaml`) и примеры интеграций (CI, n8n)
+- Поддержка публикации отчётов (Markdown/HTML/S3/Confluence) и синхронизации с Neo4j
+- Sandbox manager + локальный режим (`--local`) для CI
+
+**Status:** 🟡 MVP (готов к пилотам, требуется доработка sandbox)
+
+---
+
 ### 🎤 [Voice Queries](./VOICE_QUERIES.md)
 **Голосовые запросы к AI**
 
@@ -111,6 +123,7 @@
 
 ## 🎯 Quick Links
 
+- [Security Agent Framework](../security/agent_framework/README.md)
 - [Voice Queries Guide](./VOICE_QUERIES.md)
 - [OCR Integration](./OCR_INTEGRATION.md)
 - [i18n Guide](./I18N_GUIDE.md)
