@@ -1,187 +1,134 @@
 #!/usr/bin/env python3
 """
-Проверка безопасности перед git push
-Финальная проверка что нет проприетарных данных
+Проверка безопасности git-репозитория: крупные файлы, потенциальные секреты, .gitignore.
 """
 
-import subprocess
-import sys
+from __future__ import annotations
+
+import argparse
+import json
+import re
 from pathlib import Path
+from typing import Dict, List
 
-def check_git_status():
-    """Проверка git status"""
-    print("=" * 80)
-    print("ПРОВЕРКА БЕЗОПАСНОСТИ GIT")
-    print("=" * 80)
-    print()
-    
-    try:
-        # Git status
-        result = subprocess.run(['git', 'status', '--short'], 
-                              capture_output=True, text=True, cwd='.')
-        
-        if result.returncode != 0:
-            print("[INFO] Git repository не инициализирован")
-            print("[INFO] Это нормально - будет создан при первом commit")
-            return True
-        
-        files = result.stdout.strip().split('\n') if result.stdout.strip() else []
-        
-        print(f"[*] Файлов в git status: {len(files)}")
-        
-        # Проверяем на проблемные паттерны
-        dangerous_files = []
-        
-        for file_line in files:
-            if not file_line.strip():
-                continue
-            
-            # Извлекаем имя файла
-            parts = file_line.strip().split()
-            if len(parts) < 2:
-                continue
-            
-            filename = parts[-1]
-            
-            # Проверяем паттерны
-            if any(pattern in filename.lower() for pattern in [
-                'knowledge_base', 
-                'full_parse',
-                'ml_training_dataset',
-                'edt_parse_results',
-                '.env'
-            ]):
-                dangerous_files.append(filename)
-        
-        if dangerous_files:
-            print("\n" + "!" * 80)
-            print("ОПАСНЫЕ ФАЙЛЫ НАЙДЕНЫ!")
-            print("!" * 80)
-            print("\nСледующие файлы НЕ должны быть в git:")
-            for f in dangerous_files:
-                print(f"  ❌ {f}")
-            
-            print("\n[ДЕЙСТВИЕ] Добавьте эти файлы в .gitignore!")
-            return False
-        else:
-            print("\n[OK] Опасных файлов не найдено в git status")
-            return True
-            
-    except FileNotFoundError:
-        print("[INFO] Git не установлен или не в PATH")
-        return True
-    except Exception as e:
-        print(f"[ERROR] Ошибка проверки: {e}")
-        return False
+LARGE_FILE_THRESHOLD_MB = 100
+SECRET_PATTERNS = [
+    re.compile(r"AKIA[0-9A-Z]{16}"),
+    re.compile(r"(?i)secret_key\s*=\s*['\"]?[A-Za-z0-9+/]{20,}"),
+    re.compile(r"(?i)api[-_]?key\s*=\s*['\"]?[A-Za-z0-9+/]{20,}"),
+    re.compile(r"(?i)ghp_[A-Za-z0-9]{20,}"),
+]
+DEFAULT_WHITELIST = {
+    "tests/fixtures/sample_key.pem",
+    "docs/examples/.env.example",
+}
 
-def check_large_files():
-    """Проверка больших файлов"""
-    print("\n[*] Проверка больших файлов в проекте...")
-    
-    large_files = []
-    
-    # Проверяем ключевые директории
-    dirs_to_check = ['knowledge_base', 'output']
-    
-    for dir_name in dirs_to_check:
-        dir_path = Path(dir_name)
-        if not dir_path.exists():
+
+def scan_large_files(root: Path, threshold_mb: int) -> List[Dict[str, any]]:
+    results = []
+    threshold_bytes = threshold_mb * 1024 * 1024
+    for path in root.rglob("*"):
+        if not path.is_file() or ".git" in path.parts:
             continue
-        
-        for file in dir_path.rglob('*.json'):
-            size_mb = file.stat().st_size / 1024 / 1024
-            if size_mb > 10:
-                large_files.append((str(file), size_mb))
-    
-    if large_files:
-        total_size = sum(s for _, s in large_files)
-        print(f"\n  [ПРЕДУПРЕЖДЕНИЕ] Найдено больших файлов: {len(large_files)}")
-        print(f"  [INFO] Общий размер: {total_size:.2f} MB")
-        print("\n  Убедитесь что они в .gitignore:")
-        for path, size in large_files[:10]:
-            print(f"    - {path} ({size:.2f} MB)")
-        
-        if len(large_files) > 10:
-            print(f"    ... и еще {len(large_files) - 10} файлов")
-    else:
-        print("  [OK] Больших проблемных файлов не найдено")
-    
-    return large_files
+        try:
+            size = path.stat().st_size
+        except OSError:
+            continue
+        if size >= threshold_bytes:
+            results.append(
+                {
+                    "path": str(path.relative_to(root)),
+                    "size_mb": round(size / 1024 / 1024, 2),
+                }
+            )
+    return results
 
-def check_env_files():
-    """Проверка .env файлов"""
-    print("\n[*] Проверка .env файлов...")
-    
-    env_files = list(Path('.').rglob('.env'))
-    env_files = [f for f in env_files if 'archive_package_OLD' not in str(f) and '.example' not in f.name]
-    
-    if env_files:
-        print(f"\n  [ПРЕДУПРЕЖДЕНИЕ] Найдены .env файлы: {len(env_files)}")
-        for env_file in env_files:
-            print(f"    - {env_file}")
-        print("\n  [ДЕЙСТВИЕ] Переименуйте в .env.example и удалите реальные значения!")
-        return False
-    else:
-        print("  [OK] .env файлов не найдено")
-        
-        # Проверяем наличие .env.example
-        if Path('.env.example').exists():
-            print("  [OK] .env.example существует")
-        else:
-            print("  [РЕКОМЕНДАЦИЯ] Создайте .env.example")
-        
-        return True
 
-def final_check():
-    """Финальная проверка"""
-    print("\n" + "=" * 80)
-    print("ФИНАЛЬНАЯ ПРОВЕРКА")
-    print("=" * 80)
-    
-    checks = {
-        '.gitignore существует': Path('.gitignore').exists(),
-        '.env.example существует': Path('.env.example').exists(),
-        'LICENSE существует': Path('LICENSE').exists(),
-        'README.md существует': Path('README.md').exists()
-    }
-    
-    all_passed = all(checks.values())
-    
-    print()
-    for check, passed in checks.items():
-        status = "[OK]" if passed else "[FAIL]"
-        symbol = "✓" if passed else "✗"
-        print(f"  {status} {check}")
-    
-    return all_passed
+def scan_secrets(root: Path, whitelist: set[str]) -> List[Dict[str, any]]:
+    findings = []
+    for path in root.rglob("*"):
+        if not path.is_file() or ".git" in path.parts:
+            continue
+        rel = str(path.relative_to(root))
+        if rel in whitelist:
+            continue
+        try:
+            content = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        matches = []
+        for pattern in SECRET_PATTERNS:
+            for match in pattern.findall(content):
+                matches.append(match if isinstance(match, str) else match[0])
+        if matches:
+            findings.append({"path": rel, "matches": matches[:5]})
+    return findings
 
-def main():
-    """Главная функция"""
-    print("\nПроверка безопасности перед публикацией на GitHub...\n")
-    
-    # Проверки
-    git_safe = check_git_status()
-    large_files = check_large_files()
-    env_safe = check_env_files()
-    final_passed = final_check()
-    
-    # Итог
-    print("\n" + "=" * 80)
-    
-    if git_safe and env_safe and final_passed:
-        print("✓ БЕЗОПАСНО ПУБЛИКОВАТЬ")
-        print("=" * 80)
-        print("\nВсе проверки пройдены!")
-        print("Можно делать git add, commit, push")
-        return 0
-    else:
-        print("✗ НЕ БЕЗОПАСНО ПУБЛИКОВАТЬ")
-        print("=" * 80)
-        print("\nИсправьте проблемы выше перед публикацией!")
+
+def check_gitignore(root: Path) -> Dict[str, List[str]]:
+    required = {".env", "*.key", "*.pem", "secrets/"}
+    try:
+        gitignore = (root / ".gitignore").read_text(encoding="utf-8")
+    except OSError:
+        return {"missing": sorted(required)}
+    missing = [pattern for pattern in required if pattern not in gitignore]
+    return {"missing": missing}
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Проверка git-репозитория на безопасность")
+    parser.add_argument("--root", type=Path, default=Path("."), help="Корень проекта")
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path("./output/audit/git_safety.json"),
+        help="Файл для сохранения результатов",
+    )
+    parser.add_argument(
+        "--threshold",
+        type=int,
+        default=LARGE_FILE_THRESHOLD_MB,
+        help="Порог для больших файлов (MB)",
+    )
+    parser.add_argument(
+        "--whitelist",
+        nargs="*",
+        default=list(DEFAULT_WHITELIST),
+        help="Относительные пути файлов, которые можно пропускать при проверке секретов",
+    )
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    root = args.root.resolve()
+    if not root.exists():
+        print(f"Ошибка: каталог {root} не найден")
         return 1
 
+    report = {
+        "schema_version": "1.0.0",
+        "root": str(root),
+        "large_files": scan_large_files(root, args.threshold),
+        "secrets": scan_secrets(root, set(args.whitelist)),
+        "gitignore": check_gitignore(root),
+    }
+
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    with args.output.open("w", encoding="utf-8") as fp:
+        json.dump(report, fp, ensure_ascii=False, indent=2)
+
+    print("Проверка git завершена. Отчёт сохранён в", args.output)
+    print(f"  Файлов > {args.threshold}MB: {len(report['large_files'])}")
+    print(f"  Потенциальных секретов: {len(report['secrets'])}")
+    print(f"  Отсутствующих паттернов .gitignore: {len(report['gitignore']['missing'])}")
+    return 0
+
+
 if __name__ == "__main__":
+    import sys
     sys.exit(main())
+
 
 
 
