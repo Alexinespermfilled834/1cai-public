@@ -110,6 +110,10 @@
 
 ---
 
+[Подробные пошаговые сценарии → `docs/CASE_STUDIES.md`](docs/CASE_STUDIES.md)
+
+---
+
 ## ⚠️ Important Notice / Важное уведомление
 
 ### English

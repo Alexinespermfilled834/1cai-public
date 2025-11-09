@@ -147,6 +147,12 @@ docker compose exec ml-worker python train.py ^
 - `--epochs` — кол-во эпох,
 - `--output` — итоговая папка.
 
+#### Быстрый демо-запуск
+```bash
+make train-ml-demo
+```
+Команда поднимет `ml-worker`, обучит небольшую демо-модель и сохранит её в `/models/demo-model`.
+
 ### 5.2 Мониторим процесс
 - Логи обучения: `docker compose logs -f ml-worker`.
 - MLflow UI: http://localhost:5000 (если включен в `docker-compose.neural.yml`).
@@ -166,6 +172,11 @@ python scripts/eval/eval_model.py ^
   --model ./models/ERPCPM-7B ^
   --questions output/dataset/ERPCPM_qa.jsonl ^
   --limit 10
+```
+
+Для демо-модели:
+```bash
+make eval-ml-demo
 ```
 
 ### 6.3 Проверяем качество
@@ -220,6 +231,10 @@ docker compose -f docker-compose.neural.yml up -d
 
 # 5. Обучение
 docker compose exec ml-worker python train.py --dataset /data/ERPCPM_dataset.jsonl --epochs 3 --model qwen/Qwen2.5-7B-Instruct --output /models/ERPCPM-7B
+
+# Быстрый demo-режим
+make train-ml-demo
+make eval-ml-demo
 
 # 6. Копия модели и проверка
 docker compose cp ml-worker:/models/ERPCPM-7B ./models/ERPCPM-7B

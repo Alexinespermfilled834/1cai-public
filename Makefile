@@ -1,7 +1,7 @@
 # Makefile for Enterprise 1C AI Development Stack
 # Quick commands for common tasks
 
-.PHONY: help install test docker-up docker-down migrate clean
+.PHONY: help install test docker-up docker-down migrate clean train-ml-demo eval-ml-demo
 
 help:
 	@echo "Enterprise 1C AI Development Stack - Commands:"
@@ -45,6 +45,10 @@ help:
 	@echo "AI Models:"
 	@echo "  make ollama-pull      - Download Qwen3-Coder model"
 	@echo "  make ollama-list      - List installed models"
+	@echo ""
+	@echo "ML Demos:"
+	@echo "  make train-ml-demo    - Run demo training inside ml-worker"
+	@echo "  make eval-ml-demo     - Evaluate trained demo model"
 	@echo ""
 	@echo "Utilities:"
 	@echo "  make status           - Show project status"
@@ -166,3 +170,10 @@ clean:
 	find . -type f -name "*.log" -delete
 	rm -rf htmlcov/ coverage.xml .coverage
 	@echo "✓ Cleaned temporary files"
+
+train-ml-demo:
+	docker compose -f docker-compose.neural.yml up -d
+	docker compose exec ml-worker python train.py --dataset /data/DEMO_dataset.jsonl --epochs 1 --output /models/demo-model
+
+eval-ml-demo:
+	python scripts/eval/eval_model.py --model ./models/demo-model --questions output/dataset/DEMO_qa.jsonl --limit 10

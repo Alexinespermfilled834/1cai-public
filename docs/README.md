@@ -21,6 +21,7 @@
 | **🎁 Специальные фичи** | [Features](./06-features/) |
 | **🔗 n8n интеграция** | [n8n Integration](./06-features/n8n-integration.md) |
 | **🔒 Security automation (NEW!)** | [Security Agent Framework](../security/agent_framework/README.md) |
+| **🎬 Showcase / Use cases** | [Case Studies](./CASE_STUDIES.md) |
 | **🔑 Auth API** | [Auth endpoints](./API_REFERENCE.md#-auth-api) |
 
 ---
