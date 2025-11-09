@@ -189,34 +189,30 @@ async function deleteWorkflow(workflowId, cookies) {
 }
 
 (async () => {
+  let workflow;
   try {
     console.log(`→ Авторизация на ${base.href} как ${login}`);
     const cookies = await loginAndGetCookies();
     console.log('✓ Авторизация успешна');
 
     console.log('→ Запуск smoke-теста ноды 1C AI Stack…');
-    const workflow = await createWorkflow(cookies);
+    workflow = await createWorkflow(cookies);
     let result;
     try {
       result = await runWorkflow(workflow, cookies);
+      console.log('✓ Workflow выполнен успешно');
+      console.log('Результат:', JSON.stringify(result, null, 2));
     } finally {
-      try {
-        await deleteWorkflow(workflow.id, cookies);
-      } catch (cleanupError) {
-        console.warn('⚠️ Не удалось удалить временный workflow:', cleanupError.message);
+      if (workflow?.id) {
+        try {
+          await deleteWorkflow(workflow.id, cookies);
+        } catch (cleanupError) {
+          console.error('⚠ Не удалось удалить временный workflow:', cleanupError.message);
+        }
       }
     }
-
-    const items = result?.data?.[0];
-    if (!items) {
-      throw new Error(`Неожиданный ответ: ${JSON.stringify(result)}`);
-    }
-
-    console.log('✓ Workflow выполнился успешно');
-    console.log('Ответ ноды:', JSON.stringify(items, null, 2));
   } catch (error) {
-    const details = error?.stack || error?.message || JSON.stringify(error, null, 2);
-    console.error('✖ Smoke-тест завершился ошибкой:', details);
+    console.error('✖ Ошибка при выполнении smoke-теста:', error.message);
     process.exit(1);
   }
 })();

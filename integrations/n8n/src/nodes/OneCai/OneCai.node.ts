@@ -43,7 +43,7 @@ async function oneCaiApiRequest(
 		throw new NodeOperationError(this.getNode(), 'Credentials are not set for 1C AI Stack API');
 	}
 
-	const { baseUrl, apiKey, ignoreSslIssues } = credentials as IDataObject;
+	const { baseUrl } = credentials as IDataObject;
 
 	if (!baseUrl) {
 		throw new NodeOperationError(this.getNode(), 'Base URL is required in credentials');
@@ -52,45 +52,32 @@ async function oneCaiApiRequest(
 	const sanitizedBaseUrl = ensureTrailingSlashRemoved(baseUrl as string);
 	const sanitizedPath = path.startsWith('/') ? path : `/${path}`;
 
-	const headers: IDataObject = {
-		'Content-Type': 'application/json',
-		Accept: 'application/json',
-	};
-
-	if (apiKey) {
-		headers.Authorization =
-			(apiKey as string).toLowerCase().startsWith('bearer ') ? (apiKey as string) : `Bearer ${apiKey}`;
-	}
-
-	// Merge custom headers (JSON string)
-	if (additionalFields.headers) {
-		Object.assign(headers, additionalFields.headers);
-	}
-
 	const options: IDataObject = {
 		method,
-		uri: `${sanitizedBaseUrl}${sanitizedPath}`,
-		headers,
+		url: `${sanitizedBaseUrl}${sanitizedPath}`,
 		json: true,
+		qs: Object.keys(qs).length ? qs : undefined,
+		body: Object.keys(body).length ? body : undefined,
+		headers: {
+			'Content-Type': 'application/json',
+			Accept: 'application/json',
+			...(additionalFields.headers ?? {}),
+		},
 	};
 
-	if (Object.keys(body).length) {
-		options.body = body;
-	}
-
-	if (Object.keys(qs).length) {
-		options.qs = qs;
-	}
-
-	if (ignoreSslIssues === true) {
+	if (credentials.ignoreSslIssues === true) {
 		options.rejectUnauthorized = false;
 	}
 
 	try {
-		const request = this.helpers.request as unknown as (opts: IDataObject) => Promise<any>;
-		return await request(options);
+		return await this.helpers.requestWithAuthentication.call(this, 'oneCaiApi', options);
 	} catch (error) {
-		throw new NodeApiError(this.getNode(), error as JsonObject);
+		const err = error as JsonObject;
+		const responseBody = err?.response?.body;
+		if (responseBody) {
+			err.message = `${err.message} - ${JSON.stringify(responseBody)}`;
+		}
+		throw new NodeApiError(this.getNode(), err);
 	}
 }
 
