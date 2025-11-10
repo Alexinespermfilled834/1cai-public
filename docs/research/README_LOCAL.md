@@ -58,11 +58,15 @@
 
 14. **Secret scanning & Security**  
     - Workflow `secret-scan.yml` (Gitleaks) добавлен в CI.  
-    - Конституция будет расширена пунктами по least privilege.
+    - Конституция дополнится пунктами по least privilege.
 
 15. **DORA metrics**  
     - Скрипт `scripts/metrics/collect_dora.py` + workflow `dora-metrics.yml` (еженедельно).  
     - Отчёты сохраняются в `output/metrics/`.
+
+16. **Observability & Runbooks**  
+    - Документ `docs/observability/SLO.md` (SLO/SLI/Error Budget).  
+    - Runbook `docs/runbooks/alert_slo_runbook.md` для инцидентов.
 
 16. **Обновлён мастер-лист TODO**  
     - `docs/research/alkoleft_todo.md` теперь с приоритетами и ссылками на соответствующие планы.

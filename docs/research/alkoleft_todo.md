@@ -14,3 +14,5 @@
   - ✅ Workflow `secret-scan.yml` (Gitleaks); расширить конституцию пунктами по least privilege.
 - [ ] (Низкий) Сбор и публикация DORA-метрик
   - ✅ `scripts/metrics/collect_dora.py`, workflow `dora-metrics.yml`; настроить визуализацию (следующий шаг).
+- [ ] (Средний) Observability & Runbooks
+  - ✅ `docs/observability/SLO.md`, `docs/runbooks/alert_slo_runbook.md`; внедрить автоматический экспорт метрик и alert канал.
