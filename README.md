@@ -17,7 +17,8 @@
 - Makefile дополнен целями `bsl-ls-up`, `bsl-ls-down`, `bsl-ls-logs`, `bsl-ls-check`; есть скрипт `scripts/parsers/check_bsl_language_server.py` для проверки health/parse.
 - Парсер `BSLASTParser` использует переменную `BSL_LANGUAGE_SERVER_URL`, проверяет доступность сервиса и автоматически откатывается на regex, если LSP недоступен.
 - В документации (`docs/research/bsl_language_server_plan.md`) описаны шаги интеграции и обязательное локальное тестирование перед эскалацией.
-- Благодарим авторов проекта [1c-syntax/bsl-language-server](https://github.com/1c-syntax/bsl-language-server) за открытый сервис, на котором основана интеграция.
+- Детальный гайд по эксплуатации: [`AST_TOOLING_BSL_LANGUAGE_SERVER.md`](docs/06-features/AST_TOOLING_BSL_LANGUAGE_SERVER.md).
+- Благодарим команду [1c-syntax/bsl-language-server](https://github.com/1c-syntax/bsl-language-server) за открытый сервис, на котором построена интеграция.
 
 ### 🔄 ITS Documentation Scraper (Nov 9, 2025)
 - Построен модуль `integrations/its_scraper`: асинхронный сбор статей ИТС (ретраи, адаптивный rate-limit, прокси, user-agent rotation, Prometheus-метрики, stream JSONL)
