@@ -104,8 +104,8 @@
 
 22. **Service Mesh (Istio & Linkerd)**  
     - Кастомный профиль: `infrastructure/service-mesh/istio/` (make `mesh-istio-apply`).  
-    - Linkerd CLI blueprint: `infrastructure/service-mesh/linkerd/`, make `linkerd-install`, скрипты `scripts/service_mesh/linkerd/bootstrap_certs.sh`, `apply_managed_identity.sh`, `ci_smoke.sh`.  
-    - Интеграция с observability stack, ArgoCD application/ApplicationSet, workflow `linkerd-smoke.yml`.  
+    - Linkerd CLI blueprint: `infrastructure/service-mesh/linkerd/`, make `linkerd-install`, скрипты `bootstrap_certs.sh`, `rotate_certs.sh`, `apply_managed_identity.sh`, `ci_smoke.sh`, `chaos_ci.sh`.  
+    - Интеграция с observability stack, ArgoCD application/ApplicationSet, workflows `linkerd-smoke.yml`, `linkerd-chaos.yml`.  
 
 23. **Chaos Engineering (Litmus)**  
     - Эксперимент pod-delete: `infrastructure/chaos/litmus/`.  

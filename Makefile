@@ -224,6 +224,12 @@ azure-keyvault:
 vault-test:
 	VAULT_ADDR=$(VAULT_ADDR) VAULT_TOKEN=$(VAULT_TOKEN) bash scripts/secrets/test_vault_sync.sh
 
+linkerd-smoke:
+	bash scripts/service_mesh/linkerd/ci_smoke.sh
+
+linkerd-rotate-certs:
+	bash scripts/service_mesh/linkerd/rotate_certs.sh
+
 # Installation
 install:
 	pip install -r requirements.txt

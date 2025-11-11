@@ -150,6 +150,8 @@
   - `infrastructure/terraform/azure-aks` — Terraform модуль AKS (Azure).
   - `infrastructure/terraform/azure-keyvault` — Terraform модуль Key Vault.
   - `scripts/service_mesh/linkerd/bootstrap_certs.sh` — генерация trust anchors/issuer.
+  - `scripts/service_mesh/linkerd/` — bootstrap/rotate certs, managed identity, CI smoke (`linkerd-smoke.yml`).
+  - Make: `linkerd-install`, `linkerd-rotate-certs`, `linkerd-smoke`.
   - `infrastructure/azure/azure-pipelines.yml` — Azure DevOps pipeline.
   - `infrastructure/vault/` — политики, скрипты, SecretProviderClass для Vault (`make vault-csi-apply`, sync скрипты).
   - `scripts/secrets/aws_sync_to_vault.py` — синхронизация AWS Secrets Manager → Vault.
