@@ -34,13 +34,14 @@
   - ✅ CSI: SecretProviderClass (`infrastructure/vault/csi`), Helm интеграция (`vault.enabled`, agent sidecar), make `vault-csi-apply`, sync скрипты (`scripts/secrets/*`).
   - TODO: Vault Agent sidecar автоматические обновления, Azure Key Vault Terraform, Secret rotation alerts.
 - [ ] (Средний) FinOps
-  - ✅ Скрипты `scripts/finops/aws_cost_report.py`, `aws_cost_to_slack.py`, `aws_budget_check.py`, `azure_cost_to_slack.py`; workflow `finops-report.yml`; make `finops-slack` (Slack/Teams).
-  - TODO: Azure Budgets (через API), Teams дашборды, Grafana визуализации.
+  - ✅ Скрипты `scripts/finops/aws_cost_report.py`, `aws_cost_to_slack.py`, `aws_budget_check.py`, `azure_cost_to_slack.py`, `azure_budget_check.py`; workflow `finops-report.yml`; make `finops-slack` (Slack/Teams);
+  - ✅ Дашборд Grafana `observability/grafana/dashboards/finops_cost.json` (требуются datasources).
+  - TODO: Teams dashboard и автоматическая загрузка FinOps данных в Prometheus/ClickHouse.
 - [ ] (Средний) Service Mesh & Chaos
   - ✅ Istio профиль (`infrastructure/service-mesh/istio`), make `mesh-istio-apply`, документ `docs/ops/service_mesh.md`.
-  - ✅ Linkerd blueprint (`infrastructure/service-mesh/linkerd`), ArgoCD application + ApplicationSet, make `linkerd-install`.
+  - ✅ Linkerd blueprint (`infrastructure/service-mesh/linkerd`), ArgoCD application/ApplicationSet, make `linkerd-install`, серты `scripts/service_mesh/linkerd/bootstrap_certs.sh`.
   - ✅ Litmus pod-delete + network latency (`infrastructure/chaos/litmus`, `make chaos-litmus-run`).
-  - TODO: Linkerd trust anchors/issuer автоматизация, chaos тесты в CI (nightly), Istio mTLS policies.
+  - TODO: Linkerd trust anchors автоматизация (секреты), chaos в CI (nightly), Istio mTLS policies.
 - [ ] (Высокий) Runtime & Compliance
   - ✅ `scripts/setup/check_runtime.py`, make `check-runtime`, инструкция `docs/setup/python_311.md`.
   - TODO: Обновить конституцию правилами по установленной версии Python; автоматизировать проверку наличия `make`, `docker compose`.

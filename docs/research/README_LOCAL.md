@@ -104,8 +104,8 @@
 
 22. **Service Mesh (Istio & Linkerd)**  
     - Кастомный профиль: `infrastructure/service-mesh/istio/` (make `mesh-istio-apply`).  
-    - Linkerd CLI blueprint: `infrastructure/service-mesh/linkerd/`, make `linkerd-install`.  
-    - Интеграция с observability stack.  
+    - Linkerd CLI blueprint: `infrastructure/service-mesh/linkerd/`, make `linkerd-install`, скрипт `scripts/service_mesh/linkerd/bootstrap_certs.sh`.  
+    - Интеграция с observability stack, ArgoCD application/ApplicationSet.  
 
 23. **Chaos Engineering (Litmus)**  
     - Эксперимент pod-delete: `infrastructure/chaos/litmus/`.  
@@ -118,8 +118,9 @@
     - Terraform `infrastructure/terraform/azure-keyvault`.  
 
 25. **FinOps & Cost Reports**  
-    - Скрипты `scripts/finops/aws_cost_to_slack.py`, `scripts/finops/azure_cost_to_slack.py`, `scripts/finops/aws_budget_check.py`, Make `finops-slack`.  
+    - Скрипты `scripts/finops/aws_cost_to_slack.py`, `scripts/finops/azure_cost_to_slack.py`, `scripts/finops/aws_budget_check.py`, `scripts/finops/azure_budget_check.py`, Make `finops-slack`.  
     - Workflow `.github/workflows/finops-report.yml` (Slack/Teams уведомления, Budgets).  
+    - Grafana `observability/grafana/dashboards/finops_cost.json`.  
 
 26. **Self-control checklist**  
     - Скрипт `scripts/checklists/preflight.sh` (слэк-нотификации), make `preflight`, документ `docs/ops/self_control.md`.  

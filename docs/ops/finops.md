@@ -29,3 +29,10 @@ python scripts/finops/azure_cost_to_slack.py
 ## 4. Roadmap
 - Azure Budgets / Teams оповещения.
 - Grafana dashboards с Cost Explorer.
+
+## 4. Grafana
+- Дашборд `observability/grafana/dashboards/finops_cost.json` — отображает AWS EstimatedCharges и кастомные Azure метрики (не забудьте настроить datasources `aws-cost`, `azure-cost`).
+
+## 5. Roadmap
+- Azure Budgets (API) → Teams уведомления (реализовано в `azure_budget_check.py`).
+- Grafana dashboards (частично, нужно подключить источники и панель Teams).

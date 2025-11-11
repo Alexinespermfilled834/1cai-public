@@ -31,6 +31,7 @@
 | Checklists | `scripts/checklists/` | `preflight.sh` | Самоконтроль перед деплоем |
 | Secrets | `scripts/secrets/` | `aws_sync_to_vault.py` | Синхронизация AWS Secrets Manager → Vault |
 | Infrastructure | `infrastructure/terraform/aws-eks` | Terraform модуль EKS | Развёртывание AWS инфраструктуры |
+| Infrastructure | `infrastructure/terraform/azure-keyvault` | Terraform модуль Key Vault | Provisioning Azure Key Vault |
 | Infrastructure | `infrastructure/ansible/` | `site.yml`, `hosts.ini` | Bootstrap Linux-хостов |
 
 ## 3. Зависимости и подготовка

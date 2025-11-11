@@ -1,0 +1,54 @@
+{
+  "id": null,
+  "uid": "finops-cost",
+  "title": "FinOps Cost Overview",
+  "tags": ["finops", "cost"],
+  "timezone": "",
+  "schemaVersion": 37,
+  "version": 1,
+  "refresh": "30m",
+  "panels": [
+    {
+      "type": "table",
+      "title": "AWS Daily Cost (last 7 days)",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "aws-cost"
+      },
+      "targets": [
+        {
+          "namespace": "AWS/Billing",
+          "metricName": "EstimatedCharges",
+          "statistics": ["Maximum"],
+          "period": "86400",
+          "region": "us-east-1",
+          "dimensions": {
+            "Currency": "USD"
+          },
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "type": "table",
+      "title": "Azure Cost (Last 7 days)",
+      "datasource": {
+        "type": "grafana-scheduled-reports",
+        "uid": "azure-cost"
+      },
+      "targets": [
+        {
+          "format": "table",
+          "expr": "finops_cost_azure{currency='USD'}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showHeader": true
+      }
+    }
+  ]
+}
