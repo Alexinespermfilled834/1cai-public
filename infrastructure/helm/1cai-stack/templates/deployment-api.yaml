@@ -17,6 +17,7 @@ spec:
         app.kubernetes.io/name: {{ include "1cai-stack.name" . }}
         app.kubernetes.io/component: api
     spec:
+      serviceAccountName: {{ include "1cai-stack.serviceAccountName" . }}
       containers:
         - name: api
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -26,6 +27,15 @@ spec:
               value: {{ quote .Values.api.env.IGNORE_PY_VERSION_CHECK }}
             - name: LOG_LEVEL
               value: {{ quote .Values.api.env.LOG_LEVEL }}
+{{- if and .Values.vault.enabled .Values.vault.env }}
+{{- range .Values.vault.env }}
+            - name: {{ .name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .secretName }}
+                  key: {{ .secretKey }}
+{{- end }}
+{{- end }}
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -45,7 +55,11 @@ spec:
           volumeMounts:
             - name: vault-token
               mountPath: /var/run/secrets/vault
-      serviceAccountName: {{ include "1cai-stack.serviceAccountName" . }}
+{{- if .Values.vault.enabled }}
+            - name: vault-secrets
+              mountPath: {{ .Values.vault.mountPath | default "/vault/secrets" }}
+              readOnly: true
+{{- end }}
       volumes:
         - name: vault-token
           projected:
@@ -54,3 +68,11 @@ spec:
                   audience: vault
                   expirationSeconds: 7200
                   path: token
+{{- if .Values.vault.enabled }}
+        - name: vault-secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.vault.secretProviderClass.name }}
+{{- end }}

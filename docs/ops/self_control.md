@@ -5,7 +5,7 @@
 - Автоматизированный скрипт + чек-лист для ручного подтверждения.
 
 ## 2. Скрипт
-- `scripts/checklists/preflight.sh` — запускает `make check-runtime`, `make lint`, `make test`, `make policy-check`, `run_checkov.sh`.
+- `scripts/checklists/preflight.sh` — запускает `make check-runtime`, `make lint`, `make test`, `make policy-check`, `run_checkov.sh`. Сохраняет лог (временный файл) и, если установлен `SLACK_WEBHOOK_URL`, отправляет summary в канал.
 - Команда: `make preflight` (см. Makefile).
 
 ## 3. Ручной чек-лист

@@ -52,3 +52,30 @@ secrets:
 serviceAccount:
   create: true
   name: ""
+  annotations: {}
+
+vault:
+  enabled: false
+  mountPath: /vault/secrets
+  secretProviderClass:
+    name: vault-1cai
+    provider: vault
+    parameters:
+      static:
+        vaultAddress: "http://vault.vault:8200"
+        roleName: "1cai-app"
+        namespace: ""
+      objects: |
+        - objectName: db-url
+          secretPath: secret/data/1cai/database
+          secretKey: url
+    secretObjects:
+      - secretName: db-credentials
+        type: Opaque
+        data:
+          - objectName: db-url
+            key: url
+  env:
+    - name: DATABASE_URL
+      secretName: db-credentials
+      secretKey: url

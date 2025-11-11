@@ -6,3 +6,4 @@ resources:
   - app-project.yaml
   - application-1cai.yaml
   - application-observability.yaml
+  - application-linkerd.yaml
