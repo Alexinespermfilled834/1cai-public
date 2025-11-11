@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Добавлены GitOps manifests (`infrastructure/argocd`), скрипты `scripts/gitops/*`, make-цели `gitops-apply/gitops-sync`, документ [`docs/ops/gitops.md`](docs/ops/gitops.md).
 - Подготовлен анализ рынка DevOps/SRE вакансий (`docs/research/job_market_devops_analysis.md`) — приоритизация технологий (AWS, Ansible, GitOps, Service Mesh).
 - Новый Terraform модуль `infrastructure/terraform/aws-eks` (создание VPC+EKS), Ansible playbook `infrastructure/ansible` и документация (`docs/ops/ansible.md`).
+- Добавлены Istio service mesh артефакты (`infrastructure/service-mesh/istio`, документ `docs/ops/service_mesh.md`, make `mesh-istio-apply`) и Litmus chaos сценарий (`infrastructure/chaos/litmus`, скрипт `scripts/chaos/run_litmus.sh`, документ `docs/ops/chaos_engineering.md`).
 
 ---
 

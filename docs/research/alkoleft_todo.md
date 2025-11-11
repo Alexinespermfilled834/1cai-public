@@ -29,7 +29,9 @@
   - ✅ Ansible bootstrap `infrastructure/ansible`.
   - TODO: Azure DevOps pipeline пример, Terraform для AKS, Vault replication.
 - [ ] (Средний) Service Mesh & Chaos
-  - TODO: Istio/Linkerd шаблон, Litmus сценарий, документация.
+  - ✅ Istio профиль (`infrastructure/service-mesh/istio`), make `mesh-istio-apply`, документ `docs/ops/service_mesh.md`.
+  - ✅ Litmus pod-delete сценарий (`infrastructure/chaos/litmus`, `make chaos-litmus-run`), документ `docs/ops/chaos_engineering.md`.
+  - TODO: Linkerd альтернатива, Litmus network chaos, Istio mTLS policies.
 - [ ] (Средний) Secret management
   - TODO: HashiCorp Vault best practices, Terraform policies, интеграция с AWS Secrets Manager / Azure Key Vault.
 - [ ] (Высокий) Runtime & Compliance

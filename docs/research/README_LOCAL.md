@@ -102,5 +102,15 @@
     - Документ `docs/research/job_market_devops_analysis.md` — топовые требования (AWS, Ansible, GitOps, Service Mesh, Vault).  
     - Используется для приоритизации задач (обновляет `docs/research/alkoleft_todo.md`).  
 
-22. **Обновлён мастер-лист TODO**  
+22. **Service Mesh (Istio)**  
+    - Кастомный профиль: `infrastructure/service-mesh/istio/`.  
+    - Make `mesh-istio-apply`, namespace label + README `docs/ops/service_mesh.md`.  
+    - Интеграция с observability stack.  
+
+23. **Chaos Engineering (Litmus)**  
+    - Эксперимент pod-delete: `infrastructure/chaos/litmus/`.  
+    - Скрипт `scripts/chaos/run_litmus.sh`, make `chaos-litmus-run`.  
+    - Документ `docs/ops/chaos_engineering.md`.  
+
+24. **Обновлён мастер-лист TODO**  
     - `docs/research/alkoleft_todo.md` теперь с приоритетами и ссылками на соответствующие планы.

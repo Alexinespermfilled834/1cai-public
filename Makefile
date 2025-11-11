@@ -31,6 +31,8 @@ help:
 	@echo "  make policy-check     - Run policy-as-code checks (Conftest + Semgrep)"
 	@echo "  make gitops-apply     - Apply Argo CD manifests (Kustomize)"
 	@echo "  make gitops-sync      - Trigger Argo CD sync (requires argocd CLI/token)"
+	@echo "  make mesh-istio-apply - Apply IstioOperator profile via kubectl"
+	@echo "  make chaos-litmus-run - Apply Litmus chaos experiment (pod-delete)"
 	@echo ""
 	@echo "Docker:"
 	@echo "  make docker-up        - Start all Docker services"
@@ -173,6 +175,12 @@ gitops-apply:
 
 gitops-sync:
 	bash scripts/gitops/sync.sh
+
+mesh-istio-apply:
+	kubectl apply -k infrastructure/service-mesh/istio
+
+chaos-litmus-run:
+	bash scripts/chaos/run_litmus.sh
 
 # Installation
 install:

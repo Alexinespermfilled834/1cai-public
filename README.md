@@ -125,6 +125,8 @@
   - [`docs/ops/devops_platform.md`](docs/ops/devops_platform.md) — стратегия DevOps-платформы.
   - [`docs/ops/gitops.md`](docs/ops/gitops.md) — GitOps с Argo CD.
   - [`docs/ops/ansible.md`](docs/ops/ansible.md) — bootstrap инфраструктуры Ansible.
+  - [`docs/ops/service_mesh.md`](docs/ops/service_mesh.md) — Istio blueprint.
+  - [`docs/ops/chaos_engineering.md`](docs/ops/chaos_engineering.md) — Litmus chaos сценарии.
   - `infrastructure/kind/cluster.yaml` — локальный Kubernetes.
   - `infrastructure/helm/1cai-stack` — Helm chart приложения.
   - `infrastructure/helm/observability-stack` — Prometheus/Loki/Tempo/Grafana/OTEL.

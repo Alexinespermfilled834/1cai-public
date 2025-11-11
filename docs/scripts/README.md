@@ -28,6 +28,7 @@
 | GitOps | `scripts/gitops/` | `apply.sh`, `sync.sh` | Применение Argo CD manifest’ов и инициирование sync |
 | Infrastructure | `infrastructure/terraform/aws-eks` | Terraform модуль EKS | Развёртывание AWS инфраструктуры |
 | Infrastructure | `infrastructure/ansible/` | `site.yml`, `hosts.ini` | Bootstrap Linux-хостов |
+| Chaos | `scripts/chaos/` | `run_litmus.sh` | Запуск Litmus pod-delete эксперимента |
 
 ## 3. Зависимости и подготовка
 
@@ -113,7 +114,10 @@
 - `sync.sh` — вызывает `argocd app sync` для `1cai-stack` и `observability-stack` (требует `ARGOCD_TOKEN`, переменная `ARGOCD_SERVER`).
 - README: `scripts/gitops/README.md`.
 
-### 4.14 ML и экспериментальные утилиты
+### 4.14 Chaos (`scripts/chaos/`)
+- `run_litmus.sh` — применяет Litmus experiment/engine (требует установленного оператора).
+
+### 4.15 ML и экспериментальные утилиты
 - `dataset/create_ml_dataset.py`, `prepare_neural_training_data.py` — подготовка выборок для моделей.
 - `finetune_qwen_smoltalk.py`, `train_copilot_model.py` — эксперименты с дообучением ассистента.
 - `benchmark_performance.py`, `profile_full_parser.py` — измерение скорости анализа/парсинга.
@@ -137,5 +141,6 @@
 | GitHub Actions | `observability-test.yml` | автоматическая проверка compose стека |
 | `make gitops-apply` | `scripts/gitops/apply.sh` | раздел 4.13 |
 | `make gitops-sync` | `scripts/gitops/sync.sh` | раздел 4.13 |
+| `make chaos-litmus-run` | `scripts/chaos/run_litmus.sh` | раздел 4.14 |
 
 Всегда сверяйтесь с `
