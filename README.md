@@ -126,6 +126,7 @@
   - [`docs/status/dora_history.md`](docs/status/dora_history.md) — автоматическая история DORA метрик (weekly).
   - Workflow `observability.yml` — напоминание об интеграции SLO/метрик.
   - `make observability-up` → локальный Prometheus/Grafana стек (см. `observability/docker-compose.observability.yml`), проверяется CI (`observability-test.yml`).
+  - Telegram оповещения: workflow `telegram-alert.yaml` (требует `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`).
 - **Architecture**
   - [`docs/architecture/README.md`](docs/architecture/README.md) — обзор C4, операции и ссылки на ADR.
   - [`docs/architecture/adr/`](docs/architecture/adr/) — реестр решений, статусы и история изменений.

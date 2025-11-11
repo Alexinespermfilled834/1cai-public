@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `scripts/metrics/collect_dora.py` обновляет `docs/status/dora_history.md`; workflow `dora-metrics.yml` коммитит историю автоматически.
 - Добавлен стек Prometheus/Grafana для локальной проверки SLO (`observability/docker-compose.observability.yml`, `make observability-up`, workflow `observability.yml`).
 - Workflow `observability-test.yml` проверяет docker-compose стек (smoke-api + Prometheus + Grafana) в CI.
+- Workflow `telegram-alert.yaml` отправляет уведомления в Telegram при падении Observability/DORA workflow.
 
 ---
 

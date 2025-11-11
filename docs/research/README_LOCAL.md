@@ -69,7 +69,8 @@
     - Runbook `docs/runbooks/alert_slo_runbook.md` + `docs/runbooks/postmortem_template.md`.  
     - История DORA: `docs/status/dora_history.md` (обновляется автоматически workflow `dora-metrics`).  
     - `make observability-up` поднимает локальный стек Prometheus/Grafana (`observability/docker-compose.observability.yml`).  
-    - CI проверка compose стека: `observability-test.yml`.
+    - CI проверка compose стека: `observability-test.yml`.  
+    - Telegram алерты: `telegram-alert.yaml` (потребуются secrets `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`).
 
 16. **Обновлён мастер-лист TODO**  
     - `docs/research/alkoleft_todo.md` теперь с приоритетами и ссылками на соответствующие планы.

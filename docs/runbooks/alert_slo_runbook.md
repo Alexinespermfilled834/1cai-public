@@ -8,8 +8,8 @@ Runbook описывает действия при нарушении SLO/але
 
 ## 2. Каналы оповещения
 
-- GitHub Actions (workflow `dora-metrics`, `github-monitor`, `smoke-tests`).
-- Slack/Telegram — TODO (создать канал `#alerts`).
+- GitHub Actions (workflow `dora-metrics`, `github-monitor`, `smoke-tests`, `observability-test`).
+- Telegram — используем бота для алертов (`TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID`, workflow `telegram-alert.yaml`).
 - Email — резерв (см. `docs/SUPPORT.md`).
 
 ## 3. Общая схема реагирования
