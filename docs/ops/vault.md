@@ -14,21 +14,23 @@
 3. Использовать Secrets Store CSI Driver:
    - `infrastructure/vault/csi/secret-provider-class.yaml` — описывает, какие данные из Vault попадут в K8s Secret `db-credentials`.
    - `infrastructure/vault/csi/deployment-example.yaml` — пример Deployment, подключающий volume `vault-secrets`.
+   - Helm: `values.vault.enabled=true` → CSI интеграция; `values.vault.agent.enabled=true` → Vault Agent sidecar (рендерит `/vault/secrets/app.env`).
    - Скрипт `scripts/secrets/apply_vault_csi.sh` / `make vault-csi-apply` — быстрый запуск.
 
-## 4. AWS Secrets Manager / Azure Key Vault
-- AWS: Terraform пример (см. `infrastructure/terraform/aws-eks`) + IAM policy для чтения `secretsmanager:GetSecretValue` (TODO).
-- Azure: добавить Key Vault (Terraform) и Managed Identity (TODO).
-
-## 4. AWS/Azure Secret Manager
-- AWS: скрипт `scripts/secrets/aws_sync_to_vault.py` — переносит указанные Secrets Manager ключи в Vault (`python scripts/secrets/aws_sync_to_vault.py my/secret --vault-path secret/data/1cai/aws`).
-- Azure: скрипт `scripts/secrets/azure_sync_to_vault.py` (`python scripts/secrets/azure_sync_to_vault.py <vault-name> secret1 --vault-path secret/data/1cai/azure`).
+## 4. Cloud секреты
+- AWS: скрипт `scripts/secrets/aws_sync_to_vault.py`.
+- Azure: скрипт `scripts/secrets/azure_sync_to_vault.py`.
+- Terraform модуль `infrastructure/terraform/azure-keyvault` — Key Vault + секреты + access policies.
 
 ## 5. Best Practices
 - Политики только на нужные пути (`secret/data/1cai/*`).
-- Короткие TTL, регулярный `vault lease renew` через sidecar.
-- Audit log включен (`vault audit enable file file_path=/var/log/vault_audit.log`).
-- Secrets никогда не коммитятся, только через Terraform/Vault CLI.
+- Короткие TTL, `vault lease renew` через агент.
+- Audit log включен (`vault audit enable file ...`).
+- Secrets никогда не коммитятся.
+- При изменении секретов — перезапуск через Vault Agent sidecar (watcher) или `scripts/secrets/test_vault_sync.sh` + `make preflight`.
+
+## 6. Проверка
+- `scripts/secrets/test_vault_sync.sh` проверяет значение в Vault и Kubernetes secret; полезно для CI (`make vault-test`).
 
 ## 6. Roadmap
 - CSI driver манифесты для K8s.

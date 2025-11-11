@@ -7,7 +7,7 @@
 
 ## 2. Структура
 - `infrastructure/service-mesh/istio/` — IstioOperator профиль (`profile-default.yaml`) + README.
-- `infrastructure/service-mesh/linkerd/` — альтернативный mesh с CLI установкой.
+- `infrastructure/service-mesh/linkerd/` — альтернативный mesh с CLI установкой (скрипт `scripts/service_mesh/linkerd/bootstrap_certs.sh` генерирует trust anchor/issuer). При GitOps использовании задействуйте `application-linkerd.yaml` или `applicationset-linkerd.yaml`.
 - Make цели: `mesh-istio-apply`, `linkerd-install`.
 
 ## 3. После установки

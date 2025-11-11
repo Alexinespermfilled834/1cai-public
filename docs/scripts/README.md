@@ -132,6 +132,7 @@
 - `aws_sync_to_vault.py` — перенос Secrets Manager в Vault.
 - `azure_sync_to_vault.py` — синхронизация Azure Key Vault → Vault.
 - `apply_vault_csi.sh` — разворачивает SecretProviderClass и пример Deployment.
+- `test_vault_sync.sh` — проверка соответствия Vault и Kubernetes secret.
 
 ### 4.18 FinOps (`scripts/finops/`)
 - `aws_cost_report.py` — отчёт по затратам AWS (Cost Explorer).
@@ -142,7 +143,10 @@
 ### 4.19 Checklists (`scripts/checklists/`)
 - `preflight.sh` — выполняет ключевые проверки перед деплоем (lint/test/policy/checkov) и отправляет отчет в Slack/Teams.
 
-### 4.20 ML и экспериментальные утилиты
+### 4.20 Service Mesh (`scripts/service_mesh/`)
+- `bootstrap_certs.sh` — генерация trust anchor/issuer для Linkerd (TODO).
+
+### 4.21 ML и экспериментальные утилиты
 - `dataset/create_ml_dataset.py`, `prepare_neural_training_data.py` — подготовка выборок для моделей.
 - `finetune_qwen_smoltalk.py`, `train_copilot_model.py` — эксперименты с дообучением ассистента.
 - `benchmark_performance.py`, `profile_full_parser.py` — измерение скорости анализа/парсинга.

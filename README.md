@@ -147,6 +147,8 @@
   - `infrastructure/terraform` — Terraform конфигурация для Helm релиза.
   - `infrastructure/terraform/aws-eks` — Terraform модуль EKS (AWS).
   - `infrastructure/terraform/azure-aks` — Terraform модуль AKS (Azure).
+  - `infrastructure/terraform/azure-keyvault` — Terraform модуль Key Vault.
+  - `scripts/service_mesh/linkerd/bootstrap_certs.sh` — генерация trust anchors/issuer.
   - `infrastructure/azure/azure-pipelines.yml` — Azure DevOps pipeline.
   - `infrastructure/vault/` — политики, скрипты, SecretProviderClass для Vault (`make vault-csi-apply`, sync скрипты).
   - `scripts/secrets/aws_sync_to_vault.py` — синхронизация AWS Secrets Manager → Vault.

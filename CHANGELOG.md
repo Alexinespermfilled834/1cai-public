@@ -56,9 +56,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Подготовлен анализ рынка DevOps/SRE вакансий (`docs/research/job_market_devops_analysis.md`) — приоритизация технологий (AWS, Ansible, GitOps, Service Mesh).
 - Новый Terraform модуль `infrastructure/terraform/aws-eks` (создание VPC+EKS), Ansible playbook `infrastructure/ansible` и документация (`docs/ops/ansible.md`).
 - Добавлены Istio service mesh артефакты (`infrastructure/service-mesh/istio`, документ `docs/ops/service_mesh.md`, make `mesh-istio-apply`) и Litmus chaos сценарий (`infrastructure/chaos/litmus`, скрипт `scripts/chaos/run_litmus.sh`, документ `docs/ops/chaos_engineering.md`). Добавлен network latency эксперимент.
-- Vault best practices: политики/скрипты (`infrastructure/vault/`), SecretProviderClass для CSI, документ [`docs/ops/vault.md`](docs/ops/vault.md), скрипты синхронизации AWS/Azure (`scripts/secrets/aws_sync_to_vault.py`, `scripts/secrets/azure_sync_to_vault.py`), опция Vault Agent sidecar в Helm, правило в конституции.
+- Vault best practices: политики/скрипты (`infrastructure/vault/`), SecretProviderClass для CSI, документ [`docs/ops/vault.md`](docs/ops/vault.md), скрипты синхронизации AWS/Azure (`scripts/secrets/aws_sync_to_vault.py`, `scripts/secrets/azure_sync_to_vault.py`), опция Vault Agent sidecar в Helm, тест `scripts/secrets/test_vault_sync.sh`, Terraform модуль `infrastructure/terraform/azure-keyvault`.
 - FinOps: AWS/Azure Cost Explorer скрипты (`scripts/finops/aws_cost_to_slack.py`, `azure_cost_to_slack.py`, `aws_budget_check.py`, `azure_budget_check.py`, `teams_notify.py`), workflow [`finops-report.yml`](.github/workflows/finops-report.yml), make `finops-slack` (Slack/Teams).
-- Service Mesh: Linkerd blueprint (`infrastructure/service-mesh/linkerd`, ArgoCD application/ApplicationSet, `make linkerd-install`), Litmus network latency сценарий (`pod-network-latency.yaml`, `chaos-engine-network.yaml`), workflow `chaos-validate.yml`.
+- Service Mesh: Linkerd blueprint (`infrastructure/service-mesh/linkerd`, ArgoCD application/ApplicationSet, `make linkerd-install`, скрипт `scripts/service_mesh/linkerd/bootstrap_certs.sh`), Litmus network latency сценарий (`pod-network-latency.yaml`, `chaos-engine-network.yaml`), workflow `chaos-validate.yml`.
 
 ---
 

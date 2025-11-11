@@ -36,7 +36,9 @@ help:
 	@echo "  make preflight        - Run self-control checklist before deploy"
 	@echo "  make vault-csi-apply  - Apply Vault CSI SecretProviderClass + example"
 	@echo "  make linkerd-install  - Install Linkerd control plane"
-	@echo "  make finops-slack     - Send AWS/Azure cost reports to Slack"
+	@echo "  make finops-slack     - Send AWS/Azure cost reports to Slack/Teams"
+	@echo "  make azure-keyvault   - Provision Azure Key Vault via Terraform"
+	@echo "  make vault-test       - Validate Vault/Kubernetes secrets"
 	@echo ""
 	@echo "Docker:"
 	@echo "  make docker-up        - Start all Docker services"
@@ -210,6 +212,17 @@ finops-slack:
 	  AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID) AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY) \
 	  AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID) AWS_BUDGET_NAMES=$(AWS_BUDGET_NAMES) \
 	  python scripts/finops/aws_budget_check.py || true; fi
+
+azure-keyvault:
+	cd infrastructure/terraform/azure-keyvault && terraform init && terraform apply -auto-approve \
+	  -var="subscription_id=$(AZURE_SUBSCRIPTION_ID)" \
+	  -var="tenant_id=$(AZURE_TENANT_ID)" \
+	  -var="resource_group_name=$(AZURE_KV_RG)" \
+	  -var="location=$(AZURE_KV_LOCATION)" \
+	  -var="key_vault_name=$(AZURE_KV_NAME)"
+
+vault-test:
+	VAULT_ADDR=$(VAULT_ADDR) VAULT_TOKEN=$(VAULT_TOKEN) bash scripts/secrets/test_vault_sync.sh
 
 # Installation
 install:

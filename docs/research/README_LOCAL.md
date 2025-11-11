@@ -114,7 +114,8 @@
 
 24. **Vault & Secret Management**  
     - Политика `infrastructure/vault/policies/1cai-app.hcl`, скрипт `infrastructure/vault/scripts/configure.sh`.  
-    - CSI пример `infrastructure/vault/csi/*`, Helm интеграция (`vault.enabled`, agent sidecar), Make `vault-csi-apply`, скрипты `scripts/secrets/*`.  
+    - CSI пример `infrastructure/vault/csi/*`, Helm интеграция (`vault.enabled`, agent sidecar), Make `vault-csi-apply`, скрипты `scripts/secrets/*`, тест `scripts/secrets/test_vault_sync.sh`.  
+    - Terraform `infrastructure/terraform/azure-keyvault`.  
 
 25. **FinOps & Cost Reports**  
     - Скрипты `scripts/finops/aws_cost_to_slack.py`, `scripts/finops/azure_cost_to_slack.py`, `scripts/finops/aws_budget_check.py`, Make `finops-slack`.  
