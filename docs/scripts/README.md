@@ -24,6 +24,7 @@
 | Observability | `docs/observability/`, `docs/runbooks/` | SLO, runbooks, postmortem template | Мониторинг, Error Budget, реакции |
 | ML & Benchmarks | `scripts/dataset/`, `scripts/ml/`, `benchmark_*.py` | `create_ml_dataset.py`, `massive_ast_dataset_builder.py`, `benchmark_performance.py` | Подготовка датасетов, измерение производительности |
 | Setup | `scripts/setup/` | `check_runtime.py` | Проверка наличия Python 3.11, подготовка окружения |
+| Security | `scripts/security/` | `run_security_scans.sh` | Запуск bandit/pip-audit/safety в CI |
 
 ## 3. Зависимости и подготовка
 
@@ -100,7 +101,10 @@
 - `check_runtime.py` — проверяет доступность Python 3.11 (`make check-runtime`). При отсутствии выводит инструкцию `docs/setup/python_311.md`.
 - Дополнительно: используйте PowerShell/WSL скрипты из `scripts/windows/` для установки зависимостей.
 
-### 4.12 ML и экспериментальные утилиты
+### 4.12 Безопасность (`scripts/security/`)
+- `run_security_scans.sh` — единая точка запуска bandit/pip-audit/safety. Используется в Jenkins/GitLab pipeline.
+
+### 4.13 ML и экспериментальные утилиты
 - `dataset/create_ml_dataset.py`, `prepare_neural_training_data.py` — подготовка выборок для моделей.
 - `finetune_qwen_smoltalk.py`, `train_copilot_model.py` — эксперименты с дообучением ассистента.
 - `benchmark_performance.py`, `profile_full_parser.py` — измерение скорости анализа/парсинга.
@@ -119,6 +123,7 @@
 | `make release-notes/tag/push` | `scripts/release/create_release.py` | раздел 4.10 |
 | `make observability-up/down` | `observability/docker-compose.observability.yml` | раздел 4.11 |
 | `make check-runtime` | `scripts/setup/check_runtime.py` | раздел 4.11 |
+| security pipeline | `scripts/security/run_security_scans.sh` | раздел 4.12 |
 | GitHub Actions | `observability-test.yml` | автоматическая проверка compose стека |
 
 Всегда сверяйтесь с `

@@ -118,6 +118,12 @@
 - **Setup & Runtime**
   - [`docs/setup/python_311.md`](docs/setup/python_311.md) — установка Python 3.11 и проверка среды.
   - `scripts/setup/check_runtime.py` + `make check-runtime` — автоматическая проверка версии Python.
+- **Infrastructure & DevOps**
+  - [`docs/ops/devops_platform.md`](docs/ops/devops_platform.md) — стратегия DevOps-платформы.
+  - `infrastructure/kind/cluster.yaml` — локальный Kubernetes.
+  - `infrastructure/helm/1cai-stack` — Helm chart приложения.
+  - `infrastructure/terraform` — Terraform конфигурация для Helm релиза.
+  - `infrastructure/jenkins/Jenkinsfile`, `infrastructure/gitlab/.gitlab-ci.yml` — многостадийные pipeline для Jenkins и GitLab.
 - **Feature Guides**
   - [`docs/06-features/AST_TOOLING_BSL_LANGUAGE_SERVER.md`](docs/06-features/AST_TOOLING_BSL_LANGUAGE_SERVER.md) — запуск и диагностика bsl-language-server, fallback сценарии.
   - [`docs/06-features/MCP_SERVER_GUIDE.md`](docs/06-features/MCP_SERVER_GUIDE.md) — эндпоинты MCP, переменные окружения, troubleshooting.
@@ -144,41 +150,4 @@
   - [`docs/06-features/ITS_SCRAPER.md`](docs/03-integrations/ITS_SCRAPER.md) — сбор данных ITS и обновление базы знаний.
 - **Research & Plans**
   - [`docs/research/README_LOCAL.md`](docs/research/README_LOCAL.md) — ежедневные статусы и подготовка публикации.
-  - [`docs/research/alkoleft_todo.md`](docs/research/alkoleft_todo.md) — интеграция экосистемы @alkoleft с приоритетами.
-  - [`docs/research/github_monitoring_plan.md`](docs/research/github_monitoring_plan.md) — мониторинг внешних репозиториев и уведомления.
-  - [`docs/research/archive_tools_assessment.md`](docs/research/archive_tools_assessment.md) — анализ архивных утилит и кандидаты для CLI.
-  - [`docs/research/release_playbook.md`](docs/research/release_playbook.md) — процесс выпуска, теги, GitHub Release.
-
----
-
-## 📝 Recent Updates
-- **[Unreleased]** – см. [`CHANGELOG.md`](CHANGELOG.md)
-  - Интеграция `bsl-language-server` (docker-compose, make-таргеты, диагностика)
-  - Новый гид по AST tooling (`docs/06-features/AST_TOOLING_BSL_LANGUAGE_SERVER.md`)
-  - Перестройка README и документационного хаба
-  - Исследование GitHub Spec Kit (план внедрения)
-- **5.1.1 (2025-11-07)** — улучшения Marketplace API, Redis caching, rate limiting
-- **5.1.0 (2025-11-06)** — масштабный выпуск: EDT parser, ML dataset generator, audit suite, ITIL анализ
-
-Полный список изменений — в [`CHANGELOG.md`](CHANGELOG.md).
-
----
-
-## 💬 Support
-- Issues: [GitHub Issues](https://github.com/DmitrL-dev/1cai-public/issues)
-- Telegram: см. [`docs/SUPPORT.md`](docs/SUPPORT.md)
-- FAQ: [`docs/FAQ.md`](docs/FAQ.md)
-
----
-
-## 🙏 Credits & Acknowledgements
-- **1c-syntax/bsl-language-server** — язык-сервер BSL (AST, диагностика).
-- **BIA (yaxunit, edt-test-runner, precommit4onec)** — экосистема тестирования 1С.
-- **GitHub/spec-kit** — идеи для spec-driven development и автоматизации планирования.
-- **alkoleft** — platform context exporter, ones_doc_gen, MCP инструменты.
-
-Благодарим авторов открытых решений, которые мы используем и расширяем. Все сторонние проекты упомянуты в документации и changelog.
-
----
-
-© 2025 1C AI Stack. MIT License.
+  - [`

@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `make check-runtime` + скрипт `scripts/setup/check_runtime.py` проверяют наличие Python 3.11; добавлено руководство [`docs/setup/python_311.md`](docs/setup/python_311.md).
 - Alertmanager и правила алертов для observability-стека (`observability/alertmanager.yml`, `observability/alerts.yml`, порт 9093, Telegram-конфигурация).
 - Workflow `trufflehog.yml` выполняет дополнительное сканирование секретов (trufflesecurity/trufflehog) на push/PR и по расписанию.
+- Добавлен инфраструктурный стек: kind-кластер (`infrastructure/kind/cluster.yaml`), Helm chart (`infrastructure/helm/1cai-stack`), Terraform шаблон (`infrastructure/terraform`), Jenkins pipeline (`infrastructure/jenkins/Jenkinsfile`) и GitLab CI (`infrastructure/gitlab/.gitlab-ci.yml`); документ [`docs/ops/devops_platform.md`](docs/ops/devops_platform.md).
 
 ---
 

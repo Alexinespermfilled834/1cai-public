@@ -77,5 +77,11 @@
     - Инструкция по установке Python 3.11: `docs/setup/python_311.md`.  
     - Secret scanning: `secret-scan.yml` (Gitleaks) + новый workflow `trufflehog.yml` (TODO: проверить в CI).  
 
-18. **Обновлён мастер-лист TODO**  
+18. **DevOps платформа (Kubernetes/IaC/CI)**  
+    - Kind кластер: `infrastructure/kind/cluster.yaml`.  
+    - Helm chart `infrastructure/helm/1cai-stack`, Terraform `infrastructure/terraform`.  
+    - Jenkins pipeline `infrastructure/jenkins/Jenkinsfile`, GitLab pipeline `infrastructure/gitlab/.gitlab-ci.yml`.  
+    - Документ [`docs/ops/devops_platform.md`](../ops/devops_platform.md) — описание стратегии и онбординг.  
+
+19. **Обновлён мастер-лист TODO**  
     - `docs/research/alkoleft_todo.md` теперь с приоритетами и ссылками на соответствующие планы.

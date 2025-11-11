@@ -1,7 +1,7 @@
 # Makefile for Enterprise 1C AI Development Stack
 # Quick commands for common tasks
 
-.PHONY: help install test docker-up docker-down migrate clean train-ml eval-ml train-ml-demo eval-ml-demo scrape-its render-uml render-uml-svg adr-new test-bsl export-context generate-docs bsl-ls-up bsl-ls-down bsl-ls-logs feature-init feature-validate release-notes release-tag release-push smoke-tests check-runtime
+.PHONY: help install test docker-up docker-down migrate clean train-ml eval-ml train-ml-demo eval-ml-demo scrape-its render-uml render-uml-svg adr-new test-bsl export-context generate-docs bsl-ls-up bsl-ls-down bsl-ls-logs feature-init feature-validate release-notes release-tag release-push smoke-tests check-runtime kind-up kind-down helm-deploy terraform-apply terraform-destroy
 
 CONFIG ?= ERPCPM
 EPOCHS ?=
@@ -22,6 +22,11 @@ help:
 	@echo "  make install          - Install Python dependencies"
 	@echo "  make install-dev      - Install dev dependencies + main"
 	@echo "  make check-runtime    - Ensure Python 3.11 runtime is available"
+	@echo "  make kind-up          - Start local kind cluster (infrastructure/kind/cluster.yaml)"
+	@echo "  make kind-down        - Delete local kind cluster"
+	@echo "  make helm-deploy      - Deploy 1cai via Helm chart (infrastructure/helm/1cai-stack)"
+	@echo "  make terraform-apply  - Apply Terraform stack (namespace + Helm release)"
+	@echo "  make terraform-destroy - Destroy Terraform resources"
 	@echo ""
 	@echo "Docker:"
 	@echo "  make docker-up        - Start all Docker services"
@@ -133,6 +138,23 @@ observability-up:
 
 observability-down:
 	docker compose -f observability/docker-compose.observability.yml down
+
+kind-up:
+	kind create cluster --config infrastructure/kind/cluster.yaml || true
+
+kind-down:
+	kind delete cluster --name 1cai-devops || true
+
+helm-deploy:
+	helm upgrade --install 1cai infrastructure/helm/1cai-stack \
+	  --namespace 1cai --create-namespace \
+	  -f infrastructure/helm/1cai-stack/values.yaml
+
+terraform-apply:
+	cd infrastructure/terraform && terraform init && terraform apply -auto-approve
+
+terraform-destroy:
+	cd infrastructure/terraform && terraform destroy -auto-approve
 
 # Installation
 install:
