@@ -57,7 +57,7 @@
 
 ## 6. Governance & Compliance
 - Конституция: [Constitution](./research/constitution.md).
-- Policy-as-code: [Policy as Code](./security/policy_as_code.md), `policy/kubernetes/**`, `policy/terraform/**`.
+- Policy-as-code: [Policy as Code](./security/policy_as_code.md), [`policy/kubernetes/`](../../policy/kubernetes/), [`policy/terraform/`](../../policy/terraform/).
 
 ## 7. Changelog & Releases
 - Изменения: [CHANGELOG.md](../CHANGELOG.md).
