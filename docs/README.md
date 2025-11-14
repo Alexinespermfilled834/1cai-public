@@ -18,6 +18,8 @@
 - **Service Mesh:**
   - [Istio профиль](../../infrastructure/service-mesh/istio) — IstioOperator профиль.
   - [Linkerd скрипты](../../scripts/service_mesh/linkerd/) — bootstrap/rotate certs, managed identity, CI smoke.
+  - [Linkerd bootstrap certs](../../scripts/service_mesh/linkerd/bootstrap_certs.sh) — генерация trust anchors/issuer.
+  - Make: `linkerd-install`, `linkerd-rotate-certs`, `linkerd-smoke`.
 - **Chaos Engineering:**
   - [Litmus эксперименты](../../infrastructure/chaos/litmus) — Litmus Chaos эксперименты.
 - **GitOps:**
