@@ -41,6 +41,11 @@
 │ Level 3: AI ORCHESTRATOR                               │
 │  ├─ Query Classifier                                   │
 │  ├─ Agent Selector                                     │
+│  ├─ AI Models:                                         │
+│  │  ├─ Kimi-K2-Thinking (NEW! - API + local)         │
+│  │  ├─ Qwen3-Coder                                     │
+│  │  ├─ OpenAI (GPT-4, GPT-3.5)                       │
+│  │  └─ 1C:Напарник (ready)                            │
 │  ├─ 8 AI Agents (Architect, Dev, QA, DevOps, etc.)    │
 │  └─ Code Execution Engine (NEW!)                      │
 ├────────────────────────────────────────────────────────┤
