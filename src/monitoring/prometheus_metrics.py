@@ -58,22 +58,92 @@ http_response_size_bytes = Histogram(
 ai_queries_total = Counter(
     'ai_queries_total',
     'Total AI queries',
-    ['agent_type', 'status']
+    ['agent_type', 'status', 'model']
 )
 
 # AI response time
 ai_response_duration_seconds = Histogram(
     'ai_response_duration_seconds',
     'AI response duration',
-    ['agent_type'],
-    buckets=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0]
+    ['agent_type', 'model'],
+    buckets=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0, 60.0, 120.0, 300.0]
 )
 
 # AI tokens used
 ai_tokens_used_total = Counter(
     'ai_tokens_used_total',
     'Total AI tokens consumed',
-    ['agent_type', 'model']
+    ['agent_type', 'model', 'token_type']  # token_type: prompt, completion, total
+)
+
+# AI service availability
+ai_service_available = Gauge(
+    'ai_service_available',
+    'AI service availability (1 = available, 0 = unavailable)',
+    ['service', 'model']
+)
+
+# AI errors
+ai_errors_total = Counter(
+    'ai_errors_total',
+    'Total AI errors',
+    ['service', 'model', 'error_type']
+)
+
+# Kimi-K2-Thinking specific metrics
+kimi_queries_total = Counter(
+    'kimi_queries_total',
+    'Total Kimi-K2-Thinking queries',
+    ['mode', 'status']  # mode: api, local
+)
+
+kimi_response_duration_seconds = Histogram(
+    'kimi_response_duration_seconds',
+    'Kimi-K2-Thinking response duration',
+    ['mode'],
+    buckets=[0.5, 1.0, 2.0, 5.0, 10.0, 30.0, 60.0, 120.0, 300.0]
+)
+
+kimi_tokens_used_total = Counter(
+    'kimi_tokens_used_total',
+    'Total Kimi-K2-Thinking tokens consumed',
+    ['mode', 'token_type']
+)
+
+kimi_reasoning_steps = Histogram(
+    'kimi_reasoning_steps',
+    'Number of reasoning steps in Kimi responses',
+    ['mode'],
+    buckets=[1, 2, 5, 10, 20, 50, 100]
+)
+
+kimi_tool_calls_total = Counter(
+    'kimi_tool_calls_total',
+    'Total tool calls made by Kimi',
+    ['mode', 'tool_name']
+)
+
+# AI Orchestrator metrics
+orchestrator_queries_total = Counter(
+    'orchestrator_queries_total',
+    'Total orchestrator queries',
+    ['query_type', 'selected_service']
+)
+
+orchestrator_fallback_total = Counter(
+    'orchestrator_fallback_total',
+    'Total fallback operations',
+    ['from_service', 'to_service', 'reason']
+)
+
+orchestrator_cache_hits_total = Counter(
+    'orchestrator_cache_hits_total',
+    'Total cache hits in orchestrator'
+)
+
+orchestrator_cache_misses_total = Counter(
+    'orchestrator_cache_misses_total',
+    'Total cache misses in orchestrator'
 )
 
 

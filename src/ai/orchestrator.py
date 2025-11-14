@@ -250,6 +250,34 @@ class AIOrchestrator:
                 }
             )
             self.qwen_client = None
+        
+        # Initialize Kimi client
+        try:
+            from src.ai.clients.kimi_client import KimiClient, KimiConfig
+            kimi_config = KimiConfig()
+            self.kimi_client = KimiClient(config=kimi_config)
+            if self.kimi_client.is_configured:
+                logger.info(
+                    "Kimi-K2-Thinking client initialized",
+                    extra={
+                        "mode": self.kimi_client._mode
+                    }
+                )
+            else:
+                logger.warning(
+                    "Kimi-K2-Thinking client not configured. Check KIMI_API_KEY or KIMI_OLLAMA_URL.",
+                    extra={"mode": self.kimi_client._mode}
+                )
+                self.kimi_client = None
+        except Exception as e:
+            logger.warning(
+                "Kimi-K2-Thinking client not available",
+                extra={
+                    "error": str(e),
+                    "error_type": type(e).__name__
+                }
+            )
+            self.kimi_client = None
     
     def register_client(self, service: AIService, client: Any):
         """Register AI service client"""
@@ -302,11 +330,25 @@ class AIOrchestrator:
             # Check cache
             cache_key = f"{query}:{context}"
             if cache_key in self.cache:
+                # Track cache hit
+                try:
+                    from src.monitoring.prometheus_metrics import orchestrator_cache_hits_total
+                    orchestrator_cache_hits_total.inc()
+                except ImportError:
+                    pass
+                
                 logger.info(
                     "Cache hit",
                     extra={"query_length": len(query)}
                 )
                 return self.cache[cache_key]
+            
+            # Track cache miss
+            try:
+                from src.monitoring.prometheus_metrics import orchestrator_cache_misses_total
+                orchestrator_cache_misses_total.inc()
+            except ImportError:
+                pass
             
             # Classify query
             intent = self.classifier.classify(query, context)
@@ -538,12 +580,98 @@ class AIOrchestrator:
             }
     
     async def _handle_code_generation(self, query: str, context: Dict) -> Dict:
-        """Handle code generation requests"""
+        """Handle code generation requests - prioritizes Kimi-K2-Thinking for complex reasoning"""
+        import time
+        
+        # Try Kimi-K2-Thinking first (better for complex code generation)
+        if self.kimi_client and self.kimi_client.is_configured:
+            try:
+                # Track metrics
+                try:
+                    from src.monitoring.prometheus_metrics import (
+                        kimi_queries_total, kimi_response_duration_seconds,
+                        kimi_tokens_used_total, orchestrator_queries_total
+                    )
+                    start_time = time.time()
+                    kimi_mode = "api" if not self.kimi_client.is_local else "local"
+                except ImportError:
+                    kimi_queries_total = None
+                    kimi_response_duration_seconds = None
+                    kimi_tokens_used_total = None
+                    orchestrator_queries_total = None
+                    start_time = None
+                    kimi_mode = None
+                
+                system_prompt = context.get('system_prompt', 'You are an expert 1C:Enterprise developer. Generate clean, efficient BSL code.')
+                
+                result = await self.kimi_client.generate(
+                    prompt=query,
+                    system_prompt=system_prompt,
+                    temperature=1.0,
+                    max_tokens=context.get('max_tokens', 4096)
+                )
+                
+                # Record metrics
+                if kimi_queries_total and kimi_mode:
+                    duration = time.time() - start_time
+                    kimi_queries_total.labels(mode=kimi_mode, status='success').inc()
+                    kimi_response_duration_seconds.labels(mode=kimi_mode).observe(duration)
+                    
+                    usage = result.get('usage', {})
+                    if usage:
+                        kimi_tokens_used_total.labels(mode=kimi_mode, token_type='prompt').inc(usage.get('prompt_tokens', 0))
+                        kimi_tokens_used_total.labels(mode=kimi_mode, token_type='completion').inc(usage.get('completion_tokens', 0))
+                        kimi_tokens_used_total.labels(mode=kimi_mode, token_type='total').inc(usage.get('total_tokens', 0))
+                    
+                    orchestrator_queries_total.labels(query_type='code_generation', selected_service='kimi_k2').inc()
+                
+                # Extract code from response (may contain markdown)
+                code_text = result.get('text', '')
+                
+                # Try to extract code block if present
+                import re
+                code_match = re.search(r'```(?:bsl|1c)?\n?(.*?)```', code_text, re.DOTALL)
+                if code_match:
+                    code_text = code_match.group(1).strip()
+                
+                return {
+                    "type": "code_generation",
+                    "service": "kimi_k2",
+                    "code": code_text,
+                    "full_response": result.get('text'),
+                    "reasoning": result.get('reasoning_content', ''),
+                    "model": "Kimi-K2-Thinking",
+                    "usage": result.get('usage', {})
+                }
+            except Exception as e:
+                # Track error metrics
+                try:
+                    from src.monitoring.prometheus_metrics import (
+                        kimi_queries_total, ai_errors_total,
+                        orchestrator_fallback_total
+                    )
+                    kimi_mode = "api" if not self.kimi_client.is_local else "local"
+                    kimi_queries_total.labels(mode=kimi_mode, status='error').inc()
+                    ai_errors_total.labels(service='kimi_k2', model='Kimi-K2-Thinking', error_type=type(e).__name__).inc()
+                    orchestrator_fallback_total.labels(from_service='kimi_k2', to_service='qwen_coder', reason='error').inc()
+                except ImportError:
+                    pass
+                
+                logger.warning(
+                    "Kimi code generation failed, falling back to Qwen",
+                    extra={
+                        "error": str(e),
+                        "error_type": type(e).__name__
+                    }
+                )
+                # Fall through to Qwen
+        
+        # Fallback to Qwen3-Coder
         if not self.qwen_client:
             return {
                 "type": "code_generation",
                 "service": "qwen_coder",
-                "error": "Qwen3-Coder not available. Start Ollama with: ollama pull qwen2.5-coder:7b"
+                "error": "No code generation service available. Configure KIMI_API_KEY or start Ollama with: ollama pull qwen2.5-coder:7b"
             }
         
         try:
@@ -589,21 +717,110 @@ class AIOrchestrator:
             }
     
     async def _handle_optimization(self, query: str, context: Dict) -> Dict:
-        """Handle code optimization requests"""
+        """Handle code optimization requests - prioritizes Kimi-K2-Thinking for complex reasoning"""
+        import time
+        
+        code = context.get('code')
+        if not code:
+            return {
+                "type": "optimization",
+                "error": "No code provided in context"
+            }
+        
+        # Try Kimi-K2-Thinking first (better for complex optimization with reasoning)
+        if self.kimi_client and self.kimi_client.is_configured:
+            try:
+                # Track metrics
+                try:
+                    from src.monitoring.prometheus_metrics import (
+                        kimi_queries_total, kimi_response_duration_seconds,
+                        kimi_tokens_used_total, orchestrator_queries_total
+                    )
+                    start_time = time.time()
+                    kimi_mode = "api" if not self.kimi_client.is_local else "local"
+                except ImportError:
+                    kimi_queries_total = None
+                    kimi_response_duration_seconds = None
+                    kimi_tokens_used_total = None
+                    orchestrator_queries_total = None
+                    start_time = None
+                    kimi_mode = None
+                
+                optimization_prompt = f"""Оптимизируй следующий BSL код:
+{code}
+
+Проанализируй код и предложи оптимизированную версию с объяснением улучшений."""
+                
+                system_prompt = context.get('system_prompt', 'You are an expert 1C:Enterprise developer specializing in code optimization. Provide optimized code with detailed explanations.')
+                
+                result = await self.kimi_client.generate(
+                    prompt=optimization_prompt,
+                    system_prompt=system_prompt,
+                    temperature=1.0,
+                    max_tokens=context.get('max_tokens', 4096)
+                )
+                
+                # Record metrics
+                if kimi_queries_total and kimi_mode:
+                    duration = time.time() - start_time
+                    kimi_queries_total.labels(mode=kimi_mode, status='success').inc()
+                    kimi_response_duration_seconds.labels(mode=kimi_mode).observe(duration)
+                    
+                    usage = result.get('usage', {})
+                    if usage:
+                        kimi_tokens_used_total.labels(mode=kimi_mode, token_type='prompt').inc(usage.get('prompt_tokens', 0))
+                        kimi_tokens_used_total.labels(mode=kimi_mode, token_type='completion').inc(usage.get('completion_tokens', 0))
+                        kimi_tokens_used_total.labels(mode=kimi_mode, token_type='total').inc(usage.get('total_tokens', 0))
+                    
+                    orchestrator_queries_total.labels(query_type='optimization', selected_service='kimi_k2').inc()
+                
+                optimized_text = result.get('text', '')
+                
+                # Try to extract optimized code and explanation
+                import re
+                code_match = re.search(r'```(?:bsl|1c)?\n?(.*?)```', optimized_text, re.DOTALL)
+                optimized_code = code_match.group(1).strip() if code_match else optimized_text
+                
+                return {
+                    "type": "optimization",
+                    "services": ["kimi_k2"],
+                    "original_code": code,
+                    "optimized_code": optimized_code,
+                    "explanation": result.get('reasoning_content', '') or optimized_text,
+                    "model": "Kimi-K2-Thinking",
+                    "usage": result.get('usage', {})
+                }
+            except Exception as e:
+                # Track error metrics
+                try:
+                    from src.monitoring.prometheus_metrics import (
+                        kimi_queries_total, ai_errors_total,
+                        orchestrator_fallback_total
+                    )
+                    kimi_mode = "api" if not self.kimi_client.is_local else "local"
+                    kimi_queries_total.labels(mode=kimi_mode, status='error').inc()
+                    ai_errors_total.labels(service='kimi_k2', model='Kimi-K2-Thinking', error_type=type(e).__name__).inc()
+                    orchestrator_fallback_total.labels(from_service='kimi_k2', to_service='qwen_coder', reason='error').inc()
+                except ImportError:
+                    pass
+                
+                logger.warning(
+                    "Kimi optimization failed, falling back to Qwen",
+                    extra={
+                        "error": str(e),
+                        "error_type": type(e).__name__
+                    }
+                )
+                # Fall through to Qwen
+        
+        # Fallback to Qwen3-Coder
         if not self.qwen_client:
             return {
                 "type": "optimization",
-                "error": "Qwen3-Coder not available"
+                "error": "No optimization service available. Configure KIMI_API_KEY or start Ollama with: ollama pull qwen2.5-coder:7b"
             }
         
         try:
-            code = context.get('code')
-            if not code:
-                return {
-                    "type": "optimization",
-                    "error": "No code provided in context"
-                }
-            
             # TODO: Get dependencies from Neo4j if available
             dependencies = None
             if AIService.NEO4J in self.clients:
@@ -664,6 +881,16 @@ class AIOrchestrator:
                 elif service == AIService.QWEN_CODER and hasattr(self, "query_qwen"):
                     tasks.append(asyncio.to_thread(self.query_qwen, query, context))
                     service_names.append("qwen_coder")
+                elif service == AIService.KIMI_K2 and self.kimi_client and self.kimi_client.is_configured:
+                    # Use Kimi-K2-Thinking for complex reasoning
+                    system_prompt = context.get('system_prompt', 'You are an expert AI assistant.')
+                    tasks.append(self.kimi_client.generate(
+                        prompt=query,
+                        system_prompt=system_prompt,
+                        temperature=1.0,
+                        max_tokens=context.get('max_tokens', 4096)
+                    ))
+                    service_names.append("kimi_k2")
                 else:
                     combined_results[service.value] = {
                         "status": "skipped",
