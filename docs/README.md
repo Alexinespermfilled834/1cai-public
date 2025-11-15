@@ -64,6 +64,18 @@
 ## 7. Changelog & Releases
 - Изменения: [CHANGELOG.md](../CHANGELOG.md).
 - Release automation: `scripts/release/create_release.py`, workflow `release.yml`.
+
+## 8. Business Analyst Platform
+- [BA Guide](./06-features/BUSINESS_ANALYST_GUIDE.md) — сценарии агента, структура API.
+- [Integration Plan](./07-integrations/BA_INTEGRATION_PLAN.md) — Jira/Confluence/Docflow/PowerBI и требования к секретам.
+- [E2E Matrix](./08-e2e-tests/BA_E2E_MATRIX.md) и [Assessment](./assessments/BA_ASSESSMENT.md) — тестовые сценарии и критерии готовности.
+- Скрипты и пайплайны: `scripts/ba_assessment/`, `scripts/ba_pipeline/`, `scripts/ba_scenarios/`.
+
+## 9. Resiliency & Offline Mode
+- [LLM Blocking Resilience Plan](../analysis/llm_blocking_resilience_plan.md) — регламент действий при отключении интернета / блокировке провайдеров.
+- Конфигурации: [`config/llm_gateway_simulation.yaml`](../config/llm_gateway_simulation.yaml), [`config/llm_providers.yaml`](../config/llm_providers.yaml).
+- Отчёты и шаблоны: [`docs/templates/offline_incident_report.md`](./templates/offline_incident_report.md), [`docs/stage-0/manual-sync.md`](./stage-0/manual-sync.md).
+- Тесты/хаос-скрипты: `scripts/tests/llm_smoke.py`, `scripts/tests/run_offline_dry_run.py`, `scripts/chaos/block_jira.sh`.
 # 📚 Документация 1C AI Stack
 
 **Версия:** 5.1.0  
