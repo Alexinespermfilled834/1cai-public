@@ -102,6 +102,29 @@
 
 ## 🆕 Новые компоненты (Latest Updates)
 
+### Business Analyst Platform (NEW!)
+
+**Назначение:** автоматизация discovery/requirements процессов, синхронизация артефактов и документации.
+
+- **BA Agent** – расширенный агент в [`src/ai/agents/business_analyst_agent_extended.py`](../../src/ai/agents/business_analyst_agent_extended.py) с интеграциями Jira, Confluence, PowerBI, OneDocflow.
+- **BA Sessions API** – FastAPI-модуль [`src/api/ba_sessions.py`](../../src/api/ba_sessions.py) + сервис [`src/services/ba_session_manager.py`](../../src/services/ba_session_manager.py) для управления сессиями и артефактами.
+- **Пайплайн** – `scripts/ba_pipeline/`, `scripts/ba_assessment/`, `scripts/ba_scenarios/` (сбор данных, e2e-матрицы, отчёты).
+- **Документация** – [`docs/06-features/BUSINESS_ANALYST_GUIDE.md`](../06-features/BUSINESS_ANALYST_GUIDE.md), [`docs/07-integrations/BA_INTEGRATION_PLAN.md`](../07-integrations/BA_INTEGRATION_PLAN.md), [`docs/08-e2e-tests/BA_E2E_MATRIX.md`](../08-e2e-tests/BA_E2E_MATRIX.md).
+- **Тесты** – unit и integration сценарии (`tests/unit/test_ba_*`, `tests/integration/test_ba_*`, `tests/integration/test_llm_failover.py`).
+
+Архитектурно BA-подсистема размещена на уровне L3 (AI Orchestrator) и L4 (API Gateway), использует общий storage (Postgres/Neo4j) и экспортирует артефакты через IntegrationConnector.
+
+### LLM Gateway & Resiliency Layer (NEW!)
+
+**Цель:** устойчивость к блокировкам внешних LLM/интернет-сегментов и возможность офлайн-режима.
+
+- **LLM Gateway** – сервис [`src/services/llm_gateway.py`](../../src/services/llm_gateway.py) с менеджером провайдеров [`src/services/llm_provider_manager.py`](../../src/services/llm_provider_manager.py) и policy для fallback-переходов.
+- **Конфигурация** – [`config/llm_gateway_simulation.yaml`](../../config/llm_gateway_simulation.yaml), [`config/llm_providers.yaml`](../../config/llm_providers.yaml) плюс регламент [`analysis/llm_blocking_resilience_plan.md`](../../analysis/llm_blocking_resilience_plan.md).
+- **Chaos/Smoke** – `scripts/tests/llm_smoke.py`, `scripts/tests/run_offline_dry_run.py`, `scripts/chaos/block_jira.sh`, интеграционные тесты `tests/integration/test_llm_gateway_simulation.py`.
+- **Мониторинг** – dashboards и правила в `monitoring/AI_SERVICES_MONITORING.md`, `monitoring/grafana/dashboards/ai_services.json`, `monitoring/prometheus/alerts/ai_alerts.yml`.
+
+Слой resiliency сидит между L3 (AI Orchestrator) и L2 (LLM-клиенты), обеспечивает circuit breaker, кэширование, офлайн-пакеты знаний (Knowledge Store) и отчётность по инцидентам (`docs/templates/offline_incident_report.md`).
+
 ### Kimi-K2-Thinking Integration (NEW!)
 
 **State-of-the-art thinking model** от Moonshot AI:
