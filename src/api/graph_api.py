@@ -24,6 +24,8 @@ from src.utils.structured_logging import StructuredLogger
 
 logger = StructuredLogger(__name__).logger
 
+MAX_SEMANTIC_QUERY_LENGTH = 5000
+
 app = FastAPI(
     title="1C AI Assistant API",
     description="Enterprise 1C AI Development Stack API",
@@ -50,9 +52,30 @@ pg_client = None
 embedding_service = None
 
 
+def _is_qdrant_ready() -> bool:
+    """Check if Qdrant client is initialized and connected."""
+    if not qdrant_client:
+        return False
+    internal_client = getattr(qdrant_client, "client", None)
+    return internal_client is not None
+
+
+def _is_embedding_ready() -> bool:
+    """Check if embedding service loaded model successfully."""
+    if not embedding_service:
+        return False
+    model = getattr(embedding_service, "model", None)
+    return model is not None
+
+
 # Models
 class SemanticSearchRequest(BaseModel):
-    query: str = Field(..., min_length=1, max_length=1000, description="Search query")
+    query: str = Field(
+        ...,
+        min_length=1,
+        max_length=MAX_SEMANTIC_QUERY_LENGTH,
+        description="Search query"
+    )
     configuration: Optional[str] = Field(None, max_length=200, description="Configuration filter")
     limit: int = Field(10, ge=1, le=100, description="Maximum results")
     
@@ -62,7 +85,10 @@ class SemanticSearchRequest(BaseModel):
         """Sanitize query to prevent injection"""
         # Remove potentially dangerous characters
         v = re.sub(r'[<>"\']', '', v)
-        return v.strip()
+        sanitized = v.strip()
+        if len(sanitized) > MAX_SEMANTIC_QUERY_LENGTH:
+            raise ValueError(f"Query too long. Maximum length: {MAX_SEMANTIC_QUERY_LENGTH} characters")
+        return sanitized
     
     @field_validator('configuration')
     @classmethod
@@ -348,13 +374,24 @@ async def semantic_search(request: SemanticSearchRequest):
     
     Security: Input validation and sanitization
     """
-    if not qdrant_client or not embedding_service:
-        logger.warning("Vector search not available")
+    if not _is_qdrant_ready():
+        logger.warning("Qdrant not available for semantic search")
         raise HTTPException(status_code=503, detail="Vector search not available")
+    
+    if not _is_embedding_ready():
+        logger.warning("Embedding service not available for semantic search")
+        raise HTTPException(status_code=503, detail="Embedding service not available")
     
     try:
         # Generate query embedding
-        query_vector = embedding_service.encode(request.query)
+        query_text = request.query[:MAX_SEMANTIC_QUERY_LENGTH]
+        query_vector = embedding_service.encode(query_text)
+        if not query_vector:
+            logger.error(
+                "Embedding generation failed",
+                extra={"query_length": len(query_text)}
+            )
+            raise HTTPException(status_code=503, detail="Unable to generate embedding for query")
         
         # Search in Qdrant
         results = qdrant_client.search_code(
@@ -373,6 +410,8 @@ async def semantic_search(request: SemanticSearchRequest):
             }
         )
         return {"results": results}
+    except HTTPException as http_exc:
+        raise http_exc
     except Exception as e:
         logger.error(
             f"Semantic search error: {e}",

@@ -183,6 +183,36 @@ projects_total = Gauge(
 )
 
 
+# ==================== BA SESSION METRICS ====================
+
+ba_ws_active_sessions = Gauge(
+    'ba_ws_active_sessions',
+    'Currently active BA websocket sessions'
+)
+
+ba_ws_active_participants = Gauge(
+    'ba_ws_active_participants',
+    'Currently active BA websocket participants'
+)
+
+ba_ws_events_total = Counter(
+    'ba_ws_events_total',
+    'Total BA websocket events',
+    ['event_type']
+)
+
+ba_ws_disconnects_total = Counter(
+    'ba_ws_disconnects_total',
+    'Total BA websocket disconnects',
+    ['reason']
+)
+
+ba_ws_audit_failures_total = Counter(
+    'ba_ws_audit_failures_total',
+    'Total BA session audit write failures'
+)
+
+
 # ==================== DATABASE METRICS ====================
 
 # Database queries
@@ -349,6 +379,29 @@ def track_db_query(database: str, operation: str, duration: float):
 def track_cache_operation(layer: str, operation: str, status: str):
     """Track cache operation"""
     cache_operations_total.labels(operation=operation, layer=layer, status=status).inc()
+
+
+def track_ba_session_event(event_type: str) -> None:
+    """Track BA websocket events such as join/leave/chat."""
+    ba_ws_events_total.labels(event_type=event_type).inc()
+
+
+def track_ba_session_disconnect(reason: str) -> None:
+    """Track BA websocket disconnects."""
+    ba_ws_disconnects_total.labels(reason=reason).inc()
+
+
+def track_ba_session_audit_failure() -> None:
+    """Track audit log failures for BA sessions."""
+    ba_ws_audit_failures_total.inc()
+
+
+def set_ba_session_counts(active_sessions: int, active_participants: int):
+    """
+    Update BA websocket session gauges atomically.
+    """
+    ba_ws_active_sessions.set(max(0, active_sessions))
+    ba_ws_active_participants.set(max(0, active_participants))
 
 
 # ==================== METRICS ENDPOINT ====================

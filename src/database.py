@@ -87,7 +87,8 @@ async def create_pool(max_retries: int = 1, retry_delay: int = 1) -> Optional[as
             except asyncio.TimeoutError:
                 logger.warning(f"Database connection timeout (attempt {attempt + 1}/{max_retries})")
                 if attempt < max_retries - 1:
-                    await asyncio.sleep(retry_delay)
+                    backoff_delay = retry_delay * (2 ** attempt)
+                    await asyncio.sleep(backoff_delay)
                 else:
                     logger.warning("Database connection timeout, continuing without DB")
                     return None
@@ -100,7 +101,8 @@ async def create_pool(max_retries: int = 1, retry_delay: int = 1) -> Optional[as
                     }
                 )
                 if attempt < max_retries - 1:
-                    await asyncio.sleep(retry_delay)
+                    backoff_delay = retry_delay * (2 ** attempt)
+                    await asyncio.sleep(backoff_delay)
                 else:
                     logger.warning("Database not available, continuing without DB")
                     return None

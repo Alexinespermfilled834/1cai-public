@@ -24,7 +24,24 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from src.utils.structured_logging import StructuredLogger
 
-logger = StructuredLogger(__name__).logger
+structured_logger = StructuredLogger(__name__)
+logger = structured_logger.logger
+
+
+def _safe_request_path(request: Request) -> str:
+    try:
+        return request.url.path
+    except Exception:
+        scope = getattr(request, "scope", {}) or {}
+        return scope.get("path", "unknown")
+
+
+def _safe_request_method(request: Request) -> str:
+    try:
+        return request.method
+    except Exception:
+        scope = getattr(request, "scope", {}) or {}
+        return scope.get("method", "UNKNOWN")
 
 # Error categories
 class ErrorCategory:
@@ -150,8 +167,8 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
         "HTTP exception",
         extra={
             "request_id": request_id,
-            "path": request.url.path,
-            "method": request.method,
+            "path": _safe_request_path(request),
+            "method": _safe_request_method(request),
             "status_code": exc.status_code,
             "error_code": error_code,
             "category": category,
@@ -199,8 +216,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         f"Validation error: {len(errors)} field(s) failed validation",
         extra={
             "request_id": request_id,
-            "path": request.url.path,
-            "method": request.method,
+            "path": _safe_request_path(request),
+            "method": _safe_request_method(request),
             "errors_count": len(errors),
             "errors": errors
         }
@@ -227,8 +244,8 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
             "error": str(exc),
             "error_type": type(exc).__name__,
             "request_id": request_id,
-            "path": request.url.path,
-            "method": request.method,
+            "path": _safe_request_path(request),
+            "method": _safe_request_method(request),
             "exception_type": type(exc).__name__,
             "exception_message": str(exc)
         },

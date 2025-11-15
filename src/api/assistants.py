@@ -517,7 +517,7 @@ async def get_assistant_stats(
 @router.post("/knowledge/add", summary="Добавление знаний в базу ассистента")
 @limiter.limit("10/minute")  # Rate limit: 10 knowledge additions per minute
 async def add_knowledge(
-    api_request: Request,
+    request: Request,
     documents: List[Dict[str, Any]],
     role: str = "architect",
     user_id: str = "system",

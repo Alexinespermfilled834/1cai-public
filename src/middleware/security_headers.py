@@ -114,7 +114,7 @@ async def security_headers_middleware(request: Request, call_next: Callable) -> 
             },
             exc_info=True
         )
-        # Continue without security headers rather than failing
-        return await call_next(request)
+        # Don't attempt to call next handler again (response pipeline may be closed)
+        raise
 
 

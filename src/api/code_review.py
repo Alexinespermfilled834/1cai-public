@@ -3,7 +3,7 @@ API endpoints для Code Review в реальном времени
 Версия: 1.0.0
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter, HTTPException, Depends, Request, Response
 from pydantic import BaseModel, Field
 from typing import Optional, List, Literal
 from datetime import datetime
@@ -20,7 +20,7 @@ from src.api.code_analyzers import (
 )
 from src.utils.structured_logging import StructuredLogger
 
-router = APIRouter()
+router = APIRouter(prefix="/api/code-review")
 logger = StructuredLogger(__name__).logger
 
 
@@ -100,6 +100,27 @@ class AutoFixResponse(BaseModel):
 
 def analyze_bsl_code(code: str) -> dict:
     """Базовый анализ BSL кода"""
+    if not code.strip():
+        return {
+            "suggestions": [],
+            "metrics": {
+                "complexity": 0,
+                "maintainability": 100,
+                
+                "securityScore": 100,
+                "performanceScore": 100,
+                "codeQuality": 100,
+            },
+            "statistics": {
+                "totalLines": 0,
+                "functions": 0,
+                "variables": 0,
+                "comments": 0,
+                "potentialIssues": 0,
+            },
+            "recommendations": [],
+        }
+
     suggestions = []
     lines = code.split('\n')
     
@@ -283,7 +304,7 @@ def analyze_bsl_code(code: str) -> dict:
     },
 )
 @limiter.limit(PUBLIC_RATE_LIMIT)
-async def analyze_code(request: Request, request_data: CodeContextRequest):
+async def analyze_code(request: Request, request_data: CodeContextRequest, response: Response):
     """
     Анализ кода с предложениями по улучшению
     
@@ -331,13 +352,40 @@ async def analyze_code(request: Request, request_data: CodeContextRequest):
         if file_name:
             code_request.fileName = file_name
         
-        # Генерация ключа кэша
+        # Определяем вариант кэша в зависимости от доступности AI
+        ai_variant = "local"
+        openai_analyzer = None
+        try:
+            openai_analyzer = get_openai_analyzer()
+            if getattr(openai_analyzer, "enabled", False):
+                ai_variant = f"ai:{getattr(openai_analyzer, 'model', 'unknown')}"
+        except Exception as analyzer_init_error:
+            logger.warning(
+                "Failed to initialize AI analyzer, fallback to local analysis",
+                extra={
+                    "error": str(analyzer_init_error),
+                    "error_type": type(analyzer_init_error).__name__,
+                },
+            )
+            openai_analyzer = None
+        
+        # Генерация ключа кэша (включая вариант AI, чтобы не кэшировать локальный анализ для AI клиентов)
         cache_service = get_cache_service()
         cache_key = cache_service.generate_key(
             "code_review",
             content=code_request.content,
             language=code_request.language,
-            fileName=code_request.fileName or ""
+            fileName=code_request.fileName or "",
+            ai_variant=ai_variant,
+        )
+        
+        logger.debug(
+            "Code review cache variant selected",
+            extra={
+                "ai_variant": ai_variant,
+                "ai_enabled": bool(openai_analyzer and getattr(openai_analyzer, "enabled", False)),
+                "analyzer_type": type(openai_analyzer).__name__ if openai_analyzer else None,
+            },
         )
         
         # Попытка получить из кэша
@@ -364,8 +412,7 @@ async def analyze_code(request: Request, request_data: CodeContextRequest):
         
         # AI анализ через OpenAI (асинхронно, если доступен) с timeout
         ai_suggestions = []
-        try:
-            openai_analyzer = get_openai_analyzer()
+        if openai_analyzer and getattr(openai_analyzer, "enabled", False):
             # Timeout для AI анализа (30 секунд)
             ai_timeout = 30.0
             try:
@@ -398,17 +445,20 @@ async def analyze_code(request: Request, request_data: CodeContextRequest):
                     }
                 )
                 # Продолжаем без AI предложений
-            
-        except Exception as e:
-            # Если AI недоступен, продолжаем без него
-            logger.warning(
-                "AI analysis unavailable, using local analysis only",
-                extra={
-                    "error": str(e),
-                    "error_type": type(e).__name__,
-                    "language": code_request.language
-                },
-                exc_info=True
+            except Exception as e:
+                logger.warning(
+                    "AI analysis unavailable, using local analysis only",
+                    extra={
+                        "error": str(e),
+                        "error_type": type(e).__name__,
+                        "language": code_request.language
+                    },
+                    exc_info=True
+                )
+        else:
+            logger.debug(
+                "AI analyzer disabled or not initialized, skipping AI suggestions",
+                extra={"ai_variant": ai_variant, "language": code_request.language}
             )
         
         analysis_id = f"analysis-{datetime.now().timestamp()}"
@@ -445,15 +495,7 @@ async def analyze_code(request: Request, request_data: CodeContextRequest):
         )
 
 
-@router.post(
-    "/auto-fix",
-    response_model=AutoFixResponse,
-    tags=["Code Review"],
-    summary="Автоматическое исправление кода",
-    description="Применяет автоматическое исправление к коду на основе предложения"
-)
-@limiter.limit("20/minute")  # Rate limit: 20 auto-fixes per minute
-async def auto_fix_code(api_request: Request, request: AutoFixRequest):
+async def _apply_auto_fix(payload: AutoFixRequest) -> AutoFixResponse:
     """
     SMART Auto-Fix - Применение автозамены на основе типа issue
     
@@ -461,11 +503,11 @@ async def auto_fix_code(api_request: Request, request: AutoFixRequest):
     """
     
     try:
-        fixed_code = request.code
+        fixed_code = payload.code
         changes = []
         
         # Parse suggestion ID to determine fix type
-        suggestion_id = request.suggestionId.lower()
+        suggestion_id = payload.suggestionId.lower()
         
         # Pattern 1: Type checking (Тип → ПроверитьТип)
         if 'type-check' in suggestion_id or 'Тип(' in fixed_code:
@@ -562,11 +604,30 @@ async def auto_fix_code(api_request: Request, request: AutoFixRequest):
             extra={
                 "error": str(e),
                 "error_type": type(e).__name__,
-                "suggestion_id": request.suggestionId if hasattr(request, 'suggestionId') else None
+                "suggestion_id": payload.suggestionId
             },
             exc_info=True
         )
         raise HTTPException(status_code=500, detail=f"Ошибка автозамены: {str(e)}")
+
+
+@router.post(
+    "/auto-fix",
+    response_model=AutoFixResponse,
+    tags=["Code Review"],
+    summary="Автоматическое исправление кода",
+    description="Применяет автоматическое исправление к коду на основе предложения"
+)
+@limiter.limit("20/minute")  # Rate limit: 20 auto-fixes per minute
+async def auto_fix_code_endpoint(api_request: Request, request: AutoFixRequest, response: Response):
+    return await _apply_auto_fix(request)
+
+
+async def auto_fix_code(request: AutoFixRequest) -> AutoFixResponse:
+    """
+    Позволяет использовать auto-fix напрямую в unit-тестах, минуя FastAPI слой.
+    """
+    return await _apply_auto_fix(request)
 
 
 @router.get(

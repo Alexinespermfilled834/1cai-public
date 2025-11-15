@@ -16,7 +16,8 @@ if os.getenv("IGNORE_PY_VERSION_CHECK") != "1" and sys.version_info[:2] != (3, 1
         f"Python 3.11.x is required to run 1C AI Stack (detected {sys.version.split()[0]})."
     )
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, APIRouter, status
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
@@ -65,7 +66,8 @@ from src.monitoring.opentelemetry_setup import (
 from src.utils.error_handling import register_error_handlers
 
 # Use structured logging
-logger = StructuredLogger(__name__).logger
+structured_logger = StructuredLogger(__name__)
+logger = structured_logger.logger
 
 # MCP Server (for Cursor/VSCode integration) - optional
 try:
@@ -319,6 +321,12 @@ app = FastAPI(
     },
 )
 
+api_v1_router = APIRouter(
+    prefix="/api/v1",
+    tags=["API v1"],
+    default_response_class=Response,
+)
+
 # Metrics instrumentation (Prometheus) - with error handling
 try:
     Instrumentator().instrument(app).expose(app, include_in_schema=False)
@@ -366,6 +374,32 @@ except Exception as e:
     logger.warning(f"Failed to add JWT middleware: {e}")
 
 
+LEGACY_API_REDIRECT_ENABLED = os.getenv("ENABLE_LEGACY_API_REDIRECT", "true").lower() in {"1", "true", "yes"}
+LEGACY_API_PREFIX = "/api/"
+VERSIONED_API_PREFIX = "/api/v1"
+
+if LEGACY_API_REDIRECT_ENABLED:
+    @app.middleware("http")
+    async def legacy_api_redirect_middleware(request: Request, call_next):
+        path = request.url.path or ""
+        if path.startswith(LEGACY_API_PREFIX) and not path.startswith(VERSIONED_API_PREFIX):
+            trimmed = path[len(LEGACY_API_PREFIX):]
+            new_path = f"{VERSIONED_API_PREFIX}/{trimmed}" if trimmed else VERSIONED_API_PREFIX
+            new_url = request.url.replace(path=new_path)
+            structured_logger.warning(
+                "Legacy API path accessed",
+                legacy_path=path,
+                redirected_path=new_path,
+            )
+            response = RedirectResponse(
+                url=str(new_url),
+                status_code=status.HTTP_307_TEMPORARY_REDIRECT,
+            )
+            response.headers["X-API-Version"] = "v1"
+            return response
+        return await call_next(request)
+
+
 # Logging middleware with structured logging and context propagation
 @app.middleware("http")
 async def logging_middleware(request: Request, call_next):
@@ -405,13 +439,13 @@ async def logging_middleware(request: Request, call_next):
         process_time = time.time() - start_time
         
         # Structured logging
-        logger.info(
+        structured_logger.info(
             f"{request.method} {request.url.path}",
             request_id=request_id,
             user_id=user_id,
             tenant_id=tenant_id,
             method=request.method,
-            path=request.url.path,
+            path=str(request.url.path),
             status_code=response.status_code,
             process_time_ms=round(process_time * 1000, 2),
             client_ip=request.client.host if request.client else None,
@@ -422,13 +456,13 @@ async def logging_middleware(request: Request, call_next):
     except Exception as e:
         # Log errors with full context
         process_time = time.time() - start_time
-        logger.error(
+        structured_logger.error(
             f"Request failed: {request.method} {request.url.path}",
             request_id=request_id,
             user_id=user_id,
             tenant_id=tenant_id,
             method=request.method,
-            path=request.url.path,
+            path=str(request.url.path),
             process_time_ms=round(process_time * 1000, 2),
             error=str(e),
             error_type=type(e).__name__,
@@ -474,9 +508,14 @@ routers = [
 
 for name, router in routers:
     try:
-        app.include_router(router)
+        api_v1_router.include_router(router)
     except Exception as e:
-        logger.warning(f"Failed to register {name} router: {e}")
+        logger.warning(f"Failed to register {name} router in v1: {e}")
+
+try:
+    app.include_router(api_v1_router)
+except Exception as e:
+    logger.warning(f"Failed to mount v1 API router: {e}")
 
 # Mount MCP server (для Cursor/VSCode) - only if available
 if MCP_AVAILABLE and mcp_app:

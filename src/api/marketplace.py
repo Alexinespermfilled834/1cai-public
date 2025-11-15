@@ -18,7 +18,7 @@ import uuid
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, Query
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, Query, Response
 from starlette.requests import Request
 from pydantic import BaseModel, Field
 from enum import Enum
@@ -130,6 +130,7 @@ class PluginSearchRequest(BaseModel):
 class PluginResponse(BaseModel):
     """Ответ с информацией о плагине"""
     id: str
+    plugin_id: str
     name: str
     description: str
     category: PluginCategory
@@ -149,14 +150,14 @@ class PluginResponse(BaseModel):
     repository: Optional[str] = None
     download_url: Optional[str] = None
     icon_url: Optional[str] = None
-    screenshot_urls: List[str] = []
+    screenshot_urls: List[str] = Field(default_factory=list)
     artifact_path: Optional[str] = None
     
     # Metadata
     license: str
-    keywords: List[str] = []
+    keywords: List[str] = Field(default_factory=list)
     min_version: str
-    supported_platforms: List[str]
+    supported_platforms: List[str] = Field(default_factory=list)
     
     # Timestamps
     created_at: datetime
@@ -261,6 +262,7 @@ class PluginStatsResponse(BaseModel):
 @limiter.limit("5/minute")  # Rate limit: 5 plugin submissions per minute
 async def submit_plugin(
     request: Request,
+    response: Response,
     plugin: PluginSubmitRequest,
     current_user: CurrentUser = Depends(require_roles("developer", "admin")),
     repo: MarketplaceRepository = Depends(get_marketplace_repository),
@@ -494,6 +496,7 @@ async def update_plugin(
 @limiter.limit("10/minute")  # Rate limit: 10 uploads per minute
 async def upload_plugin_artifact(
     request: Request,
+    response: Response,
     plugin_id: str,
     file: UploadFile = File(...),
     current_user: CurrentUser = Depends(get_current_user),

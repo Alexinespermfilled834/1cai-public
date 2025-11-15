@@ -40,22 +40,26 @@ class StructuredLogger:
         - File rotation support
         """
         import logging.handlers
-        
-        # Create JSON formatter
+
+        if self.logger.handlers:
+            return
+
+        log_level_name = os.getenv("LOG_LEVEL", "INFO").upper()
+        handler_level = getattr(logging, log_level_name, logging.INFO)
+
         formatter = jsonlogger.JsonFormatter(
             '%(timestamp)s %(level)s %(name)s %(message)s %(request_id)s %(user_id)s %(tenant_id)s',
             timestamp=True,
         )
-        
-        # Console handler (always enabled)
+
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setFormatter(formatter)
+        console_handler.setLevel(handler_level)
         self.logger.addHandler(console_handler)
-        
-        # File handler with rotation (if log directory exists)
+
         log_dir = os.getenv("LOG_DIR", "logs")
         os.makedirs(log_dir, exist_ok=True)
-        
+
         log_file = os.path.join(log_dir, "app.json.log")
         file_handler = logging.handlers.RotatingFileHandler(
             log_file,
@@ -63,11 +67,10 @@ class StructuredLogger:
             backupCount=5,
         )
         file_handler.setFormatter(formatter)
+        file_handler.setLevel(handler_level)
         self.logger.addHandler(file_handler)
-        
-        # Set log level from environment
-        log_level = os.getenv("LOG_LEVEL", "INFO").upper()
-        self.logger.setLevel(getattr(logging, log_level, logging.INFO))
+
+        self.logger.setLevel(logging.DEBUG)
     
     def log(
         self,

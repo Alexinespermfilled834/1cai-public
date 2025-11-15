@@ -63,7 +63,7 @@ class AICodeReviewer:
         """
         logger.info(
             "Reviewing file",
-            extra={"filename": filename}
+            extra={"file_name": filename}
         )
         
         # 1. Parse code
@@ -73,7 +73,7 @@ class AICodeReviewer:
             logger.error(
                 "Parsing error",
                 extra={
-                    "filename": filename,
+                    "file_name": filename,
                     "error": str(e),
                     "error_type": type(e).__name__
                 },

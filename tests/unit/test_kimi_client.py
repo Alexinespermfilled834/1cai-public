@@ -4,8 +4,21 @@ Unit tests for Kimi-K2-Thinking client
 import pytest
 import os
 from unittest.mock import AsyncMock, MagicMock, patch
-from src.ai.clients.kimi_client import KimiClient, KimiConfig
+from src.ai.clients.kimi_client import KimiClient, KimiConfig, DEFAULT_OLLAMA_URL
 from src.ai.clients.exceptions import LLMNotConfiguredError, LLMCallError
+
+
+class AsyncContextManagerMock:
+    """Simple async context manager returning provided value."""
+
+    def __init__(self, value):
+        self.value = value
+
+    async def __aenter__(self):
+        return self.value
+
+    async def __aexit__(self, exc_type, exc, tb):
+        return False
 
 
 class TestKimiConfig:
@@ -14,7 +27,7 @@ class TestKimiConfig:
     def test_default_config(self):
         """Test default configuration values"""
         config = KimiConfig()
-        assert config.mode == "api"
+        assert config.mode == "auto"
         assert config.base_url == "https://api.moonshot.cn/v1"
         assert config.model_name == "moonshotai/Kimi-K2-Thinking"
         assert config.temperature == 1.0
@@ -75,6 +88,37 @@ class TestKimiClient:
         
         client = KimiClient(config=config)
         assert client.is_configured is False
+    
+    def test_client_auto_mode_prefers_api(self):
+        """Auto mode should prefer API when key is available"""
+        config = KimiConfig()
+        config.mode = "auto"
+        config.api_key = "test_key"
+        config.ollama_url = DEFAULT_OLLAMA_URL
+        
+        client = KimiClient(config=config)
+        assert client._mode == "api"
+    
+    def test_client_auto_mode_prefers_local_custom_url(self):
+        """Auto mode should switch to local when custom Ollama URL provided"""
+        config = KimiConfig()
+        config.mode = "auto"
+        config.api_key = ""
+        config.ollama_url = "http://custom-ollama:11434"
+        
+        client = KimiClient(config=config)
+        assert client._mode == "local"
+    
+    def test_client_auto_mode_respects_default_env(self, monkeypatch):
+        """Auto mode should respect KIMI_DEFAULT_MODE"""
+        monkeypatch.setenv("KIMI_DEFAULT_MODE", "local")
+        config = KimiConfig()
+        config.mode = "auto"
+        config.api_key = ""
+        config.ollama_url = DEFAULT_OLLAMA_URL
+        
+        client = KimiClient(config=config)
+        assert client._mode == "local"
     
     @pytest.mark.asyncio
     async def test_generate_not_configured_api(self):
@@ -242,10 +286,13 @@ class TestKimiClient:
             "models": [{"name": "kimi-k2-thinking:cloud"}]
         })
         
-        with patch('aiohttp.ClientSession') as mock_session:
-            mock_session.return_value.__aenter__.return_value.get.return_value.__aenter__.return_value = mock_response
+        mock_session = MagicMock()
+        mock_session.get.return_value = AsyncContextManagerMock(mock_response)
+        
+        with patch.object(client, '_get_ollama_session', return_value=mock_session):
             result = await client.check_model_loaded()
-            assert result is True
+        
+        assert result is True
     
     @pytest.mark.asyncio
     async def test_check_model_loaded_local_mode_not_found(self):
@@ -263,10 +310,13 @@ class TestKimiClient:
             "models": [{"name": "other-model"}]
         })
         
-        with patch('aiohttp.ClientSession') as mock_session:
-            mock_session.return_value.__aenter__.return_value.get.return_value.__aenter__.return_value = mock_response
+        mock_session = MagicMock()
+        mock_session.get.return_value = AsyncContextManagerMock(mock_response)
+        
+        with patch.object(client, '_get_ollama_session', return_value=mock_session):
             result = await client.check_model_loaded()
-            assert result is False
+        
+        assert result is False
     
     @pytest.mark.asyncio
     async def test_close_client(self):
@@ -281,9 +331,15 @@ class TestKimiClient:
         mock_httpx_client = AsyncMock()
         client._client = mock_httpx_client
         
+        mock_aio_session = AsyncMock()
+        mock_aio_session.closed = False
+        client._ollama_session = mock_aio_session
+        
         await client.close()
         mock_httpx_client.aclose.assert_called_once()
         assert client._client is None
+        mock_aio_session.close.assert_awaited_once()
+        assert client._ollama_session is None
     
     @pytest.mark.asyncio
     async def test_context_manager(self):
@@ -296,10 +352,15 @@ class TestKimiClient:
         mock_httpx_client = AsyncMock()
         client._client = mock_httpx_client
         
+        mock_aio_session = AsyncMock()
+        mock_aio_session.closed = False
+        client._ollama_session = mock_aio_session
+        
         async with client:
             assert client._client is not None
         
         mock_httpx_client.aclose.assert_called_once()
+        mock_aio_session.close.assert_awaited_once()
 
 
 class TestKimiClientGenerateAPI:

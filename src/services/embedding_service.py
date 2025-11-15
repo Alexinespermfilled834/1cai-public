@@ -168,9 +168,10 @@ class EmbeddingService:
             )
             return []
         
+        max_text_length = 100000  # reuse for both str and list inputs
+        
         # Limit text length (prevent DoS)
         if isinstance(text, str):
-            max_text_length = 100000  # 100KB max
             if len(text) > max_text_length:
                 logger.warning(
                     "Text too long in encode",
@@ -186,9 +187,24 @@ class EmbeddingService:
                 )
                 text = text[:max_list_length]
             
-            # Validate each item in list
-            text = [str(item)[:max_text_length] if isinstance(item, str) else str(item)[:max_text_length] 
-                   for item in text if item]
+            sanitized_items = []
+            for item in text:
+                if not item:
+                    continue
+                item_str = item if isinstance(item, str) else str(item)
+                if len(item_str) > max_text_length:
+                    logger.warning(
+                        "List item too long in encode",
+                        extra={"item_length": len(item_str), "max_length": max_text_length}
+                    )
+                    item_str = item_str[:max_text_length]
+                sanitized_items.append(item_str)
+            
+            if not sanitized_items:
+                logger.warning("No valid text items provided for encoding list")
+                return []
+            
+            text = sanitized_items
         
         # Validate batch_size
         if not isinstance(batch_size, int) or batch_size < 1:

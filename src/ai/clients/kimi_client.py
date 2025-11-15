@@ -22,7 +22,7 @@ from __future__ import annotations
 import json
 import logging
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -31,7 +31,14 @@ from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_ex
 from src.utils.structured_logging import StructuredLogger
 from .exceptions import LLMCallError, LLMNotConfiguredError
 
+try:  # Optional dependency for local mode
+    import aiohttp
+except ImportError:  # pragma: no cover - handled gracefully when not installed
+    aiohttp = None
+
 logger = StructuredLogger(__name__).logger
+
+DEFAULT_OLLAMA_URL = "http://localhost:11434"
 
 
 @dataclass
@@ -39,24 +46,26 @@ class KimiConfig:
     """Configuration for Kimi-K2-Thinking client"""
     
     # Mode: "api" (Moonshot API) or "local" (Ollama/vLLM/SGLang)
-    mode: str = os.getenv("KIMI_MODE", "api")  # "api" or "local"
+    mode: str = field(default_factory=lambda: os.getenv("KIMI_MODE", os.getenv("KIMI_DEFAULT_MODE", "auto")))
     
     # API mode settings
-    base_url: str = os.getenv("KIMI_API_URL", "https://api.moonshot.cn/v1")
-    api_key: Optional[str] = os.getenv("KIMI_API_KEY")
+    base_url: str = field(default_factory=lambda: os.getenv("KIMI_API_URL", "https://api.moonshot.cn/v1"))
+    api_key: Optional[str] = field(default_factory=lambda: os.getenv("KIMI_API_KEY"))
     
     # Local mode settings (Ollama)
-    ollama_url: str = os.getenv("KIMI_OLLAMA_URL", os.getenv("OLLAMA_HOST", "http://localhost:11434"))
+    ollama_url: str = field(
+        default_factory=lambda: os.getenv("KIMI_OLLAMA_URL", os.getenv("OLLAMA_HOST", DEFAULT_OLLAMA_URL))
+    )
     
     # Model settings
-    model_name: str = os.getenv("KIMI_MODEL", "moonshotai/Kimi-K2-Thinking")  # API mode
-    local_model: str = os.getenv("KIMI_LOCAL_MODEL", "kimi-k2-thinking:cloud")  # Ollama model name
+    model_name: str = field(default_factory=lambda: os.getenv("KIMI_MODEL", "moonshotai/Kimi-K2-Thinking"))
+    local_model: str = field(default_factory=lambda: os.getenv("KIMI_LOCAL_MODEL", "kimi-k2-thinking:cloud"))
     
     # Generation settings
-    temperature: float = float(os.getenv("KIMI_TEMPERATURE", "1.0"))  # Recommended: 1.0
-    max_tokens: int = int(os.getenv("KIMI_MAX_TOKENS", "4096"))
-    timeout: float = float(os.getenv("KIMI_TIMEOUT", "300.0"))  # 5 minutes for thinking
-    verify_ssl: bool = os.getenv("KIMI_VERIFY_SSL", "true").lower() != "false"
+    temperature: float = field(default_factory=lambda: float(os.getenv("KIMI_TEMPERATURE", "1.0")))
+    max_tokens: int = field(default_factory=lambda: int(os.getenv("KIMI_MAX_TOKENS", "4096")))
+    timeout: float = field(default_factory=lambda: float(os.getenv("KIMI_TIMEOUT", "300.0")))
+    verify_ssl: bool = field(default_factory=lambda: os.getenv("KIMI_VERIFY_SSL", "true").lower() != "false")
 
 
 class KimiClient:
@@ -79,15 +88,66 @@ class KimiClient:
         self.config = config or KimiConfig()
         self._client: Optional[httpx.AsyncClient] = None
         self._timeout = httpx.Timeout(self.config.timeout, connect=10.0)
-        self._mode = self.config.mode.lower() if self.config.mode else "api"
+        self._ollama_session: Optional["aiohttp.ClientSession"] = None
+        self._ollama_timeout = None
+        if aiohttp:
+            self._ollama_timeout = aiohttp.ClientTimeout(total=self.config.timeout)
+        
+        raw_mode = (self.config.mode or "auto").lower()
+        if raw_mode not in ("api", "local", "auto"):
+            logger.warning(
+                "Invalid KIMI_MODE, falling back to 'api'",
+                extra={"mode": raw_mode}
+            )
+            raw_mode = "api"
+        
+        if raw_mode == "auto":
+            self._mode = self._auto_detect_mode()
+        else:
+            self._mode = raw_mode
         
         # Validate mode
         if self._mode not in ("api", "local"):
             logger.warning(
-                "Invalid KIMI_MODE, defaulting to 'api'",
+                "Invalid KIMI_MODE after detection, defaulting to 'api'",
                 extra={"mode": self._mode}
             )
             self._mode = "api"
+
+    def _auto_detect_mode(self) -> str:
+        """Automatically select mode based on available configuration"""
+        if self.config.api_key:
+            logger.debug("Kimi auto mode: API key detected, using 'api'")
+            return "api"
+        
+        env_local_url = os.getenv("KIMI_OLLAMA_URL") or os.getenv("OLLAMA_HOST")
+        if env_local_url:
+            logger.debug(
+                "Kimi auto mode: Ollama env detected, using 'local'",
+                extra={"ollama_url": env_local_url}
+            )
+            if not self.config.ollama_url:
+                self.config.ollama_url = env_local_url
+            return "local"
+        
+        has_custom_local = (
+            bool(self.config.ollama_url) and self.config.ollama_url != DEFAULT_OLLAMA_URL
+        )
+        if has_custom_local:
+            logger.debug(
+                "Kimi auto mode: custom Ollama URL detected, using 'local'",
+                extra={"ollama_url": self.config.ollama_url}
+            )
+            return "local"
+        
+        fallback = os.getenv("KIMI_DEFAULT_MODE", "api").lower()
+        if fallback not in ("api", "local"):
+            fallback = "api"
+        logger.debug(
+            "Kimi auto mode: falling back to configured default",
+            extra={"fallback_mode": fallback}
+        )
+        return fallback
     
     @property
     def is_configured(self) -> bool:
@@ -113,26 +173,32 @@ class KimiClient:
             )
         return self._client
     
+    async def _get_ollama_session(self) -> "aiohttp.ClientSession":
+        """Get or create aiohttp session for local mode"""
+        if aiohttp is None:  # pragma: no cover - depends on optional dependency
+            raise RuntimeError("aiohttp is required for Kimi local mode. Install aiohttp to continue.")
+        
+        if self._ollama_session is None or self._ollama_session.closed:
+            timeout = self._ollama_timeout or aiohttp.ClientTimeout(total=self.config.timeout)
+            self._ollama_session = aiohttp.ClientSession(timeout=timeout)
+        return self._ollama_session
+    
     async def check_model_loaded(self) -> bool:
         """Check if model is loaded in Ollama (local mode only)"""
         if self._mode != "local":
             return True  # API mode doesn't need this check
         
-        import aiohttp
-        
         ollama_url = self.config.ollama_url.rstrip("/")
         if not ollama_url.startswith(("http://", "https://")):
             ollama_url = f"http://{ollama_url}"
         
-        timeout = aiohttp.ClientTimeout(total=10.0)
-        
         try:
-            async with aiohttp.ClientSession(timeout=timeout) as session:
-                async with session.get(f"{ollama_url}/api/tags") as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        models = [m['name'] for m in data.get('models', [])]
-                        return self.config.local_model in models
+            session = await self._get_ollama_session()
+            async with session.get(f"{ollama_url}/api/tags") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    models = [m['name'] for m in data.get('models', [])]
+                    return self.config.local_model in models
         except Exception as e:
             logger.error(
                 "Error checking Kimi model in Ollama",
@@ -149,6 +215,9 @@ class KimiClient:
         if self._client:
             await self._client.aclose()
             self._client = None
+        if self._ollama_session:
+            await self._ollama_session.close()
+            self._ollama_session = None
     
     async def __aenter__(self) -> "KimiClient":
         return self
@@ -263,8 +332,6 @@ class KimiClient:
         
         Note: Tool calling not supported in local mode yet
         """
-        import aiohttp
-        
         # Use recommended temperature if not specified
         temperature = temperature if temperature is not None else self.config.temperature
         max_tokens = max_tokens if max_tokens is not None else self.config.max_tokens
@@ -280,8 +347,6 @@ class KimiClient:
         if not ollama_url.startswith(("http://", "https://")):
             ollama_url = f"http://{ollama_url}"
         
-        timeout = aiohttp.ClientTimeout(total=self.config.timeout)
-        
         try:
             logger.debug(
                 "Calling Kimi-K2-Thinking via Ollama",
@@ -293,55 +358,55 @@ class KimiClient:
                 }
             )
             
-            async with aiohttp.ClientSession(timeout=timeout) as session:
-                async with session.post(
-                    f"{ollama_url}/api/generate",
-                    json={
-                        "model": self.config.local_model,
-                        "prompt": full_prompt,
-                        "stream": False,
-                        "options": {
-                            "temperature": temperature,
-                            "num_predict": max_tokens,
-                        }
+            session = await self._get_ollama_session()
+            async with session.post(
+                f"{ollama_url}/api/generate",
+                json={
+                    "model": self.config.local_model,
+                    "prompt": full_prompt,
+                    "stream": False,
+                    "options": {
+                        "temperature": temperature,
+                        "num_predict": max_tokens,
                     }
-                ) as response:
-                    if response.status != 200:
-                        error_text = await response.text()
-                        logger.error(
-                            "Ollama API error",
-                            extra={
-                                "status_code": response.status,
-                                "error": error_text,
-                                "model": self.config.local_model
-                            }
-                        )
-                        raise LLMCallError(f"Ollama API error: HTTP {response.status}: {error_text}")
-                    
-                    data = await response.json()
-                    text = data.get("response", "")
-                    
-                    logger.info(
-                        "Kimi-K2-Thinking (local) API call successful",
+                }
+            ) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    logger.error(
+                        "Ollama API error",
                         extra={
-                            "prompt_length": len(prompt),
-                            "response_length": len(text),
-                            "tokens_used": data.get("eval_count", 0),
+                            "status_code": response.status,
+                            "error": error_text,
                             "model": self.config.local_model
                         }
                     )
-                    
-                    return {
-                        "text": text,
-                        "reasoning_content": "",  # Ollama doesn't return reasoning content
-                        "tool_calls": [],
-                        "usage": {
-                            "prompt_tokens": data.get("prompt_eval_count", 0),
-                            "completion_tokens": data.get("eval_count", 0),
-                            "total_tokens": data.get("prompt_eval_count", 0) + data.get("eval_count", 0),
-                        },
-                        "finish_reason": "stop",
+                    raise LLMCallError(f"Ollama API error: HTTP {response.status}: {error_text}")
+                
+                data = await response.json()
+                text = data.get("response", "")
+                
+                logger.info(
+                    "Kimi-K2-Thinking (local) API call successful",
+                    extra={
+                        "prompt_length": len(prompt),
+                        "response_length": len(text),
+                        "tokens_used": data.get("eval_count", 0),
+                        "model": self.config.local_model
                     }
+                )
+                
+                return {
+                    "text": text,
+                    "reasoning_content": "",  # Ollama doesn't return reasoning content
+                    "tool_calls": [],
+                    "usage": {
+                        "prompt_tokens": data.get("prompt_eval_count", 0),
+                        "completion_tokens": data.get("eval_count", 0),
+                        "total_tokens": data.get("prompt_eval_count", 0) + data.get("eval_count", 0),
+                    },
+                    "finish_reason": "stop",
+                }
                     
         except aiohttp.ClientError as e:
             logger.error(

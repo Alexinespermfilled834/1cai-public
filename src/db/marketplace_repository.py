@@ -412,7 +412,7 @@ class MarketplaceRepository:
                 extra={
                     "plugin_id": plugin_id,
                     "object_key": object_key,
-                    "filename": filename,
+                    "artifact_filename": filename,
                     "size": len(data)
                 }
             )
@@ -422,7 +422,7 @@ class MarketplaceRepository:
                 extra={
                     "plugin_id": plugin_id,
                     "object_key": object_key,
-                    "filename": filename,
+                    "artifact_filename": filename,
                     "error_type": type(exc).__name__
                 },
                 exc_info=True

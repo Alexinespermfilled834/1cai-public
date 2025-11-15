@@ -20,6 +20,7 @@ if router not in fastapi_app.routes:
     fastapi_app.include_router(router)
 
 client = TestClient(fastapi_app)
+pytestmark = pytest.mark.timeout(10)
 
 
 @pytest.fixture(autouse=True)

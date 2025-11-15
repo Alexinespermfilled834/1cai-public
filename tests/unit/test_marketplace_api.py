@@ -6,6 +6,8 @@ Tests for create, update, and complaints functionality
 import pytest
 from unittest.mock import AsyncMock, Mock, patch
 from fastapi import HTTPException
+from starlette.requests import Request
+from starlette.responses import Response
 
 from src.api.marketplace import (
     submit_plugin,
@@ -14,6 +16,7 @@ from src.api.marketplace import (
     PluginSubmitRequest,
     PluginUpdateRequest,
     PluginStatus,
+    PluginCategory,
 )
 from src.security.auth import CurrentUser
 
@@ -33,67 +36,97 @@ def mock_user():
 def mock_repo():
     """Mock marketplace repository"""
     repo = AsyncMock()
-    repo.create_plugin = AsyncMock(return_value={
+    plugin_payload = {
+        "id": "plugin_123",
         "plugin_id": "plugin_123",
         "name": "Test Plugin",
+        "description": "A test plugin",
+        "category": PluginCategory.AI_AGENT.value,
+        "version": "1.0.0",
+        "author": "testuser",
         "status": PluginStatus.PENDING.value,
+        "visibility": "public",
+        "downloads": 0,
+        "rating": 0.0,
+        "ratings_count": 0,
+        "installs": 0,
+        "homepage": None,
+        "repository": None,
+        "download_url": "/marketplace/plugins/plugin_123/download",
+        "icon_url": None,
+        "changelog": None,
+        "readme": None,
+        "artifact_path": None,
+        "screenshot_urls": [],
+        "keywords": [],
+        "license": "MIT",
+        "min_version": "1.0.0",
+        "supported_platforms": ["telegram"],
+        "created_at": "2025-11-15T00:00:00Z",
+        "updated_at": "2025-11-15T00:00:00Z",
+        "published_at": None,
+        "featured": False,
+        "verified": False,
         "owner_id": "user_123",
-    })
-    repo.get_plugin = AsyncMock(return_value={
-        "plugin_id": "plugin_123",
-        "name": "Test Plugin",
-        "status": PluginStatus.APPROVED.value,
-        "owner_id": "user_123",
-    })
-    repo.update_plugin = AsyncMock(return_value={
-        "plugin_id": "plugin_123",
-        "name": "Updated Plugin",
-        "status": PluginStatus.APPROVED.value,
-        "owner_id": "user_123",
-    })
+        "owner_username": "testuser",
+    }
+    repo.create_plugin = AsyncMock(return_value=plugin_payload)
+    repo.get_plugin = AsyncMock(return_value={**plugin_payload, "status": PluginStatus.APPROVED.value})
+    repo.update_plugin = AsyncMock(return_value={**plugin_payload, "name": "Updated Plugin", "status": PluginStatus.APPROVED.value})
     repo.add_complaint = AsyncMock(return_value=True)
     return repo
 
 
 @pytest.mark.asyncio
-async def test_submit_plugin_success(mock_user, mock_repo):
+@pytest.fixture
+def fake_request():
+    scope = {
+        "type": "http",
+        "method": "POST",
+        "headers": [],
+        "path": "/marketplace/plugins",
+    }
+    return Request(scope)
+
+
+@pytest.mark.asyncio
+async def test_submit_plugin_success(mock_user, mock_repo, fake_request):
     """Test successful plugin submission"""
     plugin_data = PluginSubmitRequest(
         name="Test Plugin",
         description="A test plugin",
+        category=PluginCategory.AI_AGENT,
         version="1.0.0",
         author="Test Author",
     )
     
     with patch("src.api.marketplace.audit_logger") as mock_audit:
         result = await submit_plugin(
+            request=fake_request,
+            response=Response(),
             plugin=plugin_data,
             current_user=mock_user,
             repo=mock_repo
         )
     
-    assert result["plugin_id"] == "plugin_123"
-    assert result["status"] == PluginStatus.PENDING.value
+    result_data = result.model_dump()
+    assert result_data["plugin_id"] == "plugin_123"
+    assert result_data["status"] == PluginStatus.PENDING.value
     mock_repo.create_plugin.assert_called_once()
     mock_audit.log_action.assert_called_once()
 
 
-@pytest.mark.asyncio
-async def test_submit_plugin_validation_error(mock_user, mock_repo):
-    """Test plugin submission with validation error"""
-    plugin_data = PluginSubmitRequest(
-        name="AB",  # Too short
-        description="Test",
-        version="1.0.0",
-        author="Test",
-    )
+def test_submit_plugin_validation_error():
+    """Test plugin submission request validation"""
+    from pydantic import ValidationError
     
-    # Should fail validation before reaching endpoint
-    with pytest.raises(Exception):
-        await submit_plugin(
-            plugin=plugin_data,
-            current_user=mock_user,
-            repo=mock_repo
+    with pytest.raises(ValidationError):
+        PluginSubmitRequest(
+            name="AB",  # Too short
+            description="Test",
+            category=PluginCategory.AI_AGENT,
+            version="1.0.0",
+            author="Test",
         )
 
 
@@ -112,7 +145,7 @@ async def test_update_plugin_success(mock_user, mock_repo):
             repo=mock_repo
         )
     
-    assert result["name"] == "Updated Plugin"
+    assert result.model_dump()["name"] == "Updated Plugin"
     mock_repo.update_plugin.assert_called_once()
     mock_audit.log_action.assert_called_once()
 
@@ -121,7 +154,7 @@ async def test_update_plugin_success(mock_user, mock_repo):
 async def test_update_plugin_not_found(mock_user, mock_repo):
     """Test updating non-existent plugin"""
     mock_repo.get_plugin.return_value = None
-    update_data = PluginUpdateRequest(description="Updated")
+    update_data = PluginUpdateRequest(description="Updated description")
     
     with pytest.raises(HTTPException) as exc_info:
         await update_plugin(
@@ -143,7 +176,7 @@ async def test_update_plugin_unauthorized(mock_user, mock_repo):
         email="other@example.com",
         roles=["developer"]
     )
-    update_data = PluginUpdateRequest(description="Updated")
+    update_data = PluginUpdateRequest(description="Updated description")
     
     with pytest.raises(HTTPException) as exc_info:
         await update_plugin(

@@ -25,6 +25,27 @@ except ImportError:
     settings = MockSettings()
 
 
+_OPENAI_ANALYZER: Optional["OpenAICodeAnalyzer"] = None
+
+
+def get_openai_analyzer() -> "OpenAICodeAnalyzer":
+    """
+    Lazy singleton accessor to reuse analyzer in HTTP handlers and tests.
+    """
+    global _OPENAI_ANALYZER
+    if _OPENAI_ANALYZER is None:
+        _OPENAI_ANALYZER = OpenAICodeAnalyzer()
+    return _OPENAI_ANALYZER
+
+
+def set_openai_analyzer(analyzer: Optional["OpenAICodeAnalyzer"]) -> None:
+    """
+    Allow tests to inject a fake analyzer implementation.
+    """
+    global _OPENAI_ANALYZER
+    _OPENAI_ANALYZER = analyzer
+
+
 class OpenAICodeAnalyzer:
     """Сервис для AI анализа кода через OpenAI"""
     
@@ -659,15 +680,4 @@ class OpenAICodeAnalyzer:
             )
             return []
 
-
-# Глобальный экземпляр
-_openai_analyzer: Optional[OpenAICodeAnalyzer] = None
-
-
-def get_openai_analyzer() -> OpenAICodeAnalyzer:
-    """Получение экземпляра OpenAI анализатора"""
-    global _openai_analyzer
-    if _openai_analyzer is None:
-        _openai_analyzer = OpenAICodeAnalyzer()
-    return _openai_analyzer
 

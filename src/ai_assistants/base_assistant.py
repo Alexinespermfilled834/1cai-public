@@ -29,17 +29,29 @@ class AIMessage:
 class ChatPromptTemplate:
     def __init__(self, messages):
         self.messages = messages
-    
+
+    @classmethod
+    def from_messages(cls, messages):
+        return cls(messages)
+
     def format_prompt(self, **kwargs):
         class MockPromptValue:
+            def __init__(self, messages):
+                self._messages = messages
+
             def to_messages(self):
-                return self.messages
-        return MockPromptValue()
+                return self._messages
+
+        return MockPromptValue(self.messages)
 
 class ConversationalRetrievalChain:
     def __init__(self, **kwargs):
         pass
-    
+
+    @classmethod
+    def from_llm(cls, llm, retriever, **kwargs):
+        return cls(llm=llm, retriever=retriever, **kwargs)
+
     async def ainvoke(self, inputs):
         return {"answer": "Test response", "source_documents": []}
 

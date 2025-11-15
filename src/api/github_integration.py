@@ -17,7 +17,6 @@ import logging
 from typing import Dict, Any, List, Optional
 from fastapi import APIRouter, Request, HTTPException, Header
 import httpx
-import requests
 
 from src.ai.agents.code_review.ai_reviewer import AICodeReviewer
 from src.utils.structured_logging import StructuredLogger
@@ -467,7 +466,7 @@ class GitHubIntegration:
     ) -> bool:
         """
         Публикация одиночного комментария в PR с input validation и retry logic.
-        Совместима с тестами, использующими requests.patch.
+        Совместима с тестами, использующими заглушки httpx.AsyncClient.
         """
         # Input validation
         if not isinstance(repo, str) or not repo.strip():
@@ -515,14 +514,17 @@ class GitHubIntegration:
         }
         
         base_delay = 1.0
+        timeout_config = httpx.Timeout(10.0, connect=5.0)
         last_exception = None
         
         for attempt in range(max_retries):
             try:
-                def _post():
-                    return requests.post(url, headers=headers, json={"body": comment}, timeout=10)
-                
-                response = await asyncio.to_thread(_post)
+                async with httpx.AsyncClient(timeout=timeout_config) as client:
+                    response = await client.post(
+                        url,
+                        headers=headers,
+                        json={"body": comment}
+                    )
                 
                 if response.status_code in (200, 201):
                     if attempt > 0:
@@ -536,7 +538,6 @@ class GitHubIntegration:
                         )
                     return True
                 
-                # Retry on 5xx errors
                 if response.status_code >= 500 and attempt < max_retries - 1:
                     delay = base_delay * (2 ** attempt)
                     logger.warning(
@@ -563,7 +564,7 @@ class GitHubIntegration:
                 )
                 return False
                 
-            except requests.exceptions.Timeout as e:
+            except httpx.TimeoutException as e:
                 last_exception = e
                 if attempt == max_retries - 1:
                     logger.error(
@@ -589,7 +590,7 @@ class GitHubIntegration:
                 )
                 await asyncio.sleep(delay)
                 
-            except requests.exceptions.RequestException as e:
+            except httpx.RequestError as e:
                 last_exception = e
                 if attempt == max_retries - 1:
                     logger.error(
@@ -842,7 +843,7 @@ async def manual_review(
     except asyncio.TimeoutError:
         logger.error(
             "Timeout in manual_review",
-            extra={"filename": filename, "code_length": len(code)}
+            extra={"file_name": filename, "code_length": len(code)}
         )
         raise HTTPException(status_code=504, detail="Review operation timed out")
     except Exception as e:

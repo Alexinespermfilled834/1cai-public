@@ -1,14 +1,15 @@
 """
-E2E tests for marketplace API with authentication and role-based access
+E2E tests for marketplace API with authentication and role-based access.
+These tests rely on dependency overrides so we can exercise the FastAPI router
+without real JWT tokens or a Postgres marketplace repository.
 """
 
 import pytest
 from fastapi.testclient import TestClient
-from httpx import AsyncClient
 
 from src.main import app
-from src.security.auth import get_current_user, require_roles
-from src.security.roles import grant_role
+from src.api.marketplace import get_marketplace_repository
+from src.security.auth import CurrentUser, get_current_user
 
 
 @pytest.fixture
@@ -19,168 +20,273 @@ def client():
 
 @pytest.fixture
 def developer_user():
-    """Mock developer user"""
-    from src.security.auth import CurrentUser
     return CurrentUser(
         user_id="dev_123",
         username="developer",
         email="dev@example.com",
-        roles=["developer"]
-    )
-
-
-@pytest.fixture
-def admin_user():
-    """Mock admin user"""
-    from src.security.auth import CurrentUser
-    return CurrentUser(
-        user_id="admin_123",
-        username="admin",
-        email="admin@example.com",
-        roles=["admin"]
+        roles=["developer"],
     )
 
 
 @pytest.fixture
 def regular_user():
-    """Mock regular user"""
-    from src.security.auth import CurrentUser
     return CurrentUser(
         user_id="user_123",
         username="user",
         email="user@example.com",
-        roles=["user"]
+        roles=["user"],
     )
+
+
+class DummyMarketplaceRepo:
+    """Simple in-memory marketplace repository for integration tests."""
+
+    def __init__(self):
+        self.plugins = {}
+        self.complaints = []
+
+    async def create_plugin(self, plugin_id, owner_id, owner_username, payload, download_url):
+        plugin = {
+            "id": plugin_id,
+            "plugin_id": plugin_id,
+            "name": payload["name"],
+            "description": payload["description"],
+            "category": payload["category"],
+            "version": payload["version"],
+            "author": payload.get("author", owner_username),
+            "status": payload.get("status", "pending"),
+            "visibility": payload.get("visibility", "public"),
+            "downloads": 0,
+            "rating": 0.0,
+            "ratings_count": 0,
+            "installs": 0,
+            "homepage": payload.get("homepage"),
+            "repository": payload.get("repository"),
+            "download_url": download_url,
+            "icon_url": payload.get("icon_url"),
+            "screenshot_urls": payload.get("screenshot_urls", []),
+            "keywords": payload.get("keywords", []),
+            "license": payload.get("license", "MIT"),
+            "min_version": payload.get("min_version", "1.0.0"),
+            "supported_platforms": payload.get("supported_platforms", []),
+            "readme": payload.get("readme"),
+            "changelog": payload.get("changelog"),
+            "artifact_path": payload.get("artifact_path"),
+            "created_at": "2025-11-15T00:00:00Z",
+            "updated_at": "2025-11-15T00:00:00Z",
+            "published_at": None,
+            "featured": False,
+            "verified": False,
+            "owner_id": owner_id,
+            "owner_username": owner_username,
+        }
+        self.plugins[plugin_id] = plugin
+        return plugin
+
+    async def get_plugin(self, plugin_id):
+        return self.plugins.get(plugin_id)
+
+    async def update_plugin(self, plugin_id, update_data):
+        plugin = self.plugins.get(plugin_id)
+        if not plugin:
+            return None
+        plugin.update(update_data)
+        plugin["updated_at"] = "2025-11-15T00:00:01Z"
+        return plugin
+
+    async def add_complaint(self, complaint_id, plugin_id, user_id, reason, details=None):
+        if plugin_id not in self.plugins:
+            return False
+        self.complaints.append(
+            {
+                "complaint_id": complaint_id,
+                "plugin_id": plugin_id,
+                "user_id": user_id,
+                "reason": reason,
+                "details": details,
+            }
+        )
+        return True
+
+    def seed_plugin(self, plugin_id: str):
+        if plugin_id not in self.plugins:
+            self.plugins[plugin_id] = {
+                "id": plugin_id,
+                "plugin_id": plugin_id,
+                "name": "Seed Plugin",
+                "description": "Seed",
+                "category": "ai_agent",
+                "version": "1.0.0",
+                "author": "seed",
+                "status": "approved",
+                "visibility": "public",
+                "downloads": 0,
+                "rating": 0.0,
+                "ratings_count": 0,
+                "installs": 0,
+                "homepage": None,
+                "repository": None,
+                "download_url": f"/marketplace/plugins/{plugin_id}/download",
+                "icon_url": None,
+                "screenshot_urls": [],
+                "keywords": [],
+                "license": "MIT",
+                "min_version": "1.0.0",
+                "supported_platforms": [],
+                "readme": None,
+                "changelog": None,
+                "artifact_path": None,
+                "created_at": "2025-11-15T00:00:00Z",
+                "updated_at": "2025-11-15T00:00:00Z",
+                "published_at": None,
+                "featured": False,
+                "verified": False,
+                "owner_id": "seed_user",
+                "owner_username": "seed",
+            }
+
+
+def _override_repo(repo: DummyMarketplaceRepo):
+    app.dependency_overrides[get_marketplace_repository] = lambda: repo
+
+
+def _override_current_user(user: CurrentUser):
+    app.dependency_overrides[get_current_user] = lambda: user
 
 
 @pytest.mark.asyncio
 async def test_submit_plugin_requires_developer_role(client, developer_user):
-    """Test that plugin submission requires developer role"""
-    # Mock auth dependency
-    app.dependency_overrides[require_roles("developer", "admin")] = lambda: developer_user
-    
+    repo = DummyMarketplaceRepo()
+    _override_repo(repo)
+    _override_current_user(developer_user)
+
     response = client.post(
         "/marketplace/plugins",
         json={
             "name": "Test Plugin",
             "description": "A test plugin for E2E testing",
+            "category": "ai_agent",
             "version": "1.0.0",
             "author": "Test Author",
         },
-        headers={"Authorization": "Bearer test_token"}
+        headers={"Authorization": "Bearer test_token"},
     )
-    
-    assert response.status_code in [201, 400]  # 201 success or 400 validation error
-    if response.status_code == 201:
-        data = response.json()
-        assert "plugin_id" in data
-        assert data["status"] == "pending"
-    
+
+    assert response.status_code == 201
+    data = response.json()
+    assert "plugin_id" in data
+    assert data["status"] == "pending"
+
     app.dependency_overrides.clear()
 
 
 @pytest.mark.asyncio
 async def test_submit_plugin_rejects_regular_user(client, regular_user):
-    """Test that regular users cannot submit plugins"""
-    # This should fail because regular_user doesn't have developer role
-    # In real scenario, require_roles would raise HTTPException
-    
-    # For testing, we verify the endpoint requires developer role
-    # by checking that without proper auth, it returns 401/403
+    repo = DummyMarketplaceRepo()
+    _override_repo(repo)
+    _override_current_user(regular_user)
+
     response = client.post(
         "/marketplace/plugins",
         json={
             "name": "Test Plugin",
             "description": "A test plugin",
+            "category": "ai_agent",
             "version": "1.0.0",
             "author": "Test Author",
-        }
+        },
+        headers={"Authorization": "Bearer token"},
     )
-    
-    # Should fail without auth
-    assert response.status_code in [401, 403, 422]
+
+    assert response.status_code == 403
+
+    app.dependency_overrides.clear()
 
 
 @pytest.mark.asyncio
 async def test_update_plugin_requires_ownership(client, developer_user):
-    """Test that only plugin owner can update their plugin"""
-    # Mock current user
-    app.dependency_overrides[get_current_user] = lambda: developer_user
-    
-    # First create a plugin
+    repo = DummyMarketplaceRepo()
+    _override_repo(repo)
+    _override_current_user(developer_user)
+
     create_response = client.post(
         "/marketplace/plugins",
         json={
             "name": "My Plugin",
-            "description": "My plugin",
+            "description": "My plugin description",
+            "category": "ai_agent",
             "version": "1.0.0",
             "author": "Me",
         },
-        headers={"Authorization": "Bearer test_token"}
+        headers={"Authorization": "Bearer test_token"},
     )
-    
-    if create_response.status_code == 201:
-        plugin_id = create_response.json()["plugin_id"]
-        
-        # Try to update it
-        update_response = client.put(
-            f"/marketplace/plugins/{plugin_id}",
-            json={"description": "Updated description"},
-            headers={"Authorization": "Bearer test_token"}
-        )
-        
-        # Should succeed for owner
-        assert update_response.status_code in [200, 404]  # 404 if plugin not found in test DB
-    
+
+    assert create_response.status_code == 201
+    plugin_id = create_response.json()["plugin_id"]
+
+    update_response = client.put(
+        f"/marketplace/plugins/{plugin_id}",
+        json={"description": "Updated description"},
+        headers={"Authorization": "Bearer test_token"},
+    )
+
+    assert update_response.status_code == 200
     app.dependency_overrides.clear()
 
 
 @pytest.mark.asyncio
 async def test_report_plugin_creates_complaint(client, regular_user):
-    """Test that reporting a plugin creates a complaint"""
-    app.dependency_overrides[get_current_user] = lambda: regular_user
-    
+    repo = DummyMarketplaceRepo()
+    repo.seed_plugin("test_plugin_123")
+    _override_repo(repo)
+    _override_current_user(regular_user)
+
     response = client.post(
         "/marketplace/plugins/test_plugin_123/report",
         params={"reason": "spam", "details": "This is spam"},
-        headers={"Authorization": "Bearer test_token"}
+        headers={"Authorization": "Bearer test_token"},
     )
-    
-    # Should accept the report (404 if plugin doesn't exist in test DB)
-    assert response.status_code in [200, 404]
-    
-    if response.status_code == 200:
-        data = response.json()
-        assert data["status"] == "reported"
-    
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "reported"
+
     app.dependency_overrides.clear()
 
 
 @pytest.mark.asyncio
 async def test_marketplace_authorization_flow(client, developer_user, regular_user):
-    """Test complete authorization flow for marketplace"""
-    # 1. Developer can submit plugin
-    app.dependency_overrides[require_roles("developer", "admin")] = lambda: developer_user
-    
+    repo = DummyMarketplaceRepo()
+    _override_repo(repo)
+
+    current = {"user": developer_user}
+    app.dependency_overrides[get_current_user] = lambda: current["user"]
+
     submit_response = client.post(
         "/marketplace/plugins",
         json={
             "name": "Auth Test Plugin",
             "description": "Testing auth",
+            "category": "ai_agent",
             "version": "1.0.0",
             "author": "Test",
         },
-        headers={"Authorization": "Bearer dev_token"}
+        headers={"Authorization": "Bearer dev_token"},
     )
-    
-    assert submit_response.status_code in [201, 400]
-    
-    # 2. Regular user cannot submit
-    app.dependency_overrides[require_roles("developer", "admin")] = lambda: regular_user
-    
-    # This should fail - but in test we can't easily test this without
-    # proper role checking, so we verify the endpoint exists
-    assert True  # Placeholder - actual test would verify 403 response
-    
+    assert submit_response.status_code == 201
+
+    current["user"] = regular_user
+    forbidden_response = client.post(
+        "/marketplace/plugins",
+        json={
+            "name": "Auth Fail Plugin",
+            "description": "Testing auth fail",
+            "category": "ai_agent",
+            "version": "1.0.0",
+            "author": "Test",
+        },
+        headers={"Authorization": "Bearer user_token"},
+    )
+    assert forbidden_response.status_code == 403
+
     app.dependency_overrides.clear()
 
