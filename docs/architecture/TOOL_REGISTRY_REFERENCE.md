@@ -70,7 +70,10 @@ ToolRegistry задуман как общий источник правды дл
 
 - хранение ToolDescriptor/ToolUsageExample в БД (PostgreSQL/Neo4j),
 - semantic index usage-примеров (Qdrant),
-- 자동ическую генерацию документации по зарегистрированным инструментам.
+- автоматическую генерацию документации по зарегистрированным инструментам,
+- read-only API поверх ToolRegistry (экспериментальный пример уже
+  реализован как `/api/tools/registry/examples` в `src/ai/orchestrator.py`,
+  используя descriptors из `src/ai/tool_registry_examples.py`).
 
 ---
 

@@ -56,6 +56,25 @@ async def get_scenario_examples() -> Dict[str, Any]:
     }
 
 
+@app.get("/api/tools/registry/examples")
+async def get_tool_registry_examples() -> Dict[str, Any]:
+    """
+    Экспериментальный read-only endpoint, возвращающий
+    примерное содержимое ToolRegistry (несколько инструментов).
+    """
+    try:
+        from src.ai.tool_registry_examples import list_example_tools
+    except Exception as e:  # pragma: no cover - защитный fallback
+        logger.warning(
+            "Tool registry examples not available",
+            extra={"error": str(e), "error_type": type(e).__name__},
+        )
+        raise HTTPException(status_code=500, detail="Tool registry examples not available")
+
+    tools = [asdict(t) for t in list_example_tools()]
+    return {"tools": tools}
+
+
 class QueryType(Enum):
     """Types of queries"""
     STANDARD_1C = "standard_1c"
