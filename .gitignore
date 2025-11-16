@@ -109,6 +109,8 @@ archive_*/
 backup/
 original-style-demo/
 original-style-report/
+original-style-demo/
+original-style-report/
 
 # === КРИТИЧНО: Проприетарные данные 1С ===
 
@@ -171,6 +173,7 @@ analysis/git_ls_files.txt
 # Node modules (если используется)
 node_modules/
 **/node_modules/
+demo/demo-ai-assistants-1c/dist/
 
 # Coverage reports
 htmlcov/

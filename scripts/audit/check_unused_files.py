@@ -29,6 +29,7 @@ IGNORED_DIR_PREFIXES = [
     "analysis/",
     "output/",
     "docs/09-archive/",
+    "docs/architecture/checksums/",
     ".github/",
     ".git/",
     "venv/",
@@ -42,6 +43,9 @@ IGNORED_FILES = {
 
 
 def is_ignored_path(rel_path: str) -> bool:
+    # Игнорируем служебные .gitkeep (держат пустые директории в git)
+    if rel_path.endswith("/.gitkeep"):
+        return True
     for prefix in IGNORED_DIR_PREFIXES:
         if rel_path.startswith(prefix):
             return True
