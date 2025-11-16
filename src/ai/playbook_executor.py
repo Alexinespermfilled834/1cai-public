@@ -27,6 +27,7 @@ from src.ai.scenario_hub import (
     ScenarioStep,
     TrustScore,
 )
+from src.ai.scenario_policy import StepDecision, assess_plan_execution
 
 
 def _parse_risk(value: str) -> ScenarioRiskLevel:
@@ -97,7 +98,10 @@ def load_playbook(path: str | Path) -> ScenarioPlan:
     return plan
 
 
-def dry_run_playbook(plan: ScenarioPlan) -> ScenarioExecutionReport:
+def dry_run_playbook(
+    plan: ScenarioPlan,
+    autonomy: AutonomyLevel | None = None,
+) -> ScenarioExecutionReport:
     """
     Dry-run сценария:
     - не выполняет реальные действия;
@@ -113,11 +117,18 @@ def dry_run_playbook(plan: ScenarioPlan) -> ScenarioExecutionReport:
         ],
     )
 
-    timeline = []
+    # Оценка шагов через Scenario Policy (если указан уровень автономности)
+    timeline: list[str] = []
+    decisions: dict[str, StepDecision] = {}
+    if autonomy is not None:
+        decisions = assess_plan_execution(plan, autonomy)
+
     for idx, step in enumerate(plan.steps, start=1):
+        decision = decisions.get(step.id, StepDecision.NEEDS_APPROVAL)
         timeline.append(
             f"Шаг {idx}: {step.title} "
-            f"(risk={step.risk_level.value}, autonomy={step.autonomy_required.value})"
+            f"(risk={step.risk_level.value}, autonomy={step.autonomy_required.value}, "
+            f"decision={decision.value})"
         )
 
     summary = (
@@ -136,12 +147,27 @@ def dry_run_playbook(plan: ScenarioPlan) -> ScenarioExecutionReport:
     )
 
 
-def dry_run_playbook_to_dict(path: str | Path) -> Dict[str, Any]:
+def dry_run_playbook_to_dict(
+    path: str | Path,
+    autonomy: str | None = None,
+) -> Dict[str, Any]:
     """
     Утилита для CLI/скриптов: dry-run плейбука и возврат отчёта как dict.
     """
     plan = load_playbook(path)
-    report = dry_run_playbook(plan)
+
+    autonomy_level: AutonomyLevel | None = None
+    if autonomy is not None:
+        # Преобразуем строку в AutonomyLevel, если она валидна
+        mapping = {
+            "A0_propose_only": AutonomyLevel.A0_PROPOSE_ONLY,
+            "A1_safe_automation": AutonomyLevel.A1_SAFE_AUTOMATION,
+            "A2_non_prod_changes": AutonomyLevel.A2_NON_PROD_CHANGES,
+            "A3_restricted_prod": AutonomyLevel.A3_RESTRICTED_PROD,
+        }
+        autonomy_level = mapping.get(autonomy)
+
+    report = dry_run_playbook(plan, autonomy=autonomy_level)
     return asdict(report)
 
 

@@ -101,13 +101,13 @@ curl http://localhost:8000/api/scenarios/examples | jq
 Для локальной проверки структуры плейбука можно выполнить dry-run:
 
 ```bash
-python scripts/runbooks/run_playbook.py playbooks/ba_dev_qa_example.yaml
+python scripts/runbooks/run_playbook.py playbooks/ba_dev_qa_example.yaml --autonomy A2_non_prod_changes
 ```
 
 Аналогично для DR rehearsal:
 
 ```bash
-python scripts/runbooks/run_playbook.py playbooks/dr_vault_example.yaml
+python scripts/runbooks/run_playbook.py playbooks/dr_vault_example.yaml --autonomy A2_non_prod_changes
 ```
 
 Скрипт не выполняет реальные действия — только печатает отчёт по шагам
