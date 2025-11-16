@@ -41,7 +41,44 @@
 - **BA & Documentation**: новые BA‑гайды (BA‑03…BA‑07), обновлён `alkoleft_todo.md`, Usage Cookbook (`docs/01-getting-started/cookbook.md`) и Windows Quickstart, шаблон DORA weekly summary (`docs/status/weekly_summary_template.md`).  
 - **DR/Resilience**: автоматизация DR rehearsal постмортемов (`scripts/runbooks/generate_dr_postmortem.py`, `docs/runbooks/postmortems/*`), актуализирован `dr_rehearsal_plan.md`.
 
-*(Слоты для ещё 6 релизов будут автоматически заполняться по мере появления дат в CHANGELOG.)*
+#### 2025‑11‑15 — Orchestrator & AI‑контур
+
+- **AI Orchestrator**: базовые unit‑тесты (`tests/unit/test_ai_orchestrator_basic.py`, `tests/unit/test_query_classifier.py`) для классификации запросов, кэша и offline‑режима.  
+- **AI Agents**: дополнительные unit‑тесты для TechLogAnalyzer, RAS Monitor, Issue Classifier (ML/rule‑based).  
+- **LLM Diagnostics**: `scripts/diagnostics/check_llm_endpoints.py` + юнит‑тесты, DevOps offline‑гайд обновлён под новые проверки.
+
+#### 2025‑11‑14 — Security & Audit
+
+- **Secret Scanning**: `scripts/audit/check_secrets.py` + отчёт `analysis/secret_scan_report.json`.  
+- **Hidden Dirs / Git Safety**: `scripts/audit/check_hidden_dirs.py`, `check_git_safety.py`, интеграция в `make security-audit`.  
+- **Security Docs**: обновлены `SECURITY_IMPROVEMENTS.md`, раздел Security в `CHANGELOG`, зафиксирован риск по CVE FastAPI/Starlette/urllib3.  
+- **Windows Security**: `scripts/windows/security-audit.ps1` как единая точка входа для аудита в PowerShell.
+
+#### 2025‑11‑13 — Агентские гайды и E2E
+
+- **Developer AI Secure**: `docs/06-features/DEVELOPER_AGENT_GUIDE.md` + unit‑тесты approve‑флоу.  
+- **QA Engineer AI**: `docs/06-features/QA_ENGINEER_GUIDE.md`, system‑тесты маршрутизатора ролей (`tests/system/test_role_based_routing.py`).  
+- **Business Analyst**: интеграционные тесты Jira/Confluence/PowerBI/Docflow (`tests/unit/test_business_analyst_integrations.py`).  
+- **SQL Optimizer**: гайд `SQL_OPTIMIZER_GUIDE.md` и unit‑тесты secure‑режима.
+
+#### 2025‑11‑12 — DevEx, Windows и Cookbook
+
+- **Windows Quickstart**: `docs/01-getting-started/windows_quickstart.md` с пошаговым запуском без GNU Make.  
+- **Usage Cookbook**: `docs/01-getting-started/cookbook.md` (частые сценарии: тесты, security-audit, BA→Dev→QA, Orchestrator latency, DR rehearsal).  
+- **Runtime Checks**: `scripts/setup/check_runtime.py` + обновлённая `docs/research/constitution.md` (проверки Python 3.11, make, docker).
+
+#### 2025‑11‑11 — BA‑подсистема и DR
+
+- **BA Guides**: `BA_PROCESS_MODELLING_GUIDE`, `BA_ANALYTICS_KPI_GUIDE`, `BA_TRACEABILITY_COMPLIANCE_GUIDE`, `BA_INTEGRATIONS_COLLAB_GUIDE`, `BA_ENABLEMENT_GUIDE` + индексы в `docs/06-features/README.md`.  
+- **DR / Resilience**: план `docs/runbooks/dr_rehearsal_plan.md`, интеграция DR rehearsal в общий процесс.  
+- **DORA / Status**: `docs/status/weekly_summary_template.md` и обновлённый `docs/status/README.md`.
+
+#### 2025‑11‑10 — Архитектура, Feature Flags и README
+
+- **Feature Flags**: `docs/06-features/FEATURE_FLAGS_GUIDE.md`, ссылки в `docs/06-features/README.md` и `README`.  
+- **Architecture / UML**: диаграмма CursorExt (`docs/architecture/uml/integrations/cursorext-overview.puml`) и артефакт PNG в `docs/architecture/images/`.  
+- **README & Usage**: очищен от merge‑конфликтов, добавлен раздел Usage, таблица статусов подсистем и ссылки на основные гайды.  
+- **Приватный push‑процесс**: документация в `docs/05-development/README.md` и `docs/01-getting-started/CONTRIBUTING.md`.
 
 ## Архитектура платформы
 
