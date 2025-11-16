@@ -89,8 +89,12 @@ rule_files:
 ### Alertmanager
 
 Алерты автоматически маршрутизируются по severity:
-- **critical** → канал `#1c-ai-critical` + email
+- **critical** → канал `#1c-ai-critical` + email (может дублироваться в Telegram)
 - **warning** → канал `#1c-ai-warnings`
+
+Для интеграции с Telegram предусмотрен workflow `.github/workflows/telegram-alert.yaml`
+и стандартная схема Alertmanager → webhook → Telegram gateway. См. подробности в
+`docs/observability/telegram_alerts.md`.
 
 ## Запросы Prometheus
 
