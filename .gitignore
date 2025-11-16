@@ -143,6 +143,11 @@ docs/FINAL_COMPREHENSIVE_SUMMARY.md
 ROOT_CLEANUP_PLAN.md
 *_CLEANUP_PLAN.md
 LICENSE_AUDIT_*.md
+FULL_AUDIT_RESULTS_FINAL.md
+GIT_STATUS_REPORT.md
+progress_summary.json
+handover_summary.json
+.memory/
 
 # Local AI progress memory (НЕ ДОЛЖНО попадать в git)
 analysis/progress_memory.json
