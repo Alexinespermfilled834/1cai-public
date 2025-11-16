@@ -40,7 +40,7 @@
 - **Security & Audit**: скрипты `scripts/audit/check_hidden_dirs.py`, `check_secrets.py`, составной `make security-audit` + `scripts/windows/security-audit.ps1`, обновлённые `SECURITY_IMPROVEMENTS.md` и политика `docs/research/constitution.md`.  
 - **BA & Documentation**: новые BA‑гайды (BA‑03…BA‑07), обновлён `alkoleft_todo.md`, Usage Cookbook (`docs/01-getting-started/cookbook.md`) и Windows Quickstart, шаблон DORA weekly summary (`docs/status/weekly_summary_template.md`).  
 - **DR/Resilience**: автоматизация DR rehearsal постмортемов (`scripts/runbooks/generate_dr_postmortem.py`, `docs/runbooks/postmortems/*`), YAML-плейбуки (`playbooks/*.yaml`), dry-run исполнитель (`src/ai/playbook_executor.py`, `scripts/runbooks/run_playbook.py`), актуализирован `dr_rehearsal_plan.md`.  
-- **Scenario Hub & Tool Registry (experimental)**: добавлен reference-слой Scenario Hub/ToolRegistry (`src/ai/scenario_hub.py`, `src/ai/tool_registry.py`, `docs/architecture/AI_SCENARIO_HUB_REFERENCE.md`, `docs/architecture/TOOL_REGISTRY_REFERENCE.md`), read-only endpoints `/api/scenarios/examples` и `/api/tools/registry/examples`, YAML-плейбуки (`playbooks/*`) и готовые рецепты в Cookbook.
+- **Scenario Hub & Tool Registry (experimental)**: добавлен reference-слой Scenario Hub/ToolRegistry (`src/ai/scenario_hub.py`, `src/ai/tool_registry.py`, `docs/architecture/AI_SCENARIO_HUB_REFERENCE.md`, `docs/architecture/TOOL_REGISTRY_REFERENCE.md`), read-only endpoints `/api/scenarios/examples` (с поддержкой уровней автономности и policy_decisions) и `/api/tools/registry/examples`, YAML-плейбуки (`playbooks/*`), dry-run исполнитель с Scenario Policy и готовые рецепты в Cookbook.
 
 #### 2025‑11‑15 — Orchestrator & AI‑контур
 
