@@ -1,2 +1,67 @@
-[]
+[
+  {
+    "name": "yaxunit-ai-generated-code",
+    "command": [
+      "oscript",
+      "tools/yaxunit/src/cli/yaxunit-runner.os",
+      "--workspace",
+      "tests/bsl",
+      "--test-file",
+      "test_ai_generated_code.bsl"
+    ],
+    "working_directory": "tests/bsl",
+    "env": {
+      "YAXUNIT_OPTS": "--report=junit --output=output/bsl-tests/reports"
+    },
+    "timeout": 1800
+  },
+  {
+    "name": "yaxunit-parsers",
+    "command": [
+      "oscript",
+      "tools/yaxunit/src/cli/yaxunit-runner.os",
+      "--workspace",
+      "tests/bsl",
+      "--test-file",
+      "test_parsers.bsl"
+    ],
+    "working_directory": "tests/bsl",
+    "env": {
+      "YAXUNIT_OPTS": "--report=junit --output=output/bsl-tests/reports"
+    },
+    "timeout": 1800
+  },
+  {
+    "name": "yaxunit-integrations",
+    "command": [
+      "oscript",
+      "tools/yaxunit/src/cli/yaxunit-runner.os",
+      "--workspace",
+      "tests/bsl",
+      "--test-file",
+      "test_integrations.bsl"
+    ],
+    "working_directory": "tests/bsl",
+    "env": {
+      "YAXUNIT_OPTS": "--report=junit --output=output/bsl-tests/reports"
+    },
+    "timeout": 1800
+  },
+  {
+    "name": "yaxunit-mcp-tools",
+    "command": [
+      "oscript",
+      "tools/yaxunit/src/cli/yaxunit-runner.os",
+      "--workspace",
+      "tests/bsl",
+      "--test-file",
+      "test_mcp_tools.bsl"
+    ],
+    "working_directory": "tests/bsl",
+    "env": {
+      "YAXUNIT_OPTS": "--report=junit --output=output/bsl-tests/reports"
+    },
+    "timeout": 1800
+  }
+]
 

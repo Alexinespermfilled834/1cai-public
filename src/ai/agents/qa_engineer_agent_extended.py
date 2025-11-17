@@ -25,6 +25,70 @@ class SmartTestGenerator:
     def _load_test_templates(self) -> Dict:
         """Шаблоны тестов"""
         return {
+            "yaxunit_test": """
+// Тест: {test_name}
+// Модуль: {module_name}
+// Генерировано автоматически AI Agent
+
+Процедура {test_name}() Экспорт
+    
+    // Arrange (подготовка)
+    {arrange_code}
+    
+    // Act (действие)
+    {act_code}
+    
+    // Assert (проверка через YAxUnit)
+    {assert_code}
+    
+КонецПроцедуры
+""",
+            "yaxunit_with_predicate": """
+// Тест: {test_name}
+// Модуль: {module_name}
+// Генерировано автоматически AI Agent
+
+Процедура {test_name}() Экспорт
+    
+    // Arrange (подготовка)
+    {arrange_code}
+    
+    // Act (действие)
+    {act_code}
+    
+    // Assert (проверка через YAxUnit с предикатом)
+    Условие = ЮТест.Предикат()
+        {predicate_code}
+        .Получить();
+    
+    ЮТест.ОжидаетЧто({result_variable}, "{test_description}")
+        {assert_code}
+    
+КонецПроцедуры
+""",
+            "yaxunit_database_test": """
+// Тест: {test_name}
+// Модуль: {module_name}
+// Генерировано автоматически AI Agent
+
+Процедура {test_name}() Экспорт
+    
+    // Arrange (подготовка)
+    {arrange_code}
+    
+    // Act (действие)
+    {act_code}
+    
+    // Assert (проверка базы данных через YAxUnit)
+    УсловиеПоиска = ЮТест.Предикат()
+        {predicate_code}
+        .Получить();
+    
+    ЮТест.ОжидаетЧтоТаблицаБазы("{table_name}", "{test_description}")
+        {assert_code}
+    
+КонецПроцедуры
+""",
             "unit_test_bsl": """
 // Тест: {test_name}
 // Модуль: {module_name}
@@ -111,16 +175,21 @@ class SmartTestGenerator:
         return_type = self._detect_return_type(function_code)
         complexity = self._calculate_complexity(function_code)
         
-        # Generate unit tests
+        # Generate unit tests (включая YAxUnit формат)
         unit_tests = []
         
-        # Normal case
-        unit_tests.append(self._generate_unit_test(
+        # Normal case - YAxUnit формат
+        param_values = ', '.join([self._generate_test_value(p) for p in params])
+        assert_yaxunit = self._generate_yaxunit_assert(return_type, "Результат")
+        
+        unit_tests.append(self._generate_yaxunit_test(
             test_name=f"Тест_{function_name}_НормальныйСценарий",
             module_name=function_name,
-            arrange="// Подготовка нормальных данных",
-            act=f"Результат = {function_name}({', '.join([p['name'] for p in params])});",
-            assert_code="// Проверка корректности результата"
+            arrange_code=self._generate_yaxunit_arrange(params),
+            act_code=f"Результат = {function_name}({param_values});",
+            assert_code=assert_yaxunit,
+            result_variable="Результат",
+            test_description=f"Проверка корректности функции {function_name}"
         ))
         
         # Edge cases
