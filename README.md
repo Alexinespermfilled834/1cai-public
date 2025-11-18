@@ -7,6 +7,7 @@
 [![Status](https://img.shields.io/badge/status-production-green.svg)](CHANGELOG.md)
 [![Documentation](https://img.shields.io/badge/docs-complete-brightgreen.svg)](docs/README.md)
 [![Standards](https://img.shields.io/badge/standards-160-brightgreen.svg)](docs/architecture/STANDARDS_INDEX.md)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-live-brightgreen.svg)](https://dmitrl-dev.github.io/1cai-public/architecture/interactive-architecture.html)
 
 > **🎯 Платформа** для AI-ассистированной разработки на 1C:Предприятие с **160 формализованными спецификациями**, покрывающими все аспекты платформы.
 >

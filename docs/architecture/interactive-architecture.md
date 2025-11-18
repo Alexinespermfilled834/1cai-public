@@ -135,8 +135,8 @@ graph TB
 **✅ Интерактивная карта доступна через GitHub Pages!**
 
 1. **Через GitHub Pages** (рекомендуется):
-   - Откройте: `https://dmitrl-dev.github.io/1cai-public/architecture/interactive-architecture.html`
-   - Или главная страница: `https://dmitrl-dev.github.io/1cai-public/`
+   - 🎯 **[Открыть интерактивную карту](https://dmitrl-dev.github.io/1cai-public/architecture/interactive-architecture.html)**
+   - Или главная страница: [https://dmitrl-dev.github.io/1cai-public/](https://dmitrl-dev.github.io/1cai-public/)
 
 2. **Через RawGit/JSDelivr** (быстрый способ):
    - Откройте: `https://cdn.jsdelivr.net/gh/DmitrL-dev/1cai-public@main/docs/architecture/interactive-architecture.html`
