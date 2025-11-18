@@ -38,10 +38,12 @@ jobs:
         pytest tests/unit/test_event_bus.py tests/unit/test_self_evolving_ai.py tests/unit/test_self_healing_code.py tests/unit/test_distributed_agent_network.py tests/unit/test_code_dna.py tests/unit/test_predictive_code_generation.py -v
     
     - name: Upload coverage
+      if: always()
       uses: codecov/codecov-action@v3
       with:
         files: ./coverage.xml
         flags: unittests
+        fail_ci_if_error: false
 
     - name: Upload unit test artifacts
       if: always()
