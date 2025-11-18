@@ -8,9 +8,11 @@ on:
 jobs:
   aws:
     runs-on: ubuntu-latest
-    if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+    if: ${{ secrets.SLACK_WEBHOOK_URL != null && secrets.SLACK_WEBHOOK_URL != '' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Install deps
         run: |
           pip install boto3 requests
@@ -22,7 +24,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: python scripts/finops/aws_cost_to_slack.py
       - name: AWS Budget check
-        if: ${{ secrets.AWS_ACCOUNT_ID != '' && secrets.AWS_BUDGET_NAMES != '' }}
+        if: ${{ secrets.AWS_ACCOUNT_ID != null && secrets.AWS_ACCOUNT_ID != '' && secrets.AWS_BUDGET_NAMES != null && secrets.AWS_BUDGET_NAMES != '' }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -33,9 +35,11 @@ jobs:
 
   azure:
     runs-on: ubuntu-latest
-    if: ${{ secrets.SLACK_WEBHOOK_URL != '' && secrets.AZURE_TENANT_ID != '' }}
+    if: ${{ secrets.SLACK_WEBHOOK_URL != null && secrets.SLACK_WEBHOOK_URL != '' && secrets.AZURE_TENANT_ID != null && secrets.AZURE_TENANT_ID != '' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Install deps
         run: |
           pip install azure-identity azure-mgmt-costmanagement requests
@@ -49,7 +53,7 @@ jobs:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         run: python scripts/finops/azure_cost_to_slack.py
       - name: Azure Budget check
-        if: ${{ secrets.AZURE_BUDGET_NAMES != '' }}
+        if: ${{ secrets.AZURE_BUDGET_NAMES != null && secrets.AZURE_BUDGET_NAMES != '' }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
