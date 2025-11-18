@@ -12,9 +12,10 @@ jobs:
   collect:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -26,13 +27,16 @@ jobs:
 
       - name: Commit history (if changed)
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/status/dora_history.md
-          git diff --cached --quiet || (git commit -m "docs: update dora history" && git push)
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: update dora history [skip ci]"
+            git push
+          fi
 
       - name: Upload metrics artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dora-metrics
           path: |

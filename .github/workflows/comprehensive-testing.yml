@@ -45,7 +45,7 @@ jobs:
 
     - name: Upload unit test artifacts
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: unit-test-results
         path: output/test-results
@@ -270,7 +270,7 @@ jobs:
 
     - name: Upload BSL test logs
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: bsl-test-artifacts
         path: output/bsl-tests
@@ -371,7 +371,7 @@ jobs:
 
     - name: Upload audit reports
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: full-audit-reports
         path: |
