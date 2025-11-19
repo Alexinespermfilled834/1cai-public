@@ -1,6 +1,6 @@
 # 🤖 1C AI Stack — Платформа для AI-ассистированной разработки 1C
 
-<!-- Test commit: проверка исправлений GitHub Actions workflows -->
+<!-- Test commit: повторная проверка исправлений GitHub Actions workflows -->
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
