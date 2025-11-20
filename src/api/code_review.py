@@ -12,9 +12,11 @@ from typing import List, Literal, Optional
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 
-from src.api.code_analyzers import (analyze_javascript_code,
-                                    analyze_python_code,
-                                    analyze_typescript_code)
+from src.api.code_analyzers import (
+    analyze_javascript_code,
+    analyze_python_code,
+    analyze_typescript_code,
+)
 from src.middleware.rate_limiter import PUBLIC_RATE_LIMIT, limiter
 from src.services.caching_service import get_cache_service
 from src.services.openai_code_analyzer import get_openai_analyzer

@@ -7,8 +7,7 @@ Tests for IntegrationSyncWithGraph (integrations_with_graph.py).
 import pytest
 
 from src.ai.agents.integrations_with_graph import IntegrationSyncWithGraph
-from src.ai.code_graph import (Edge, EdgeKind, InMemoryCodeGraphBackend, Node,
-                               NodeKind)
+from src.ai.code_graph import Edge, EdgeKind, InMemoryCodeGraphBackend, Node, NodeKind
 
 
 @pytest.mark.asyncio

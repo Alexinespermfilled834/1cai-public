@@ -6,8 +6,7 @@ Tests for Unified Change Graph (InMemoryCodeGraphBackend).
 
 import pytest
 
-from src.ai.code_graph import (Edge, EdgeKind, InMemoryCodeGraphBackend, Node,
-                               NodeKind)
+from src.ai.code_graph import Edge, EdgeKind, InMemoryCodeGraphBackend, Node, NodeKind
 
 
 @pytest.mark.asyncio

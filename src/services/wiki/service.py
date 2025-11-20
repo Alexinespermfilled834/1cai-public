@@ -13,6 +13,7 @@ from src.utils.structured_logging import StructuredLogger
 # Import DTOs
 from .models import WikiPage as PageDTO
 from .models import WikiPageCreate, WikiPageUpdate
+
 # Import Renderer
 from .renderer import WikiRenderer
 

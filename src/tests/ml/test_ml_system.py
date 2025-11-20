@@ -14,10 +14,15 @@ import pytest
 
 from src.ml.ab_testing.tester import ABTestConfig, ABTestManager, TestType
 from src.ml.experiments.mlflow_manager import MLFlowManager
+
 # Тестируемые компоненты
 from src.ml.metrics.collector import AssistantRole, MetricsCollector
-from src.ml.models.predictor import (ModelEnsemble, PredictionType,
-                                     SklearnPredictor, create_model)
+from src.ml.models.predictor import (
+    ModelEnsemble,
+    PredictionType,
+    SklearnPredictor,
+    create_model,
+)
 from src.ml.training.trainer import DataPreprocessor, ModelTrainer
 
 

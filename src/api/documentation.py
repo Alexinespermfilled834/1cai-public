@@ -14,8 +14,7 @@ from pydantic import BaseModel, Field
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from src.services.documentation_generation_service import \
-    get_documentation_generator
+from src.services.documentation_generation_service import get_documentation_generator
 from src.utils.structured_logging import StructuredLogger
 
 limiter = Limiter(key_func=get_remote_address)

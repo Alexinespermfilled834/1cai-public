@@ -52,8 +52,7 @@ async def test_devops_agent_pipeline_optimization():
 @pytest.mark.asyncio
 async def test_qa_agent_test_generation():
     """Test генерации тестов"""
-    from src.ai.agents.qa_engineer_agent_extended import \
-        QAEngineerAgentExtended
+    from src.ai.agents.qa_engineer_agent_extended import QAEngineerAgentExtended
 
     agent = QAEngineerAgentExtended()
 
@@ -72,8 +71,9 @@ async def test_qa_agent_test_generation():
 @pytest.mark.asyncio
 async def test_ba_agent_requirements_extraction():
     """Test извлечения требований"""
-    from src.ai.agents.business_analyst_agent_extended import \
-        BusinessAnalystAgentExtended
+    from src.ai.agents.business_analyst_agent_extended import (
+        BusinessAnalystAgentExtended,
+    )
 
     agent = BusinessAnalystAgentExtended()
 
@@ -98,8 +98,9 @@ async def test_ba_agent_requirements_extraction():
 @pytest.mark.asyncio
 async def test_tw_agent_api_docs_generation():
     """Test генерации API документации"""
-    from src.ai.agents.technical_writer_agent_extended import \
-        TechnicalWriterAgentExtended
+    from src.ai.agents.technical_writer_agent_extended import (
+        TechnicalWriterAgentExtended,
+    )
 
     agent = TechnicalWriterAgentExtended()
 
@@ -172,8 +173,7 @@ APIKey = "sk_test_12345";
 
 def test_performance_analyzer_n_plus_one():
     """Test обнаружения N+1"""
-    from src.ai.agents.code_review.performance_analyzer import \
-        PerformanceAnalyzer
+    from src.ai.agents.code_review.performance_analyzer import PerformanceAnalyzer
 
     analyzer = PerformanceAnalyzer()
 

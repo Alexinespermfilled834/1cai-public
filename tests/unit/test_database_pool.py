@@ -9,8 +9,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from src.database import (check_pool_health, close_pool, create_pool,
-                          get_db_connection, get_pool)
+from src.database import (
+    check_pool_health,
+    close_pool,
+    create_pool,
+    get_db_connection,
+    get_pool,
+)
 
 
 class AsyncAcquireContext:

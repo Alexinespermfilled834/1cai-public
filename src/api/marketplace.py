@@ -20,15 +20,13 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from fastapi import (APIRouter, Depends, File, HTTPException, Query, Response,
-                     UploadFile)
+from fastapi import APIRouter, Depends, File, HTTPException, Query, Response, UploadFile
 from pydantic import BaseModel, Field
 from starlette.requests import Request
 
 from src.db.marketplace_repository import MarketplaceRepository
 from src.middleware.rate_limiter import limiter
-from src.security import (CurrentUser, get_audit_logger, get_current_user,
-                          require_roles)
+from src.security import CurrentUser, get_audit_logger, get_current_user, require_roles
 from src.utils.structured_logging import StructuredLogger
 
 logger = StructuredLogger(__name__).logger

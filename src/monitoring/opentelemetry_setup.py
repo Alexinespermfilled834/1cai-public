@@ -27,8 +27,7 @@ logger = StructuredLogger(__name__).logger
 # Try to import OpenTelemetry (optional dependency)
 try:
     from opentelemetry import trace
-    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import \
-        OTLPSpanExporter
+    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
     from opentelemetry.exporter.prometheus import PrometheusMetricReader
     from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
     from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
@@ -38,8 +37,7 @@ try:
     from opentelemetry.sdk.metrics import MeterProvider
     from opentelemetry.sdk.resources import Resource
     from opentelemetry.sdk.trace import TracerProvider
-    from opentelemetry.sdk.trace.export import (BatchSpanProcessor,
-                                                ConsoleSpanExporter)
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 
     OPENTELEMETRY_AVAILABLE = True
 except ImportError:

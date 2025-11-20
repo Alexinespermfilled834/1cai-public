@@ -24,8 +24,11 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 
 from src.ai.llm_provider_abstraction import LLMProviderAbstraction
-from src.ai.predictive_code_generation import (PredictedRequirement,
-                                               PredictiveCodeGenerator, Trend)
+from src.ai.predictive_code_generation import (
+    PredictedRequirement,
+    PredictiveCodeGenerator,
+    Trend,
+)
 from src.infrastructure.event_bus import EventBus
 
 logger = logging.getLogger(__name__)

@@ -19,9 +19,13 @@ from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, field_validator
 
-from src.api.dependencies import (ServiceContainer, get_embedding_service,
-                                  get_neo4j_client, get_postgres_client,
-                                  get_qdrant_client)
+from src.api.dependencies import (
+    ServiceContainer,
+    get_embedding_service,
+    get_neo4j_client,
+    get_postgres_client,
+    get_qdrant_client,
+)
 from src.db.neo4j_client import Neo4jClient
 from src.db.postgres_saver import PostgreSQLSaver
 from src.db.qdrant_client import QdrantClient

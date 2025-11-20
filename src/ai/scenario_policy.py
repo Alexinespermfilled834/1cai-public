@@ -19,8 +19,12 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
 
-from src.ai.scenario_hub import (AutonomyLevel, ScenarioPlan,
-                                 ScenarioRiskLevel, ScenarioStep)
+from src.ai.scenario_hub import (
+    AutonomyLevel,
+    ScenarioPlan,
+    ScenarioRiskLevel,
+    ScenarioStep,
+)
 
 
 class StepDecision(str, Enum):

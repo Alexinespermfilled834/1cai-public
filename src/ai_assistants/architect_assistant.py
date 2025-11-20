@@ -13,8 +13,7 @@ from pydantic import BaseModel
 
 from src.config import settings
 
-from .base_assistant import (AssistantConfig, BaseAIAssistant,
-                             ChatPromptTemplate)
+from .base_assistant import AssistantConfig, BaseAIAssistant, ChatPromptTemplate
 
 
 # Упрощенные классы для тестирования

@@ -27,8 +27,12 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 import httpx
-from tenacity import (retry, retry_if_exception_type, stop_after_attempt,
-                      wait_exponential)
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 from src.utils.structured_logging import StructuredLogger
 

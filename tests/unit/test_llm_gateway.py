@@ -9,8 +9,7 @@ from unittest.mock import AsyncMock, Mock, patch
 import pytest
 
 from src.services.llm_gateway import LLMGateway
-from src.services.llm_provider_manager import (LLMProviderManager,
-                                               ProviderConfig)
+from src.services.llm_provider_manager import LLMProviderManager, ProviderConfig
 
 
 @pytest.fixture

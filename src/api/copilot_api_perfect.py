@@ -72,8 +72,7 @@ class CopilotService:
                 try:
                     import torch
                     from peft import PeftModel
-                    from transformers import (AutoModelForCausalLM,
-                                              AutoTokenizer)
+                    from transformers import AutoModelForCausalLM, AutoTokenizer
 
                     # Determine device
                     self.device = "cuda" if torch.cuda.is_available() else "cpu"

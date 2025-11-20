@@ -9,9 +9,14 @@ import asyncio
 
 import pytest
 
-from src.infrastructure.event_bus import (Event, EventBus, EventHandler,
-                                          EventPublisher, EventSubscriber,
-                                          EventType)
+from src.infrastructure.event_bus import (
+    Event,
+    EventBus,
+    EventHandler,
+    EventPublisher,
+    EventSubscriber,
+    EventType,
+)
 
 
 class MockEventHandler(EventHandler):

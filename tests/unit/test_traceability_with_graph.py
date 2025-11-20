@@ -7,8 +7,7 @@ Tests for TraceabilityWithGraph (traceability_with_graph.py).
 import pytest
 
 from src.ai.agents.traceability_with_graph import TraceabilityWithGraph
-from src.ai.code_graph import (Edge, EdgeKind, InMemoryCodeGraphBackend, Node,
-                               NodeKind)
+from src.ai.code_graph import Edge, EdgeKind, InMemoryCodeGraphBackend, Node, NodeKind
 
 
 @pytest.mark.asyncio

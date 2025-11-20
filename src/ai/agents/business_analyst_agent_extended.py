@@ -20,8 +20,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
 
-from src.ai.clients import (GigaChatClient, LLMCallError,
-                            LLMNotConfiguredError, YandexGPTClient)
+from src.ai.clients import (
+    GigaChatClient,
+    LLMCallError,
+    LLMNotConfiguredError,
+    YandexGPTClient,
+)
 from src.ai.utils.document_loader import read_document
 from src.integrations.confluence import ConfluenceClient
 from src.integrations.exceptions import IntegrationConfigError
@@ -791,8 +795,9 @@ class BusinessAnalystAgentExtended:
         # Попытка использовать Unified Change Graph
         if use_graph:
             try:
-                from src.ai.agents.process_modelling_with_graph import \
-                    ProcessModellerWithGraph
+                from src.ai.agents.process_modelling_with_graph import (
+                    ProcessModellerWithGraph,
+                )
                 from src.ai.code_graph import InMemoryCodeGraphBackend
 
                 backend = InMemoryCodeGraphBackend()
@@ -856,8 +861,9 @@ class BusinessAnalystAgentExtended:
         """
         if use_graph:
             try:
-                from src.ai.agents.process_modelling_with_graph import \
-                    ProcessModellerWithGraph
+                from src.ai.agents.process_modelling_with_graph import (
+                    ProcessModellerWithGraph,
+                )
                 from src.ai.code_graph import InMemoryCodeGraphBackend
 
                 backend = InMemoryCodeGraphBackend()
@@ -913,8 +919,9 @@ class BusinessAnalystAgentExtended:
             Результат валидации с замечаниями и рекомендациями
         """
         try:
-            from src.ai.agents.process_modelling_with_graph import \
-                ProcessModellerWithGraph
+            from src.ai.agents.process_modelling_with_graph import (
+                ProcessModellerWithGraph,
+            )
             from src.ai.code_graph import InMemoryCodeGraphBackend
 
             backend = InMemoryCodeGraphBackend()
@@ -964,8 +971,7 @@ class BusinessAnalystAgentExtended:
         # Попытка использовать Unified Change Graph
         if use_graph:
             try:
-                from src.ai.agents.analytics_kpi_with_graph import \
-                    KPIGeneratorWithGraph
+                from src.ai.agents.analytics_kpi_with_graph import KPIGeneratorWithGraph
                 from src.ai.code_graph import InMemoryCodeGraphBackend
 
                 backend = InMemoryCodeGraphBackend()
@@ -1049,8 +1055,7 @@ class BusinessAnalystAgentExtended:
         # Попытка использовать Unified Change Graph
         if use_graph:
             try:
-                from src.ai.agents.traceability_with_graph import \
-                    TraceabilityWithGraph
+                from src.ai.agents.traceability_with_graph import TraceabilityWithGraph
                 from src.ai.code_graph import InMemoryCodeGraphBackend
 
                 # Инициализировать backend (можно заменить на Neo4j в будущем)
@@ -1144,8 +1149,9 @@ class BusinessAnalystAgentExtended:
         # Обогатить артефакт ссылками из графа
         if use_graph:
             try:
-                from src.ai.agents.integrations_with_graph import \
-                    IntegrationSyncWithGraph
+                from src.ai.agents.integrations_with_graph import (
+                    IntegrationSyncWithGraph,
+                )
                 from src.ai.code_graph import InMemoryCodeGraphBackend
 
                 backend = InMemoryCodeGraphBackend()
@@ -1189,8 +1195,9 @@ class BusinessAnalystAgentExtended:
         """
         if use_graph:
             try:
-                from src.ai.agents.integrations_with_graph import \
-                    IntegrationSyncWithGraph
+                from src.ai.agents.integrations_with_graph import (
+                    IntegrationSyncWithGraph,
+                )
                 from src.ai.code_graph import InMemoryCodeGraphBackend
 
                 backend = InMemoryCodeGraphBackend()
@@ -1244,8 +1251,9 @@ class BusinessAnalystAgentExtended:
         """
         if use_graph:
             try:
-                from src.ai.agents.integrations_with_graph import \
-                    IntegrationSyncWithGraph
+                from src.ai.agents.integrations_with_graph import (
+                    IntegrationSyncWithGraph,
+                )
                 from src.ai.code_graph import InMemoryCodeGraphBackend
 
                 backend = InMemoryCodeGraphBackend()
@@ -1292,8 +1300,9 @@ class BusinessAnalystAgentExtended:
         """
         if use_graph:
             try:
-                from src.ai.agents.integrations_with_graph import \
-                    IntegrationSyncWithGraph
+                from src.ai.agents.integrations_with_graph import (
+                    IntegrationSyncWithGraph,
+                )
                 from src.ai.code_graph import InMemoryCodeGraphBackend
 
                 backend = InMemoryCodeGraphBackend()
@@ -1339,8 +1348,9 @@ class BusinessAnalystAgentExtended:
         """
         if use_graph:
             try:
-                from src.ai.agents.integrations_with_graph import \
-                    IntegrationSyncWithGraph
+                from src.ai.agents.integrations_with_graph import (
+                    IntegrationSyncWithGraph,
+                )
                 from src.ai.code_graph import InMemoryCodeGraphBackend
 
                 backend = InMemoryCodeGraphBackend()
@@ -1392,8 +1402,9 @@ class BusinessAnalystAgentExtended:
         """
         if use_graph:
             try:
-                from src.ai.agents.enablement_with_graph import \
-                    EnablementGeneratorWithGraph
+                from src.ai.agents.enablement_with_graph import (
+                    EnablementGeneratorWithGraph,
+                )
                 from src.ai.code_graph import InMemoryCodeGraphBackend
 
                 backend = InMemoryCodeGraphBackend()
@@ -1464,8 +1475,9 @@ class BusinessAnalystAgentExtended:
         """
         if use_graph:
             try:
-                from src.ai.agents.enablement_with_graph import \
-                    EnablementGeneratorWithGraph
+                from src.ai.agents.enablement_with_graph import (
+                    EnablementGeneratorWithGraph,
+                )
                 from src.ai.code_graph import InMemoryCodeGraphBackend
 
                 backend = InMemoryCodeGraphBackend()
@@ -1519,8 +1531,9 @@ class BusinessAnalystAgentExtended:
         """
         if use_graph:
             try:
-                from src.ai.agents.enablement_with_graph import \
-                    EnablementGeneratorWithGraph
+                from src.ai.agents.enablement_with_graph import (
+                    EnablementGeneratorWithGraph,
+                )
                 from src.ai.code_graph import InMemoryCodeGraphBackend
 
                 backend = InMemoryCodeGraphBackend()
@@ -1572,8 +1585,9 @@ class BusinessAnalystAgentExtended:
         """
         if use_graph:
             try:
-                from src.ai.agents.enablement_with_graph import \
-                    EnablementGeneratorWithGraph
+                from src.ai.agents.enablement_with_graph import (
+                    EnablementGeneratorWithGraph,
+                )
                 from src.ai.code_graph import InMemoryCodeGraphBackend
 
                 backend = InMemoryCodeGraphBackend()

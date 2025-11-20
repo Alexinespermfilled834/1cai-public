@@ -14,8 +14,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 import aiohttp
-from tenacity import (retry, retry_if_exception_type, stop_after_attempt,
-                      wait_fixed)
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
 from .exceptions import LLMCallError, LLMNotConfiguredError
 

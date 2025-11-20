@@ -20,9 +20,15 @@ from typing import Any, Dict
 
 import yaml
 
-from src.ai.scenario_hub import (AutonomyLevel, ScenarioExecutionReport,
-                                 ScenarioGoal, ScenarioPlan, ScenarioRiskLevel,
-                                 ScenarioStep, TrustScore)
+from src.ai.scenario_hub import (
+    AutonomyLevel,
+    ScenarioExecutionReport,
+    ScenarioGoal,
+    ScenarioPlan,
+    ScenarioRiskLevel,
+    ScenarioStep,
+    TrustScore,
+)
 from src.ai.scenario_policy import StepDecision, assess_plan_execution
 
 

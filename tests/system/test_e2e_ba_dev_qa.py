@@ -77,8 +77,7 @@ async def test_e2e_ba_dev_qa_flow():
     assert "Функция РассчитатьСкидку" in draft["code"]
 
     # 3. QA Engineer AI: генерирует тесты по сгенерированному коду
-    from src.ai.agents.qa_engineer_agent_extended import \
-        QAEngineerAgentExtended
+    from src.ai.agents.qa_engineer_agent_extended import QAEngineerAgentExtended
 
     qa_agent = QAEngineerAgentExtended()
 

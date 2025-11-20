@@ -23,9 +23,11 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from src.ai.distributed_agent_network import (ConsensusAlgorithm,
-                                              ConsensusResult,
-                                              DistributedAgentNetwork)
+from src.ai.distributed_agent_network import (
+    ConsensusAlgorithm,
+    ConsensusResult,
+    DistributedAgentNetwork,
+)
 from src.infrastructure.event_bus import EventBus
 
 logger = logging.getLogger(__name__)

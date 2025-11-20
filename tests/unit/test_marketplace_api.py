@@ -12,9 +12,15 @@ from fastapi import HTTPException
 from starlette.requests import Request
 from starlette.responses import Response
 
-from src.api.marketplace import (PluginCategory, PluginStatus,
-                                 PluginSubmitRequest, PluginUpdateRequest,
-                                 report_plugin, submit_plugin, update_plugin)
+from src.api.marketplace import (
+    PluginCategory,
+    PluginStatus,
+    PluginSubmitRequest,
+    PluginUpdateRequest,
+    report_plugin,
+    submit_plugin,
+    update_plugin,
+)
 from src.security.auth import CurrentUser
 
 

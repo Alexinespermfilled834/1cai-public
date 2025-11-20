@@ -12,6 +12,7 @@ from typing import Any, Dict, List
 
 # ML библиотеки
 import pandas as pd
+
 # Celery
 from celery import Celery
 

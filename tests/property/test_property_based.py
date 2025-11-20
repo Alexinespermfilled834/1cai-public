@@ -29,8 +29,7 @@ from hypothesis import strategies as st
 )
 async def test_event_bus_property_based(event_count: int, handlers_count: int):
     """Property-based тест Event Bus"""
-    from src.infrastructure.event_bus import (Event, EventBus, EventHandler,
-                                              EventType)
+    from src.infrastructure.event_bus import Event, EventBus, EventHandler, EventType
 
     class TestHandler(EventHandler):
         def __init__(self):
@@ -108,8 +107,11 @@ async def test_self_healing_fuzzing(
 @pytest.mark.asyncio
 async def test_chaos_network_partition():
     """Chaos тест: разделение сети"""
-    from src.ai.distributed_agent_network import (AgentNode, AgentRole,
-                                                  DistributedAgentNetwork)
+    from src.ai.distributed_agent_network import (
+        AgentNode,
+        AgentRole,
+        DistributedAgentNetwork,
+    )
 
     network = DistributedAgentNetwork()
 
@@ -129,8 +131,11 @@ async def test_chaos_network_partition():
 @pytest.mark.asyncio
 async def test_chaos_node_failure():
     """Chaos тест: отказ узла"""
-    from src.ai.distributed_agent_network import (AgentNode, AgentRole,
-                                                  DistributedAgentNetwork)
+    from src.ai.distributed_agent_network import (
+        AgentNode,
+        AgentRole,
+        DistributedAgentNetwork,
+    )
 
     network = DistributedAgentNetwork()
 

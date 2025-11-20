@@ -5,8 +5,11 @@ from pathlib import Path
 
 import pytest
 
-from scripts.ba_integration.sync_artifact import (parse_args, sync_artifact,
-                                                  sync_artifact_from_path)
+from scripts.ba_integration.sync_artifact import (
+    parse_args,
+    sync_artifact,
+    sync_artifact_from_path,
+)
 
 
 class DummyConnector:

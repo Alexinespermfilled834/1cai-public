@@ -3,13 +3,10 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from src.api.code_review import (AutoFixRequest, analyze_bsl_code,
-                                 auto_fix_code, router)
-from src.main import \
-    app as fastapi_app  # Assuming router already included in app
+from src.api.code_review import AutoFixRequest, analyze_bsl_code, auto_fix_code, router
+from src.main import app as fastapi_app  # Assuming router already included in app
 from src.services import caching_service
-from src.services.openai_code_analyzer import (OpenAICodeAnalyzer,
-                                               set_openai_analyzer)
+from src.services.openai_code_analyzer import OpenAICodeAnalyzer, set_openai_analyzer
 
 # Ensure router is mounted (in case tests import module directly)
 if router not in fastapi_app.routes:

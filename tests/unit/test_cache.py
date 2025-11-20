@@ -10,8 +10,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from src.cache.multi_layer_cache import (CircuitBreaker, LRUCache,
-                                         MultiLayerCache)
+from src.cache.multi_layer_cache import CircuitBreaker, LRUCache, MultiLayerCache
 
 
 @pytest.mark.asyncio

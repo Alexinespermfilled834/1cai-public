@@ -8,8 +8,7 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from src.ai.orchestrator import (AIOrchestrator, AIService, QueryClassifier,
-                                 QueryType)
+from src.ai.orchestrator import AIOrchestrator, AIService, QueryClassifier, QueryType
 
 
 class TestQueryClassifier:

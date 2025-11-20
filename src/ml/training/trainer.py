@@ -13,11 +13,13 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 import optuna
 import pandas as pd
+
 # Celery для background задач
 from celery import Celery
 from celery.result import AsyncResult
 from celery.schedules import crontab
 from sklearn.feature_selection import SelectKBest, f_classif, f_regression
+
 # ML библиотеки
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler

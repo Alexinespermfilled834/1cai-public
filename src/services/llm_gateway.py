@@ -20,16 +20,21 @@ from typing import Any, Callable, Dict, List, Optional, Sequence
 import yaml
 
 from src.ai.intelligent_cache import IntelligentCache
-from src.monitoring.prometheus_metrics import (llm_gateway_fallbacks_total,
-                                               llm_gateway_latency_seconds,
-                                               llm_gateway_requests_total,
-                                               llm_provider_health,
-                                               llm_provider_latency_ms)
+from src.monitoring.prometheus_metrics import (
+    llm_gateway_fallbacks_total,
+    llm_gateway_latency_seconds,
+    llm_gateway_requests_total,
+    llm_provider_health,
+    llm_provider_latency_ms,
+)
 from src.resilience.error_recovery import CircuitBreaker
 
 from .llm_health_monitor import LLMHealthMonitor, ProviderHealthStatus
-from .llm_provider_manager import (LLMProviderManager, ProviderConfig,
-                                   load_llm_provider_manager)
+from .llm_provider_manager import (
+    LLMProviderManager,
+    ProviderConfig,
+    load_llm_provider_manager,
+)
 
 logger = logging.getLogger(__name__)
 

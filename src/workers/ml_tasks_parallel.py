@@ -18,8 +18,10 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import numpy as np
+
 # ML библиотеки
 import pandas as pd
+
 # Celery
 from celery import Celery, chord, group
 from celery.schedules import crontab

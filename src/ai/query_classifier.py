@@ -235,8 +235,7 @@ class QueryClassifier:
         suggested_tools: List[str] = []
         try:
             # Robust tool registry loading
-            from src.ai.tool_registry_examples import \
-                build_example_tool_registry
+            from src.ai.tool_registry_examples import build_example_tool_registry
 
             registry = build_example_tool_registry()
 

@@ -6,9 +6,14 @@ Unit Tests для OCRService
 
 import pytest
 
-from src.services.ocr_service import (DocumentType, OCRProvider, OCRResult,
-                                      OCRService, ocr_with_structure,
-                                      quick_ocr)
+from src.services.ocr_service import (
+    DocumentType,
+    OCRProvider,
+    OCRResult,
+    OCRService,
+    ocr_with_structure,
+    quick_ocr,
+)
 
 
 class TestOCRService:

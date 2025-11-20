@@ -18,7 +18,9 @@ from typing import Callable, List, Optional, Tuple
 
 try:
     from src.monitoring.prometheus_metrics import (
-        traffic_shaping_delay_seconds, traffic_shaping_operations_total)
+        traffic_shaping_delay_seconds,
+        traffic_shaping_operations_total,
+    )
 except ImportError:
     traffic_shaping_operations_total = None
     traffic_shaping_delay_seconds = None

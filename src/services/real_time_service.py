@@ -312,11 +312,14 @@ async def start_dashboard_updater():
     Background task that periodically updates dashboards
     Broadcasts to all connected clients
     """
-    from src.api.dashboard_api import (get_ba_dashboard,
-                                       get_developer_dashboard,
-                                       get_executive_dashboard,
-                                       get_owner_dashboard, get_pm_dashboard,
-                                       get_team_lead_dashboard)
+    from src.api.dashboard_api import (
+        get_ba_dashboard,
+        get_developer_dashboard,
+        get_executive_dashboard,
+        get_owner_dashboard,
+        get_pm_dashboard,
+        get_team_lead_dashboard,
+    )
     from src.database import get_pool
 
     while True:

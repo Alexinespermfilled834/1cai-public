@@ -6,8 +6,17 @@ Supports Versioning, Soft Deletes, Namespaces, Blueprints, and Comments
 import uuid
 from datetime import datetime
 
-from sqlalchemy import (JSON, Boolean, Column, DateTime, ForeignKey, Integer,
-                        String, Text, UniqueConstraint)
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()

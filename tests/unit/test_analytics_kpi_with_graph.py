@@ -7,8 +7,7 @@ Tests for KPIGeneratorWithGraph (analytics_kpi_with_graph.py).
 import pytest
 
 from src.ai.agents.analytics_kpi_with_graph import KPIGeneratorWithGraph
-from src.ai.code_graph import (Edge, EdgeKind, InMemoryCodeGraphBackend, Node,
-                               NodeKind)
+from src.ai.code_graph import Edge, EdgeKind, InMemoryCodeGraphBackend, Node, NodeKind
 
 
 @pytest.mark.asyncio

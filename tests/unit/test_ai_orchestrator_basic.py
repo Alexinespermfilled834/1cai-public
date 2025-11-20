@@ -3,8 +3,10 @@
 import pytest
 
 from src.ai.orchestrator import AIOrchestrator
-from src.monitoring.prometheus_metrics import (orchestrator_cache_hits_total,
-                                               orchestrator_cache_misses_total)
+from src.monitoring.prometheus_metrics import (
+    orchestrator_cache_hits_total,
+    orchestrator_cache_misses_total,
+)
 
 
 @pytest.mark.asyncio

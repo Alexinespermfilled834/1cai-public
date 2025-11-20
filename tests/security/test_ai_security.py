@@ -17,8 +17,7 @@ try:
     from src.ai.agents.developer_agent_secure import DeveloperAISecure
     from src.ai.agents.devops_agent_secure import DevOpsAISecure
     from src.ai.sql_optimizer_secure import SQLOptimizerSecure
-    from src.security.ai_security_layer import (AgentRuleOfTwoConfig,
-                                                AISecurityLayer)
+    from src.security.ai_security_layer import AgentRuleOfTwoConfig, AISecurityLayer
 except ImportError as e:
     pytest.skip(f"Security modules not available: {e}", allow_module_level=True)
 

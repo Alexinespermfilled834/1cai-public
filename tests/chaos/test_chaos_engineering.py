@@ -16,8 +16,11 @@ import asyncio
 
 import pytest
 
-from src.ai.distributed_agent_network import (AgentNode, AgentRole,
-                                              DistributedAgentNetwork)
+from src.ai.distributed_agent_network import (
+    AgentNode,
+    AgentRole,
+    DistributedAgentNetwork,
+)
 from src.infrastructure.event_bus import Event, EventBus, EventType
 
 

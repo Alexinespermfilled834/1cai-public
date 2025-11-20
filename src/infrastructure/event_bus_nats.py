@@ -30,8 +30,7 @@ except ImportError:
     logger = logging.getLogger(__name__)
     logger.warning("NATS not available. Install with: pip install nats-py")
 
-from src.infrastructure.event_bus import (Event, EventBus, EventHandler,
-                                          EventType)
+from src.infrastructure.event_bus import Event, EventBus, EventHandler, EventType
 
 logger = logging.getLogger(__name__)
 

@@ -24,9 +24,11 @@ from typing import Any, Awaitable, Callable, Dict, List, Optional
 import httpx
 
 try:
-    from src.monitoring.prometheus_metrics import (network_failover_total,
-                                                   network_path_health,
-                                                   network_path_latency_ms)
+    from src.monitoring.prometheus_metrics import (
+        network_failover_total,
+        network_path_health,
+        network_path_latency_ms,
+    )
 except ImportError:
     # Fallback для случаев когда prometheus_metrics не доступен
     network_path_health = None

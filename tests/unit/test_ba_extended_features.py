@@ -3,8 +3,7 @@
 
 import pytest
 
-from src.ai.agents.business_analyst_agent_extended import \
-    BusinessAnalystAgentExtended
+from src.ai.agents.business_analyst_agent_extended import BusinessAnalystAgentExtended
 
 
 @pytest.mark.asyncio

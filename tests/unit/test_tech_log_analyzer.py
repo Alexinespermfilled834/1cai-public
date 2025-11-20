@@ -3,8 +3,11 @@
 
 import pytest
 
-from src.ai.agents.tech_log_analyzer import (PerformanceIssue, TechLogAnalyzer,
-                                             TechLogEvent)
+from src.ai.agents.tech_log_analyzer import (
+    PerformanceIssue,
+    TechLogAnalyzer,
+    TechLogEvent,
+)
 
 
 @pytest.mark.asyncio

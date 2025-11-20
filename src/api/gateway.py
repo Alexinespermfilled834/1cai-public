@@ -17,8 +17,15 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 import redis
-from fastapi import (APIRouter, BackgroundTasks, FastAPI, HTTPException,
-                     Request, Response, status)
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    FastAPI,
+    HTTPException,
+    Request,
+    Response,
+    status,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse

@@ -11,9 +11,11 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from src.ai.llm_provider_abstraction import LLMProviderAbstraction
-from src.ai.predictive_code_generation import (PredictedRequirement,
-                                               PredictiveCodeGenerator,
-                                               Requirement)
+from src.ai.predictive_code_generation import (
+    PredictedRequirement,
+    PredictiveCodeGenerator,
+    Requirement,
+)
 
 
 @pytest.fixture

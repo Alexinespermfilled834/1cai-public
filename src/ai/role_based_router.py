@@ -210,8 +210,7 @@ class RoleBasedRouter:
             )
 
         try:
-            from src.ai.agents.qa_engineer_agent_extended import \
-                QAEngineerAgentExtended
+            from src.ai.agents.qa_engineer_agent_extended import QAEngineerAgentExtended
 
             self.qa_agent = QAEngineerAgentExtended()
         except Exception as e:
@@ -222,8 +221,9 @@ class RoleBasedRouter:
             )
 
         try:
-            from src.ai.agents.business_analyst_agent_extended import \
-                BusinessAnalystAgentExtended
+            from src.ai.agents.business_analyst_agent_extended import (
+                BusinessAnalystAgentExtended,
+            )
 
             self.ba_agent = BusinessAnalystAgentExtended()
         except Exception as e:
@@ -234,8 +234,9 @@ class RoleBasedRouter:
             )
 
         try:
-            from src.ai.agents.technical_writer_agent_extended import \
-                TechnicalWriterAgentExtended
+            from src.ai.agents.technical_writer_agent_extended import (
+                TechnicalWriterAgentExtended,
+            )
 
             self.tw_agent = TechnicalWriterAgentExtended()
         except Exception as e:

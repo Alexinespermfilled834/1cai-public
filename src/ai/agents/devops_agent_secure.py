@@ -12,8 +12,7 @@ Based on Agents Rule of Two: [BC] Configuration
 import re
 from typing import Any, Dict, List, Optional
 
-from src.security.ai_security_layer import (AgentRuleOfTwoConfig,
-                                            AISecurityLayer)
+from src.security.ai_security_layer import AgentRuleOfTwoConfig, AISecurityLayer
 
 
 class DevOpsAISecure:

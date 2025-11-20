@@ -23,8 +23,7 @@ from src.config import settings
 from src.middleware.rate_limiter import limiter
 from src.ml.ab_testing.tester import ABTestConfig, ABTestManager, TestType
 from src.ml.experiments.mlflow_manager import MLFlowManager
-from src.ml.metrics.collector import (AssistantRole, MetricsCollector,
-                                      MetricType)
+from src.ml.metrics.collector import AssistantRole, MetricsCollector, MetricType
 from src.ml.models.predictor import MLPredictor, create_model
 from src.ml.training.trainer import ModelTrainer, TrainingType
 from src.utils.structured_logging import StructuredLogger

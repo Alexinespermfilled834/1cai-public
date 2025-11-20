@@ -14,8 +14,7 @@ Unified Data Layer Integration
 import logging
 from typing import Any, Dict
 
-from src.infrastructure.data_layer import (DataOperation, DataSource,
-                                           UnifiedDataLayer)
+from src.infrastructure.data_layer import DataOperation, DataSource, UnifiedDataLayer
 
 logger = logging.getLogger(__name__)
 

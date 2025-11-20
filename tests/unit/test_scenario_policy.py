@@ -4,10 +4,18 @@
 Unit tests for Scenario Policy (experimental).
 """
 
-from src.ai.scenario_hub import (AutonomyLevel, ScenarioGoal, ScenarioPlan,
-                                 ScenarioRiskLevel, ScenarioStep)
-from src.ai.scenario_policy import (StepDecision, assess_plan_execution,
-                                    decide_step_execution)
+from src.ai.scenario_hub import (
+    AutonomyLevel,
+    ScenarioGoal,
+    ScenarioPlan,
+    ScenarioRiskLevel,
+    ScenarioStep,
+)
+from src.ai.scenario_policy import (
+    StepDecision,
+    assess_plan_execution,
+    decide_step_execution,
+)
 
 
 def _make_step(step_id: str, risk: ScenarioRiskLevel) -> ScenarioStep:

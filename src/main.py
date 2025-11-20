@@ -33,12 +33,15 @@ from src.api.admin_audit import router as admin_audit_router
 from src.api.admin_roles import router as admin_roles_router
 from src.api.auth import router as auth_router
 from src.api.bpmn_api import router as bpmn_router
+
 # NEW: Security routers
 from src.api.code_approval import router as code_approval_router
 from src.api.code_review import router as code_review_router
 from src.api.copilot_api_perfect import router as copilot_router
+
 # API Routers
 from src.api.dashboard_api import router as dashboard_router
+
 # NEW: Marketplace router
 from src.api.marketplace import router as marketplace_router
 from src.api.monitoring import router as monitoring_router
@@ -46,21 +49,26 @@ from src.api.orchestrator_api import router as orchestrator_router
 from src.api.security_monitoring import router as security_monitoring_router
 from src.api.test_generation import router as test_generation_router
 from src.api.websocket_enhanced import router as websocket_router
+
 # NEW: Wiki Router
 from src.api.wiki import router as wiki_router
+
 # Database
 from src.database import close_pool, create_pool
 from src.db.marketplace_repository import MarketplaceRepository
 from src.middleware.jwt_user_context import JWTUserContextMiddleware
 from src.middleware.metrics_middleware import MetricsMiddleware
+
 # Middleware
 from src.middleware.security_headers import SecurityHeadersMiddleware
 from src.middleware.user_rate_limit import UserRateLimitMiddleware
-from src.monitoring.opentelemetry_setup import (instrument_asyncpg,
-                                                instrument_fastapi_app,
-                                                instrument_httpx,
-                                                instrument_redis,
-                                                setup_opentelemetry)
+from src.monitoring.opentelemetry_setup import (
+    instrument_asyncpg,
+    instrument_fastapi_app,
+    instrument_httpx,
+    instrument_redis,
+    setup_opentelemetry,
+)
 from src.security.auth import get_auth_service
 from src.services.health_checker import get_health_checker
 from src.utils.error_handling import register_error_handlers

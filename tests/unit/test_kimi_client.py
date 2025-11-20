@@ -8,8 +8,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from src.ai.clients.exceptions import LLMCallError, LLMNotConfiguredError
-from src.ai.clients.kimi_client import (DEFAULT_OLLAMA_URL, KimiClient,
-                                        KimiConfig)
+from src.ai.clients.kimi_client import DEFAULT_OLLAMA_URL, KimiClient, KimiConfig
 
 
 class AsyncContextManagerMock:

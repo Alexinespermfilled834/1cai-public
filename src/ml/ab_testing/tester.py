@@ -15,11 +15,21 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
+
 # Статистика
 from scipy import stats
+
 # База данных для результатов A/B тестов
-from sqlalchemy import (JSON, Boolean, Column, DateTime, Float, Integer,
-                        String, create_engine)
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    Integer,
+    String,
+    create_engine,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker

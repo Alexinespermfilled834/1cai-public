@@ -59,8 +59,7 @@ class ArchitectAgentExtended:
 
         # Интеграция знаний из ИТС
         try:
-            from src.ai.agents.its_knowledge_integrator import \
-                ITSKnowledgeIntegrator
+            from src.ai.agents.its_knowledge_integrator import ITSKnowledgeIntegrator
 
             self.its_knowledge = ITSKnowledgeIntegrator()
             self.its_integration = True
