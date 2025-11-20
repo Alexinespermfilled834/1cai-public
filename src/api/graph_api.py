@@ -1,15 +1,16 @@
 """
 Graph API - FastAPI endpoints for Neo4j, Qdrant, PostgreSQL
-Версия: 2.1.0
+Версия: 2.2.0
 
 Улучшения:
+- Dependency Injection (ServiceContainer)
 - Input validation и sanitization
 - Structured logging
 - Улучшена обработка ошибок
 - Защита от Cypher injection
 """
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional, Dict, Any
@@ -21,6 +22,13 @@ from src.db.qdrant_client import QdrantClient
 from src.db.postgres_saver import PostgreSQLSaver
 from src.services.embedding_service import EmbeddingService
 from src.utils.structured_logging import StructuredLogger
+from src.api.dependencies import (
+    ServiceContainer,
+    get_neo4j_client,
+    get_qdrant_client,
+    get_postgres_client,
+    get_embedding_service
+)
 
 logger = StructuredLogger(__name__).logger
 
@@ -45,26 +53,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Clients
-neo4j_client = None
-qdrant_client = None
-pg_client = None
-embedding_service = None
 
-
-def _is_qdrant_ready() -> bool:
+def _is_qdrant_ready(client: Optional[QdrantClient] = None) -> bool:
     """Check if Qdrant client is initialized and connected."""
-    if not qdrant_client:
+    if not client:
+        client = get_qdrant_client()
+    if not client:
         return False
-    internal_client = getattr(qdrant_client, "client", None)
+    internal_client = getattr(client, "client", None)
     return internal_client is not None
 
 
-def _is_embedding_ready() -> bool:
+def _is_embedding_ready(service: Optional[EmbeddingService] = None) -> bool:
     """Check if embedding service loaded model successfully."""
-    if not embedding_service:
+    if not service:
+        service = get_embedding_service()
+    if not service:
         return False
-    model = getattr(embedding_service, "model", None)
+    model = getattr(service, "model", None)
     return model is not None
 
 
@@ -146,67 +152,39 @@ class FunctionDependenciesRequest(BaseModel):
 @app.on_event("startup")
 async def startup_event():
     """Initialize connections on startup"""
-    global neo4j_client, qdrant_client, pg_client, embedding_service
-    
-    try:
-        # Neo4j
-        neo4j_client = Neo4jClient()
-        neo4j_client.connect()
-        
-        # Qdrant
-        qdrant_client = QdrantClient()
-        qdrant_client.connect()
-        
-        # PostgreSQL
-        pg_client = PostgreSQLSaver()
-        pg_client.connect()
-        
-        # Embeddings
-        embedding_service = EmbeddingService()
-        
-        logger.info(
-            "All services initialized",
-            extra={
-                "neo4j": neo4j_client is not None,
-                "qdrant": qdrant_client is not None,
-                "postgres": pg_client is not None,
-                "embeddings": embedding_service is not None
-            }
-        )
-    except Exception as e:
-        logger.error(
-            f"Startup error: {e}",
-            extra={"error_type": type(e).__name__},
-            exc_info=True
-        )
+    ServiceContainer.initialize()
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Cleanup on shutdown"""
-    if neo4j_client:
-        neo4j_client.disconnect()
-    if pg_client:
-        pg_client.disconnect()
+    ServiceContainer.cleanup()
 
 
 # Health check
 @app.get("/health")
-async def health_check():
+async def health_check(
+    neo4j: Optional[Neo4jClient] = Depends(get_neo4j_client),
+    qdrant: Optional[QdrantClient] = Depends(get_qdrant_client),
+    pg: Optional[PostgreSQLSaver] = Depends(get_postgres_client)
+):
     """Health check endpoint"""
     return {
         "status": "healthy",
         "services": {
-            "neo4j": neo4j_client is not None,
-            "qdrant": qdrant_client is not None,
-            "postgres": pg_client is not None
+            "neo4j": neo4j is not None,
+            "qdrant": qdrant is not None,
+            "postgres": pg is not None
         }
     }
 
 
 # Graph API endpoints
 @app.post("/api/graph/query")
-async def execute_graph_query(request: GraphQueryRequest):
+async def execute_graph_query(
+    request: GraphQueryRequest,
+    neo4j_client: Optional[Neo4jClient] = Depends(get_neo4j_client)
+):
     """
     Execute custom Cypher query
     
@@ -260,7 +238,9 @@ async def execute_graph_query(request: GraphQueryRequest):
 
 
 @app.get("/api/graph/configurations")
-async def get_configurations():
+async def get_configurations(
+    neo4j_client: Optional[Neo4jClient] = Depends(get_neo4j_client)
+):
     """Get all configurations"""
     if not neo4j_client:
         raise HTTPException(status_code=503, detail="Neo4j not available")
@@ -281,7 +261,8 @@ async def get_configurations():
 @app.get("/api/graph/objects/{config_name}")
 async def get_objects(
     config_name: str,
-    object_type: Optional[str] = Query(None, max_length=100, description="Filter by object type")
+    object_type: Optional[str] = Query(None, max_length=100, description="Filter by object type"),
+    neo4j_client: Optional[Neo4jClient] = Depends(get_neo4j_client)
 ):
     """
     Get objects of a configuration
@@ -338,7 +319,10 @@ async def get_objects(
 
 
 @app.post("/api/graph/dependencies")
-async def get_function_dependencies(request: FunctionDependenciesRequest):
+async def get_function_dependencies(
+    request: FunctionDependenciesRequest,
+    neo4j_client: Optional[Neo4jClient] = Depends(get_neo4j_client)
+):
     """Get function call graph"""
     if not neo4j_client:
         raise HTTPException(status_code=503, detail="Neo4j not available")
@@ -368,17 +352,21 @@ async def get_function_dependencies(request: FunctionDependenciesRequest):
 
 # Vector search endpoints
 @app.post("/api/search/semantic")
-async def semantic_search(request: SemanticSearchRequest):
+async def semantic_search(
+    request: SemanticSearchRequest,
+    qdrant_client: Optional[QdrantClient] = Depends(get_qdrant_client),
+    embedding_service: Optional[EmbeddingService] = Depends(get_embedding_service)
+):
     """
     Semantic code search using Qdrant
     
     Security: Input validation and sanitization
     """
-    if not _is_qdrant_ready():
+    if not _is_qdrant_ready(qdrant_client):
         logger.warning("Qdrant not available for semantic search")
         raise HTTPException(status_code=503, detail="Vector search not available")
     
-    if not _is_embedding_ready():
+    if not _is_embedding_ready(embedding_service):
         logger.warning("Embedding service not available for semantic search")
         raise HTTPException(status_code=503, detail="Embedding service not available")
     
@@ -427,7 +415,11 @@ async def semantic_search(request: SemanticSearchRequest):
 
 # Statistics endpoints
 @app.get("/api/stats/overview")
-async def get_stats_overview():
+async def get_stats_overview(
+    neo4j_client: Optional[Neo4jClient] = Depends(get_neo4j_client),
+    qdrant_client: Optional[QdrantClient] = Depends(get_qdrant_client),
+    pg_client: Optional[PostgreSQLSaver] = Depends(get_postgres_client)
+):
     """Get overall statistics"""
     stats = {}
     
@@ -449,10 +441,3 @@ async def get_stats_overview():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8080)
-
-
-
-
-
-
-

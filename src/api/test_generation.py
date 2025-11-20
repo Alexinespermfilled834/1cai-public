@@ -1,6 +1,7 @@
 """
 API endpoints для автоматической генерации тестов
-Версия: 1.0.0
+Версия: 1.1.0
+Refactored: Uses BSLParser for robust parsing
 """
 
 import logging
@@ -12,6 +13,7 @@ from datetime import datetime
 from src.services.openai_code_analyzer import get_openai_analyzer
 from src.middleware.rate_limiter import limiter
 from src.utils.structured_logging import StructuredLogger
+from src.ai.agents.code_review.bsl_parser import BSLParser
 
 # Import TypeScript test generation (moved from conditional import)
 try:
@@ -117,8 +119,9 @@ async def generate_bsl_tests(code: str, include_edge_cases: bool = True, timeout
         return []
     except Exception as e:
         logger.error(
-            f"Error in generate_bsl_tests: {e}",
+            "Error in generate_bsl_tests",
             extra={
+                "error": str(e),
                 "error_type": type(e).__name__,
                 "code_length": len(code)
             },
@@ -131,8 +134,28 @@ async def _generate_bsl_tests_internal(code: str, include_edge_cases: bool) -> L
     """Internal method for generating BSL tests"""
     tests = []
     
-    # Извлечение функций из кода
-    functions = extract_bsl_functions(code)
+    # Parsing via BSLParser (Consolidated logic)
+    parser = BSLParser()
+    try:
+        parsed_data = parser.parse_file(code)
+        raw_functions = parsed_data.get('functions', [])
+        
+        # Adapter to match expected structure
+        functions = []
+        for f in raw_functions:
+            functions.append({
+                "name": f.get('name'),
+                "code": f.get('body', ''),
+                "params": [p['name'] for p in f.get('parameters', [])],
+                "params_detailed": f.get('parameters', []),
+                "exported": f.get('is_export', False),
+                "start_line": f.get('start_line'),
+                "end_line": f.get('end_line'),
+                "comments": "" # BSLParser doesn't extract comments body yet, can be improved
+            })
+    except Exception as e:
+        logger.error(f"BSL parsing failed: {e}", exc_info=True)
+        return []
     
     for func in functions:
         test_cases = await generate_test_cases(func, include_edge_cases)
@@ -153,234 +176,6 @@ async def _generate_bsl_tests_internal(code: str, include_edge_cases: bool) -> L
         })
     
     return tests
-
-
-def extract_bsl_functions(code: str) -> List[dict]:
-    """
-    Извлечение функций из BSL кода (улучшенная версия)
-    
-    Поддерживает:
-    - Области (#Область ... #КонецОбласти)
-    - Экспортные функции/процедуры
-    - Комментарии к функциям
-    - Типы параметров и значения по умолчанию
-    """
-    import re
-    
-    if not code or not code.strip():
-        return []
-    
-    lines = code.split('\n')
-    functions = []
-    current_func = None
-    in_function = False
-    function_lines = []
-    brace_level = 0
-    region_stack = []
-    
-    for i, line in enumerate(lines):
-        stripped = line.strip()
-        original_line = line
-        
-        # Пропускаем пустые строки (но сохраняем в функции)
-        if not stripped:
-            if in_function:
-                function_lines.append(original_line)
-            continue
-        
-        # Обработка областей
-        if stripped.startswith('#Область'):
-            region_match = re.search(r'#Область\s+([^\n]+)', stripped)
-            if region_match:
-                region_stack.append(region_match.group(1).strip())
-        elif stripped.startswith('#КонецОбласти'):
-            if region_stack:
-                region_stack.pop()
-        
-        # Комментарии перед функцией
-        comment_lines = []
-        if i > 0:
-            j = i - 1
-            while j >= 0 and lines[j].strip() and (lines[j].strip().startswith('//') or lines[j].strip().startswith('/*')):
-                comment_lines.insert(0, lines[j].strip())
-                j -= 1
-        
-        # Улучшенный паттерн: учитывает Экспорт, типы параметров
-        func_match = re.search(
-            r'^\s*(?:Экспорт\s+)?(?:Функция|Процедура)\s+([\wА-Яа-я]+)\s*\(([^)]*)\)',
-            stripped,
-            re.IGNORECASE
-        )
-        
-        if func_match:
-            # Сохраняем предыдущую функцию если есть
-            if current_func and function_lines:
-                current_func['code'] = '\n'.join(function_lines)
-                functions.append(current_func)
-            
-            # Начинаем новую функцию/процедуру
-            func_type = 'Функция' if 'Функция' in stripped or 'функция' in stripped else 'Процедура'
-            func_name = func_match.group(1)
-            params_str = func_match.group(2)
-            is_exported = 'Экспорт' in stripped or 'экспорт' in stripped
-            
-            # Улучшенное извлечение параметров
-            params = _extract_parameters_detailed(params_str)
-            
-            current_func = {
-                "name": func_name,
-                "type": func_type,
-                "code": "",
-                "params": [p['name'] for p in params],  # Для обратной совместимости
-                "params_detailed": params,  # Детальная информация
-                "exported": is_exported,
-                "region": region_stack[-1] if region_stack else None,
-                "comments": '\n'.join(comment_lines) if comment_lines else '',
-                "line_start": i + 1
-            }
-            function_lines = [original_line]
-            in_function = True
-            brace_level = 0
-            continue
-        
-        # Если мы внутри функции
-        if in_function and current_func:
-            function_lines.append(original_line)
-            
-            # Подсчет уровней вложенности
-            if re.search(r'\b(?:Если|Пока|Для|Попытка)\b', stripped, re.IGNORECASE):
-                brace_level += 1
-            elif re.search(r'\b(?:КонецЕсли|КонецЦикла|Исключение)\b', stripped, re.IGNORECASE):
-                brace_level = max(0, brace_level - 1)
-            
-            # Конец функции/процедуры
-            if re.search(r'\s*Конец(?:Функции|Процедуры)\s*$', stripped, re.IGNORECASE) and brace_level == 0:
-                current_func['code'] = '\n'.join(function_lines)
-                current_func['line_end'] = i + 1
-                functions.append(current_func)
-                current_func = None
-                in_function = False
-                function_lines = []
-                brace_level = 0
-    
-    # Сохраняем последнюю функцию если файл обрывается
-    if current_func and function_lines:
-        current_func['code'] = '\n'.join(function_lines)
-        functions.append(current_func)
-    
-    return functions
-
-
-def _extract_parameters_detailed(params_str: str) -> List[dict]:
-    """
-    Детальное извлечение параметров с типами и значениями по умолчанию
-    
-    Форматы:
-    - Параметр
-    - Параметр: Тип
-    - Параметр = Значение
-    - Параметр: Тип = Значение
-    """
-    import re
-    
-    if not params_str or not params_str.strip():
-        return []
-    
-    params = []
-    current_param = ""
-    depth = 0
-    
-    for char in params_str:
-        if char == '(':
-            depth += 1
-            current_param += char
-        elif char == ')':
-            depth -= 1
-            current_param += char
-        elif char == ',' and depth == 0:
-            param = _parse_single_parameter(current_param.strip())
-            if param:
-                params.append(param)
-            current_param = ""
-        else:
-            current_param += char
-    
-    # Последний параметр
-    if current_param.strip():
-        param = _parse_single_parameter(current_param.strip())
-        if param:
-            params.append(param)
-    
-    return params
-
-
-def _parse_single_parameter(param_str: str) -> Optional[dict]:
-    """Парсинг одного параметра"""
-    import re
-    
-    if not param_str or not param_str.strip():
-        return None
-    
-    param_str = param_str.strip()
-    
-    # Ищем тип параметра (формат: Имя: Тип)
-    type_match = re.search(r'^([\wА-Яа-я]+)\s*:\s*([\wА-Яа-я]+)', param_str)
-    if type_match:
-        param_name = type_match.group(1)
-        param_type = type_match.group(2)
-        
-        # Ищем значение по умолчанию
-        default_match = re.search(r'=\s*(.+)$', param_str)
-        default_value = default_match.group(1).strip() if default_match else None
-        
-        return {
-            'name': param_name,
-            'type': param_type,
-            'default_value': default_value,
-            'required': default_value is None
-        }
-    
-    # Ищем значение по умолчанию без типа
-    default_match = re.search(r'^([\wА-Яа-я]+)\s*=\s*(.+)$', param_str)
-    if default_match:
-        param_name = default_match.group(1)
-        default_value = default_match.group(2).strip()
-        
-        return {
-            'name': param_name,
-            'type': None,
-            'default_value': default_value,
-            'required': False
-        }
-    
-    # Просто имя параметра
-    return {
-        'name': param_str,
-        'type': None,
-        'default_value': None,
-        'required': True
-    }
-
-
-def func_name_from_line(line: str) -> str:
-    """Извлечение имени функции из строки"""
-    parts = line.split()
-    for i, part in enumerate(parts):
-        if part in ['Функция', 'Процедура'] and i + 1 < len(parts):
-            name = parts[i + 1].split('(')[0].strip()
-            return name
-    return 'UnknownFunction'
-
-
-def extract_parameters(signature: str) -> List[str]:
-    """
-    Извлечение параметров из сигнатуры (улучшенная версия)
-    
-    Возвращает список имен параметров для обратной совместимости.
-    Для детальной информации используйте extract_bsl_functions() с params_detailed.
-    """
-    params_detailed = _extract_parameters_detailed(signature)
-    return [p['name'] for p in params_detailed]
 
 
 async def generate_test_cases(func: dict, include_edge_cases: bool, timeout: float = 10.0) -> List[dict]:
@@ -934,4 +729,3 @@ async def health_check():
             "ai_generation": True  # ✅ Интегрировано с OpenAI
         }
     }
-

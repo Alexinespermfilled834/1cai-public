@@ -17,9 +17,10 @@ if os.getenv("IGNORE_PY_VERSION_CHECK") != "1" and sys.version_info[:2] != (3, 1
     )
 
 from fastapi import FastAPI, Request, Response, APIRouter, status
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.staticfiles import StaticFiles # Import StaticFiles
 
 import redis.asyncio as aioredis
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -43,9 +44,13 @@ from src.api.admin_audit import router as admin_audit_router
 # NEW: Security routers
 from src.api.code_approval import router as code_approval_router
 from src.api.security_monitoring import router as security_monitoring_router
+from src.api.orchestrator_api import router as orchestrator_router
 
 # NEW: Marketplace router
 from src.api.marketplace import router as marketplace_router
+
+# NEW: Wiki Router
+from src.api.wiki import router as wiki_router
 
 # Middleware
 from src.middleware.security_headers import SecurityHeadersMiddleware
@@ -324,7 +329,7 @@ app = FastAPI(
 api_v1_router = APIRouter(
     prefix="/api/v1",
     tags=["API v1"],
-    default_response_class=Response,
+    default_response_class=JSONResponse, # Changed to JSONResponse to handle list/dict returns correctly
 )
 
 # Metrics instrumentation (Prometheus) - with error handling
@@ -504,6 +509,8 @@ routers = [
     ("admin_audit", admin_audit_router),
     ("code_approval", code_approval_router),
     ("security_monitoring", security_monitoring_router),
+    ("orchestrator", orchestrator_router),
+    ("wiki", wiki_router), # Wiki Router
 ]
 
 for name, router in routers:
@@ -525,6 +532,14 @@ if MCP_AVAILABLE and mcp_app:
     except Exception as e:
         logger.warning(f"Failed to mount MCP server: {e}")
 
+# Mount Wiki Static UI (Only in Dev/Demo mode)
+try:
+    wiki_static_path = os.path.join(os.path.dirname(__file__), "static/wiki")
+    if os.path.exists(wiki_static_path):
+        app.mount("/wiki-ui", StaticFiles(directory=wiki_static_path, html=True), name="wiki-ui")
+        logger.info(f"Wiki UI mounted at /wiki-ui (from {wiki_static_path})")
+except Exception as e:
+    logger.warning(f"Failed to mount Wiki UI: {e}")
 
 # Root
 @app.get("/", tags=["API"], summary="API root endpoint")
@@ -545,7 +560,8 @@ async def root():
         "security": "Agents Rule of Two Enabled",
         "integrations": {
             "mcp": "/mcp (Cursor/VSCode)",
-            "telegram": "Available via bot"
+            "telegram": "Available via bot",
+            "wiki": "/wiki-ui (Web Interface)"
         },
         "docs": "/docs",
         "redoc": "/redoc",

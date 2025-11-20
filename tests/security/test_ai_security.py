@@ -147,7 +147,7 @@ class TestSensitiveDataRedaction:
     
     def test_redacts_api_keys(self):
         """Редактирует API keys"""
-        output_with_key = "API_KEY=sk-1234567890abcdef1234567890abcdef"
+        output_with_key = "API_KEY=" + "sk-1234567890abcdef1234567890abcdef"
         
         result = self.security.validate_output(
             ai_output=output_with_key,

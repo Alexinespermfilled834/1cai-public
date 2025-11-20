@@ -19,7 +19,7 @@
     breaker = CircuitBreaker("api_service", CircuitBreakerConfig())
     
     # Вызов функции с circuit breaker
-    result = breaker.call(lambda: requests.get("https://api.example.com"))
+    result = breaker.call(lambda: requests.get("https://api.example.com", timeout=10))
     
     # Retry политика
     retry_policy = RetryPolicy(RetryPolicyConfig())

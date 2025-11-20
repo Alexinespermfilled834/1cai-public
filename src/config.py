@@ -239,8 +239,9 @@ class Settings(BaseSettings):
     
     # База данных
     database_url: str = Field(
-        default="postgresql://admin:changeme@localhost:5432/knowledge_base",
-        description="URL базы данных"
+        default="",
+        description="URL базы данных (postgresql://user:pass@host:port/db)",
+        validation_alias="DATABASE_URL"
     )
     
     # Redis для кэширования

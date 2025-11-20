@@ -18,7 +18,7 @@
 
 ```powershell
 # Переименуйте папку проекта без пробелов
-Rename-Item "C:\Users\chg\Downloads\package (1)" "package-1"
+Rename-Item "C:\Users\User\Downloads\package (1)" "package-1"
 ```
 
 **Альтернатива:** Используйте WSL2 для лучшей совместимости:

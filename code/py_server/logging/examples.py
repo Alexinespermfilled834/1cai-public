@@ -11,6 +11,7 @@
 
 import time
 import asyncio
+import os
 from typing import Dict, Any
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -39,9 +40,11 @@ business_logger = create_business_logger()
 app = FastAPI(title="Logging System Demo")
 
 # Добавление CORS middleware
+origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

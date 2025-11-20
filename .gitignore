@@ -356,3 +356,4 @@ tools/plantuml-*.jar
 output/metrics/
 output/test-results/
 output/test-results/allure/wiki_implementation_analysis.json
+temp_repos/
