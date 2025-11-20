@@ -282,8 +282,8 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
                 extra={
                     "error": str(e),
                     "error_type": type(e).__name__,
-                    "endpoint": endpoint if "endpoint" in locals() else None,
-                    "method": request.method if "request" in locals() else None,
+                    "endpoint": request.url.path,
+                    "method": request.method,
                 },
                 exc_info=True,
             )

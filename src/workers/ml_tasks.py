@@ -15,6 +15,8 @@ import pandas as pd
 
 # Celery
 from celery import Celery
+from celery.schedules import crontab
+from celery.schedules import crontab
 
 # Локальные импорты
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

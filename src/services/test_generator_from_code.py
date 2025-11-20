@@ -336,34 +336,36 @@ class CodeToTestGenerator:
 
         # Edge case: максимальные значения
         if any(p["type"] == "Число" for p in func_info.parameters):
-            a_str = "A" * 1000
-            param_assignments = []
+            # Подготовка значения для строки (вынесено из f-string из-за ограничений backslash)
+            long_string_val = "A" * 1000
+            long_string_expr = f'"{long_string_val}"'
+            
+            param_init_list = []
             for p in func_info.parameters:
-                if p["type"] == "Число":
-                    val = "999999999"
-                elif p["type"] == "Строка":
-                    val = f'"{a_str}"'
+                if p['type'] == 'Число':
+                    param_init_list.append(f"{p['name']} = 999999999")
+                elif p['type'] == 'Строка':
+                    param_init_list.append(f"{p['name']} = {long_string_expr}")
                 else:
-                    val = "Неопределено"
-                param_assignments.append(f"{p['name']} = {val}")
+                    param_init_list.append(f"{p['name']} = Неопределено")
+            
+            param_inits = ', '.join(param_init_list)
 
-            tests.append(
-                f"""// Edge case: максимальные значения
+            tests.append(f"""// Edge case: максимальные значения
 Процедура Тест_{func_info.name}_МаксимальныеЗначения() Экспорт
-
+    
     // Arrange
-    {', '.join(param_assignments)};
-
+    {param_inits};
+    
     // Act
     Результат = {func_info.name}({', '.join(p['name'] for p in func_info.parameters)});
-
+    
     // Assert
     ЮТест.ОжидаетЧто(Результат, "Результат с максимальными значениями")
         .ЭтоНеНеопределено();
-
+    
 КонецПроцедуры
-"""
-            )
+""")
 
         return tests
 
@@ -412,3 +414,10 @@ class CodeToTestGenerator:
     // TODO: Реализовать тест
 КонецПроцедуры
 """
+
+    def _generate_assert_code(self, return_type: Optional[str], result_var: str) -> str:
+        """Генерирует код проверки результата."""
+        if not return_type:
+            return f'    ЮТест.ОжидаетЧто({result_var}, "Результат").ЭтоНеНеопределено();'
+
+        return f'    ЮТест.ОжидаетЧто({result_var}, "Результат").ЭтоНеНеопределено();'

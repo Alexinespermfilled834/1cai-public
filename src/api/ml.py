@@ -15,6 +15,7 @@ import asyncio
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+import pandas as pd
 from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field

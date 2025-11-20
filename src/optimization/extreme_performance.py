@@ -7,6 +7,7 @@ Advanced caching, query optimization, response streaming
 
 import hashlib
 import json
+from datetime import datetime
 from typing import Any, AsyncIterator, Dict, List
 
 from src.utils.structured_logging import StructuredLogger

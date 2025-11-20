@@ -6,6 +6,7 @@ OAuth2, 2FA, Audit Logging, Compliance
 """
 
 import hashlib
+import os
 import secrets
 from datetime import datetime, timedelta
 from typing import Any, Dict

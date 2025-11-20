@@ -5,6 +5,8 @@
 Интеграция с Celery для background обучения и автоматического переобучения.
 """
 
+import logging
+import logging
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
@@ -16,6 +18,7 @@ import pandas as pd
 
 # Celery для background задач
 from celery import Celery
+from celery import current_app as celery_app
 from celery.result import AsyncResult
 from celery.schedules import crontab
 from sklearn.feature_selection import SelectKBest, f_classif, f_regression

@@ -7,6 +7,7 @@ A/B тестирование для ML моделей.
 
 import hashlib
 import json
+import logging
 import math
 import uuid
 from dataclasses import asdict, dataclass

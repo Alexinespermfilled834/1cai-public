@@ -11,6 +11,11 @@ from typing import Dict
 import asyncpg
 from fastapi import APIRouter, Header, HTTPException, Request
 
+try:
+    import stripe
+except ImportError:
+    stripe = None
+
 from src.utils.structured_logging import StructuredLogger
 
 logger = StructuredLogger(__name__).logger

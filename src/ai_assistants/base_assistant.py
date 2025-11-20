@@ -11,6 +11,11 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
+try:
+    from supabase import Client
+except ImportError:
+    Client = Any
+
 from pydantic import BaseModel, Field
 
 

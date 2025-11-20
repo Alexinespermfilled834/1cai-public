@@ -14,7 +14,7 @@ import logging
 import random
 import time
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
 
 try:
     from src.monitoring.prometheus_metrics import (
